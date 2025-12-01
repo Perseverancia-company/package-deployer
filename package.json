@@ -1,0 +1,30 @@
+{
+	"name": "package-deployer",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/FelixRiddle/package-deployer.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/FelixRiddle/package-deployer/issues"
+	},
+	"homepage": "https://github.com/FelixRiddle/package-deployer#readme",
+	"dependencies": {
+		"simple-git": "^3.30.0",
+		"yargs": "^18.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^24.0.0",
+		"@types/yargs": "^17.0.35",
+		"tsx": "^4.20.6",
+		"typescript": "^5.9.3"
+	}
+}
