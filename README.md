@@ -12,4 +12,6 @@ When adding my own dependencies they need to be built and published before, but 
 
 ## List of tasks to do
 
-When gathering the list, add a black list to ignore the main monorepo "perseverancia-deployment"
+- [x] Get all packages at a path
+	- [x] When gathering the list, add a black list to ignore some packages
+	This is principally useful for the main monorepo "perseverancia-deployment"
