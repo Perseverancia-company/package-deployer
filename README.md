@@ -26,7 +26,7 @@ When adding my own dependencies they need to be built and published before, but 
 	- [x] YAML file(because it's easy to read)
 	- [x] Blacklist names
 
-- [ ] Print packages obtained
+- [x] Print packages obtained
 
 Would serve as a dry run to check if the blacklist works
 
