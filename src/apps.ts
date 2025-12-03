@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { IAppInfo } from "./types";
+import NodePackage from "./NodePackage";
 
 /**
  * Read app package.json
@@ -54,7 +55,7 @@ export async function getAppsInfoAtPath(
 	} = {}
 ) {
 	let apps: IAppInfo[] = [];
-	const blacklist = options && options.blacklist || [];
+	const blacklist = (options && options.blacklist) || [];
 
 	// Check if the folder exists
 	if (fs.existsSync(appsPath)) {
@@ -62,7 +63,7 @@ export async function getAppsInfoAtPath(
 		const foundApps = fs.readdirSync(appsPath);
 		for (const appName of foundApps) {
 			// If the name is in the blacklist continue with the next one
-			if(blacklist.includes(appName)) {
+			if (blacklist.includes(appName)) {
 				continue;
 			}
 
@@ -140,4 +141,18 @@ export async function getAllApps(
 	}
 
 	return newApps;
+}
+
+/**
+ * Apps to node package
+ */
+export async function appsToNodePackages(packages: IAppInfo[]) {
+	// Create node packages class and push them to the list
+	let nodePackagesPromise: Array<Promise<NodePackage>> = [];
+	for (const nodePackage of packages) {
+		nodePackagesPromise.push(NodePackage.fromPath(nodePackage.path));
+	}
+	const nodePackages = await Promise.all(nodePackagesPromise);
+
+	return nodePackages;
 }

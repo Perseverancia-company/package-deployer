@@ -3,8 +3,8 @@ import { hideBin } from "yargs/helpers";
 import fsp from "fs/promises";
 
 import PackageDeployerConfiguration from "../PackageDeployerConfiguration";
-import { getAllApps } from "../apps";
-import NodePackage from "../NodePackage";
+import { appsToNodePackages, getAllApps } from "../apps";
+import { dependencyBuildOrder } from "@/graph";
 
 /**
  * Main
@@ -26,10 +26,15 @@ async function main() {
 			"print",
 			"Print things",
 			(args) => {
-				return args.option("packages", {
-					type: "boolean",
-					description: "Print all the packages obtained",
-				});
+				return args
+					.option("packages", {
+						type: "boolean",
+						description: "Print all the packages obtained",
+					})
+					.option("build-order", {
+						type: "boolean",
+						description: "Print the build order",
+					});
 			},
 			async (args) => {
 				// Print packages excluding those of the blacklist
@@ -41,6 +46,18 @@ async function main() {
 						}
 					);
 					console.log(`All packages: `, allPackages);
+				}
+
+				if (args["build-order"]) {
+					const allPackages = await getAllApps(
+						args["packages-path"],
+						{
+							blacklist: config.getBlacklist(),
+						}
+					);
+					const nodePackages = await appsToNodePackages(allPackages);
+					const buildOrder = dependencyBuildOrder(nodePackages);
+					console.log(`Build order: `, buildOrder);
 				}
 			}
 		)
@@ -54,14 +71,8 @@ async function main() {
 					blacklist: config.getBlacklist(),
 				});
 
-				// Create node packages class and push them to the list
-				let nodePackagesPromise: Array<Promise<NodePackage>> = [];
-				for (const nodePackage of allPackages) {
-					nodePackagesPromise.push(
-						NodePackage.fromPath(nodePackage.path)
-					);
-				}
-				const nodePackages = await Promise.all(nodePackagesPromise);
+				// Create node packages class
+				const nodePackages = await appsToNodePackages(allPackages);
 
 				// Deploy all packages
 				let deployPromises = [];
