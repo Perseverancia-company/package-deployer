@@ -47,6 +47,8 @@ export async function getAppInfo(appPath: string) {
 
 /**
  * Get all apps info at a path
+ * 
+ * Doesn't searches workspaces
  */
 export async function getAppsInfoAtPath(
 	appsPath: string,
