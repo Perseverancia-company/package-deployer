@@ -4,6 +4,7 @@ import NodePackage from "./NodePackage";
 import PackageDeployerConfiguration, {
 	DEPLOYER_CONFIG_FILENAME,
 } from "./PackageDeployerConfiguration";
+import { IAppInfo } from "./types";
 
 export {
 	DEPLOYER_CONFIG_FILENAME,
@@ -13,3 +14,5 @@ export {
 	getAppsInfoAtPath,
 	dependencyBuildOrder,
 };
+
+export type { IAppInfo };
