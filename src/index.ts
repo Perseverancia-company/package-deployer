@@ -1,4 +1,4 @@
-import { getAllApps, getAppsInfoAtPath } from "./apps";
+import { appsToNodePackages, getAllApps, getAppsInfoAtPath } from "./apps";
 import { dependencyBuildOrder } from "./graph";
 import NodePackage from "./NodePackage";
 import PackageDeployerConfiguration, {
@@ -10,6 +10,7 @@ export {
 	DEPLOYER_CONFIG_FILENAME,
 	NodePackage,
 	PackageDeployerConfiguration,
+	appsToNodePackages,
 	getAllApps,
 	getAppsInfoAtPath,
 	dependencyBuildOrder,
