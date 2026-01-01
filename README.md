@@ -45,6 +45,7 @@ Would serve as a dry run to check if the blacklist works
 - [x] Deploy packages
 - [x] Print packages
 - [ ] Remove packages that don't have package.json
+At the given path
 That is they aren't nodejs packages
 
 ### Github integration
