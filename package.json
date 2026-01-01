@@ -33,6 +33,7 @@
 	},
 	"homepage": "https://github.com/FelixRiddle/package-deployer#readme",
 	"dependencies": {
+		"@octokit/rest": "^22.0.1",
 		"simple-git": "^3.30.0",
 		"yaml": "^2.8.2"
 	},

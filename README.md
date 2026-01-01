@@ -16,6 +16,15 @@ Rules that have to be followed when developing this repository.
 
 When adding my own dependencies they need to be built and published before, but that beats the point of this very app.
 
+## Environment variables
+
+These are some environment variables used for configuration.
+
+```bash
+# Github token to list repositories from
+GITHUB_TOKEN=YOUR_TOKEN
+```
+
 ## List of tasks to do
 
 - [x] Get all packages at a path

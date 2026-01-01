@@ -5,12 +5,16 @@ import fsp from "fs/promises";
 import PackageDeployerConfiguration from "../PackageDeployerConfiguration";
 import { appsToNodePackages, getAllApps } from "../apps";
 import { dependencyBuildOrder } from "@/graph";
+import { Octokit } from "@octokit/rest";
 
 /**
  * Main
  */
 async function main() {
 	const config = await PackageDeployerConfiguration.load();
+	
+	// Initialize octokit
+	const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
 	return yargs()
 		.option("packages-path", {
