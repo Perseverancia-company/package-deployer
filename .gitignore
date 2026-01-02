@@ -16,6 +16,7 @@ temp/
 frontend-config.json
 deployer-config.yaml
 deploymentResult.json
+cache/
 
 # Output
 app_log.txt
