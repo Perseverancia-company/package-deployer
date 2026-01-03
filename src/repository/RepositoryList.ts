@@ -3,6 +3,8 @@ import fsp from "fs/promises";
 
 import { RepositoryFileConfiguration } from "@/types";
 import { getAllRepositories } from ".";
+import path from "path";
+import DefaultConfigFolder from "@/DefaultConfigFolder";
 
 /**
  * Repository list
@@ -23,6 +25,58 @@ export default class RepositoryList {
 		this.configurationFilePath = configurationFilePath;
 		this.configuration = repoConfig;
 		this.octokit = octokit;
+	}
+
+	/**
+	 * Default configuration file path
+	 */
+	static defaultConfigurationFile() {
+		// File path
+		const filePath = path.join(
+			DefaultConfigFolder.getPath(),
+			"userRepositories.json"
+		);
+
+		return filePath;
+	}
+
+	/**
+	 * Save repository list
+	 */
+	async save() {
+		return await fsp.writeFile(
+			this.configurationFilePath,
+			JSON.stringify(this.configuration)
+		);
+	}
+
+	/**
+	 * Get repositories
+	 */
+	getRepositories() {
+		return this.configuration.repositories;
+	}
+
+	/**
+	 * Sync
+	 *
+	 * Overwrite local repository information
+	 */
+	static async sync(configurationFilePath: string, octokit: Octokit) {
+		// Get all repositories from the github user
+		const repositories = await getAllRepositories(octokit);
+		if (!repositories) {
+			throw new Error("Couldn't fetch user repositories");
+		}
+
+		// Create config object
+		const config: RepositoryFileConfiguration = {
+			repositories,
+			lastUpdated: new Date(),
+		};
+
+		// Instantiate class
+		return new RepositoryList(configurationFilePath, config, octokit);
 	}
 
 	/**

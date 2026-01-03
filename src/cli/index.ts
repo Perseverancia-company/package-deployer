@@ -2,10 +2,8 @@
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import fsp from "fs/promises";
 import { Octokit } from "@octokit/rest";
 import dotenv from "dotenv";
-import path from "path";
 
 import PackageDeployerConfiguration from "../PackageDeployerConfiguration";
 import { appsToNodePackages, getAllApps } from "../apps";
@@ -13,6 +11,7 @@ import { dependencyBuildOrder } from "@/graph";
 import DefaultConfigFolder from "@/DefaultConfigFolder";
 import RepositoriesFolder from "@/repository/RepositoriesFolder";
 import PackageDeployer from "@/PackageDeployer";
+import RepositoryList from "@/repository/RepositoryList";
 
 /**
  * Main
@@ -65,6 +64,10 @@ async function main() {
 					.option("configuration", {
 						type: "boolean",
 						description: "Print configuration",
+					})
+					.option("user-repositories", {
+						type: "boolean",
+						description: "Print user repositories",
 					});
 			},
 			async (args) => {
@@ -87,6 +90,19 @@ async function main() {
 
 				if (args.configuration) {
 					console.log(`Configuration: \n`, config);
+				}
+
+				if (args.userRepositories) {
+					// Get(locally) or fetch(from github) repository list
+					const repositoryList = await RepositoryList.fromPath(
+						RepositoryList.defaultConfigurationFile(),
+						octokit
+					);
+
+					console.log(
+						`Repository list: \n`,
+						repositoryList.getRepositories()
+					);
 				}
 			}
 		)
@@ -141,6 +157,14 @@ async function main() {
 			async (args) => {
 				// Get repository information from github
 				if (args.repositories) {
+					// Get(locally) or fetch(from github) repository list
+					const repositoryList = await RepositoryList.sync(
+						RepositoryList.defaultConfigurationFile(),
+						octokit
+					);
+					
+					// Save
+					await repositoryList.save();
 				}
 			}
 		)
