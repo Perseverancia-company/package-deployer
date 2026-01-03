@@ -49,6 +49,79 @@ async function main() {
 
 	return yargs()
 		.command(
+			"config",
+			"Set configuration by key",
+			(args) => {
+				return args
+					.command(
+						"blacklist",
+						"Manage the package blacklist",
+						(args) => {
+							return args
+								.option("name", {
+									demandOption: true,
+									type: "string",
+									description:
+										"Package name(including the workspace)",
+								})
+								.option("add", {
+									type: "boolean",
+									description:
+										"Add an element to the blacklist",
+								});
+						},
+						async (args) => {
+							if (args.add) {
+								config.blacklistAdd(args["name"]);
+							}
+
+							await config.save(DefaultConfigFolder.getPath());
+						}
+					)
+					.option("packages-path", {
+						type: "string",
+						description:
+							"Set the packages path to clone packages to, read and deploy from.",
+					})
+					.option("github-token", {
+						type: "string",
+						description: "User github token.",
+					})
+					.option("profile-url", {
+						type: "string",
+						description: "User profile url.",
+					});
+			},
+			async (args) => {
+				// Set packages path
+				if (args.packagesPath) {
+					config.configuration.packagesPath = args.packagesPath;
+				}
+
+				// Store user profile URL
+				if (args.profileUrl) {
+					config.configuration.githubProfileUrl = args.profileUrl;
+				}
+
+				// Store user github token
+				if (args.githubToken) {
+					config.configuration.githubToken = args.githubToken;
+				}
+
+				// Save configuration
+				await config.save(DefaultConfigFolder.getPath());
+			}
+		)
+		.command(
+			"deploy",
+			"Read a folder and deploy all packages",
+			(args) => {},
+			async (args) => {
+				const pkgDeployer = new PackageDeployer(config);
+				await pkgDeployer.deploy();
+			}
+		)
+		.command(
 			"print",
 			"Print things",
 			(args) => {
@@ -107,70 +180,6 @@ async function main() {
 			}
 		)
 		.command(
-			"config",
-			"Set configuration by key",
-			(args) => {
-				return args
-					.command(
-						"blacklist",
-						"Manage the package blacklist",
-						(args) => {
-							return args
-								.option("name", {
-									demandOption: true,
-									type: "string",
-									description:
-										"Package name(including the workspace)",
-								})
-								.option("add", {
-									type: "boolean",
-									description:
-										"Add an element to the blacklist",
-								});
-						},
-						async (args) => {
-							if (args.add) {
-								config.blacklistAdd(args["name"]);
-							}
-							
-							await config.save(DefaultConfigFolder.getPath());
-						}
-					)
-					.option("packages-path", {
-						type: "string",
-						description:
-							"Set the packages path to clone packages to, read and deploy from.",
-					})
-					.option("github-token", {
-						type: "string",
-						description: "User github token.",
-					})
-					.option("profile-url", {
-						type: "string",
-						description: "User profile url.",
-					});
-			},
-			async (args) => {
-				// Set packages path
-				if (args.packagesPath) {
-					config.configuration.packagesPath = args.packagesPath;
-				}
-
-				// Store user profile URL
-				if (args.profileUrl) {
-					config.configuration.githubProfileUrl = args.profileUrl;
-				}
-
-				// Store user github token
-				if (args.githubToken) {
-					config.configuration.githubToken = args.githubToken;
-				}
-
-				// Save configuration
-				await config.save(DefaultConfigFolder.getPath());
-			}
-		)
-		.command(
 			"sync",
 			"Sync configuration",
 			(args) => {
@@ -191,15 +200,6 @@ async function main() {
 					// Save
 					await repositoryList.save();
 				}
-			}
-		)
-		.command(
-			"deploy",
-			"Read a folder and deploy all packages",
-			(args) => {},
-			async (args) => {
-				const pkgDeployer = new PackageDeployer(config);
-				await pkgDeployer.deploy();
 			}
 		)
 		.help()

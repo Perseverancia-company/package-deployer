@@ -58,12 +58,12 @@ Would serve as a dry run to check if the blacklist works
 	- [x] Set github profile
 	- [x] Set github credentials
 	- [x] Add a package to the blacklist
-- [ ] Clone all repositories of a user
+- [ ] Repositories
+	- [ ] Clone all
 - [ ] Remove repositories that don't have package.json
 That is they aren't nodejs packages
 
 ### Github integration
 
-- [ ] Read all repositories of a user in github
+- [x] Read all repositories of a user in github
 	- [ ] Clone them all
-		- [ ] Create a blacklist
