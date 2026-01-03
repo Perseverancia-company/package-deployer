@@ -7,7 +7,7 @@ import PackageDeployerConfiguration, {
 	DEPLOYER_CONFIG_FILENAME,
 } from "./PackageDeployerConfiguration";
 import { IAppInfo } from "./types";
-
+import Repository from "./repository/Repository";
 
 export {
 	DEPLOYER_CONFIG_FILENAME,
@@ -15,6 +15,7 @@ export {
 	NodePackage,
 	PackageDeployerConfiguration,
 	PackageDeployer,
+	Repository,
 	appsToNodePackages,
 	getAllApps,
 	getAppsInfoAtPath,
