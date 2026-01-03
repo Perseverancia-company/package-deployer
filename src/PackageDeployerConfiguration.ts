@@ -21,12 +21,19 @@ export default class PackageDeployerConfiguration {
 	}
 
 	/**
+	 * Blacklist
+	 */
+	blacklistAdd(packageName: string) {
+		this.configuration.blacklist.push(packageName);
+	}
+
+	/**
 	 * Get blacklist
 	 */
 	getBlacklist() {
 		return this.configuration.blacklist;
 	}
-	
+
 	/**
 	 * Get packages path
 	 */
@@ -54,6 +61,7 @@ export default class PackageDeployerConfiguration {
 
 		// File doesn't exists, create it
 		const data: IPackageDeployerConfiguration = {
+			blacklist: [],
 			packagesPath: DefaultConfigFolder.repositoriesPath(),
 		};
 		await fsp.writeFile(filePath, YAML.stringify(data));

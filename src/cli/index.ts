@@ -111,6 +111,31 @@ async function main() {
 			"Set configuration by key",
 			(args) => {
 				return args
+					.command(
+						"blacklist",
+						"Manage the package blacklist",
+						(args) => {
+							return args
+								.option("name", {
+									demandOption: true,
+									type: "string",
+									description:
+										"Package name(including the workspace)",
+								})
+								.option("add", {
+									type: "boolean",
+									description:
+										"Add an element to the blacklist",
+								});
+						},
+						async (args) => {
+							if (args.add) {
+								config.blacklistAdd(args["name"]);
+							}
+							
+							await config.save(DefaultConfigFolder.getPath());
+						}
+					)
 					.option("packages-path", {
 						type: "string",
 						description:
@@ -162,7 +187,7 @@ async function main() {
 						RepositoryList.defaultConfigurationFile(),
 						octokit
 					);
-					
+
 					// Save
 					await repositoryList.save();
 				}

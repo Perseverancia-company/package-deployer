@@ -1,9 +1,9 @@
 import { Octokit } from "@octokit/rest";
 import fsp from "fs/promises";
+import path from "path";
 
 import { RepositoryFileConfiguration } from "@/types";
 import { getAllRepositories } from ".";
-import path from "path";
 import DefaultConfigFolder from "@/DefaultConfigFolder";
 
 /**

@@ -57,9 +57,9 @@ Would serve as a dry run to check if the blacklist works
 	- [x] Set packages path
 	- [x] Set github profile
 	- [x] Set github credentials
+	- [x] Add a package to the blacklist
 - [ ] Clone all repositories of a user
 - [ ] Remove repositories that don't have package.json
-At the given path
 That is they aren't nodejs packages
 
 ### Github integration
