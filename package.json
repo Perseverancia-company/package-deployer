@@ -6,7 +6,7 @@
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"bin": {
-		"psv": "./dist/cli/index.js"
+		"pkdep": "./dist/cli/index.js"
 	},
 	"files": [
 		"dist"

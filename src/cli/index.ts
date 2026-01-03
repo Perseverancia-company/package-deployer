@@ -5,12 +5,14 @@ import { hideBin } from "yargs/helpers";
 import fsp from "fs/promises";
 import { Octokit } from "@octokit/rest";
 import dotenv from "dotenv";
+import path from "path";
 
 import PackageDeployerConfiguration from "../PackageDeployerConfiguration";
 import { appsToNodePackages, getAllApps } from "../apps";
 import { dependencyBuildOrder } from "@/graph";
 import DefaultConfigFolder from "@/DefaultConfigFolder";
 import RepositoriesFolder from "@/repository/RepositoriesFolder";
+import PackageDeployer from "@/PackageDeployer";
 
 /**
  * Main
@@ -147,61 +149,8 @@ async function main() {
 			"Read a folder and deploy all packages",
 			(args) => {},
 			async (args) => {
-				// Get all packages at the given path
-				const allPackages = await getAllApps(packagesPath, {
-					blacklist: config.getBlacklist(),
-				});
-
-				// Create node packages class
-				const nodePackages = await appsToNodePackages(allPackages);
-				const buildOrder = dependencyBuildOrder(nodePackages);
-
-				// Deploy all packages
-				let deployPromises = [];
-				for (const nodePackage of buildOrder) {
-					const handler = (async () => {
-						try {
-							await nodePackage.install();
-							await nodePackage.build();
-
-							// Check that the package isn't private
-							if (!nodePackage.packageJson.private) {
-								await nodePackage.publish();
-							}
-
-							console.log(
-								`Package ${nodePackage.packageName} deployed`
-							);
-							return {
-								packageName: nodePackage.packageName,
-								name: nodePackage.name,
-								success: true,
-							};
-						} catch (err) {
-							console.log(
-								`Package ${nodePackage.packageName} failed to be deployed`
-							);
-							return {
-								packageName: nodePackage.packageName,
-								name: nodePackage.name,
-								success: false,
-							};
-						}
-					})();
-					deployPromises.push(handler);
-				}
-				const packageDeploymentResult = await Promise.all(
-					deployPromises
-				);
-
-				// Save as json
-				await fsp.writeFile(
-					"deploymentResult.json",
-					JSON.stringify(packageDeploymentResult),
-					{
-						encoding: "utf-8",
-					}
-				);
+				const pkgDeployer = new PackageDeployer(config);
+				await pkgDeployer.deploy();
 			}
 		)
 		.help()

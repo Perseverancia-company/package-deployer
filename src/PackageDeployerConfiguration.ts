@@ -26,6 +26,13 @@ export default class PackageDeployerConfiguration {
 	getBlacklist() {
 		return this.configuration.blacklist;
 	}
+	
+	/**
+	 * Get packages path
+	 */
+	getPackagesPath() {
+		return this.configuration.packagesPath;
+	}
 
 	/**
 	 * Load

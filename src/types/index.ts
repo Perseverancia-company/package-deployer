@@ -4,6 +4,12 @@ export interface IAppInfo {
 	name: string;
 }
 
+export interface ITaskDeploymentResult {
+	packageName: string;
+	name: string;
+	success: boolean;
+}
+
 /**
  * Package deployer configuration
  */
