@@ -53,7 +53,12 @@ Would serve as a dry run to check if the blacklist works
 
 - [x] Deploy packages
 - [x] Print packages
-- [ ] Remove packages that don't have package.json
+- [ ] Config
+	- [ ] Set packages path
+	- [ ] Set github profile
+	- [ ] Set github credentials
+- [ ] Clone all repositories of a user
+- [ ] Remove repositories that don't have package.json
 At the given path
 That is they aren't nodejs packages
 

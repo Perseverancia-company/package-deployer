@@ -78,6 +78,21 @@ async function main() {
 				}
 			}
 		)
+		.command("config", "Set configuration by key", (args) => {
+			return args.option("github-token", {
+				type: "string",
+				description: "User github token."
+			}).option("profile-url", {
+				type: "string",
+				description: "User profile url."
+			});
+		}, async (args) => {
+			
+			// Store user profile URL
+			if(args.profileUrl) {
+				
+			}
+		})
 		.command(
 			"sync",
 			"Sync configuration",
