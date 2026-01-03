@@ -53,10 +53,10 @@ Would serve as a dry run to check if the blacklist works
 
 - [x] Deploy packages
 - [x] Print packages
-- [ ] Config
-	- [ ] Set packages path
-	- [ ] Set github profile
-	- [ ] Set github credentials
+- [x] Config
+	- [x] Set packages path
+	- [x] Set github profile
+	- [x] Set github credentials
 - [ ] Clone all repositories of a user
 - [ ] Remove repositories that don't have package.json
 At the given path

@@ -29,19 +29,26 @@ async function main() {
 		},
 	]);
 
+	// Github token
+	const githubToken =
+		process.env.GITHUB_TOKEN ?? config.configuration.githubToken;
+	if (!githubToken) {
+		console.warn("No github token found");
+	}
+
+	// Packages path
+	const packagesPath =
+		process.env.PACKAGES_PATH ?? config.configuration.packagesPath;
+	if (!packagesPath) {
+		console.warn(
+			"No packages path found, be sure to set it using `config --packages-path PACKAGES_PATH`"
+		);
+	}
+
 	// Initialize octokit
-	const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+	const octokit = new Octokit({ auth: githubToken });
 
 	return yargs()
-		.option("packages-path", {
-			demandOption: true,
-			type: "string",
-			description: "Path to the packages to deploy",
-		})
-		.middleware(
-			async (args) => {},
-			true // 'true' runs the middleware before validation (good for setup)
-		)
 		.command(
 			"print",
 			"Print things",
@@ -59,22 +66,16 @@ async function main() {
 			async (args) => {
 				// Print packages excluding those of the blacklist
 				if (args["packages"]) {
-					const allPackages = await getAllApps(
-						args["packages-path"],
-						{
-							blacklist: config.getBlacklist(),
-						}
-					);
+					const allPackages = await getAllApps(packagesPath, {
+						blacklist: config.getBlacklist(),
+					});
 					console.log(`All packages: `, allPackages);
 				}
 
 				if (args["build-order"]) {
-					const allPackages = await getAllApps(
-						args["packages-path"],
-						{
-							blacklist: config.getBlacklist(),
-						}
-					);
+					const allPackages = await getAllApps(packagesPath, {
+						blacklist: config.getBlacklist(),
+					});
 					const nodePackages = await appsToNodePackages(allPackages);
 					const buildOrder = dependencyBuildOrder(nodePackages);
 					console.log(`Build order: `, buildOrder);
@@ -86,6 +87,11 @@ async function main() {
 			"Set configuration by key",
 			(args) => {
 				return args
+					.option("packages-path", {
+						type: "string",
+						description:
+							"Set the packages path to clone packages to, read and deploy from.",
+					})
 					.option("github-token", {
 						type: "string",
 						description: "User github token.",
@@ -96,8 +102,19 @@ async function main() {
 					});
 			},
 			async (args) => {
+				// Set packages path
+				if (args.packagesPath) {
+					config.configuration.packagesPath = args.packagesPath;
+				}
+
 				// Store user profile URL
 				if (args.profileUrl) {
+					config.configuration.githubProfileUrl = args.profileUrl;
+				}
+
+				// Store user github token
+				if (args.githubToken) {
+					config.configuration.githubToken = args.githubToken;
 				}
 			}
 		)
@@ -111,6 +128,7 @@ async function main() {
 				});
 			},
 			async (args) => {
+				// Get repository information from github
 				if (args.repositories) {
 				}
 			}
@@ -121,7 +139,7 @@ async function main() {
 			(args) => {},
 			async (args) => {
 				// Get all packages at the given path
-				const allPackages = await getAllApps(args["packages-path"], {
+				const allPackages = await getAllApps(packagesPath, {
 					blacklist: config.getBlacklist(),
 				});
 

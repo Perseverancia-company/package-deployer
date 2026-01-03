@@ -4,8 +4,18 @@ export interface IAppInfo {
 	name: string;
 }
 
+/**
+ * Package deployer configuration
+ */
 export interface IPackageDeployerConfiguration {
-	blacklist: Array<string>;
+	// Packages path
+	packagesPath: string;
+	// Blacklisted repositories to not deploy
+	blacklist?: Array<string>;
+	// Github profile url of the user to clone repositories
+	githubProfileUrl?: string;
+	// The github token of the user to clone the repositories
+	githubToken?: string;
 }
 
 export interface RepositoryInfo {
