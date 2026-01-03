@@ -1,18 +1,26 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import fsp from "fs/promises";
+import { Octokit } from "@octokit/rest";
 
 import PackageDeployerConfiguration from "../PackageDeployerConfiguration";
 import { appsToNodePackages, getAllApps } from "../apps";
 import { dependencyBuildOrder } from "@/graph";
-import { Octokit } from "@octokit/rest";
 
 /**
  * Main
  */
 async function main() {
-	const config = await PackageDeployerConfiguration.load();
-	
+	const [config, _] = await Promise.all([
+		PackageDeployerConfiguration.load(),
+		// Create cache file if it doesn't exists
+		async () => {
+			try {
+				await fsp.mkdir("cache");
+			} catch (err) {}
+		},
+	]);
+
 	// Initialize octokit
 	const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 

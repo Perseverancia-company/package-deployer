@@ -25,9 +25,10 @@ export default class RepositoryList {
 	static async fromPath(configurationFilePath: string, octokit: Octokit) {
 		try {
 			const content = await fsp.readFile(configurationFilePath, "utf-8");
-			const config = JSON.parse()
+			const config: RepositoryFileConfiguration = JSON.parse(content);
+			return new RepositoryList(configurationFilePath, config, octokit);
 		} catch(err) {
-			
+			console.error("Error when trying to read the repository file configuration: ", err);
 		}
 	}
 }
