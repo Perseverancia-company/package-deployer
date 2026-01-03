@@ -5,6 +5,9 @@
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
+	"bin": {
+		"psv": "./dist/cli/index.js"
+	},
 	"files": [
 		"dist"
 	],
@@ -15,12 +18,13 @@
 			"require": "./dist/index.cjs",
 			"default": "./dist/index.js"
 		},
+		"./cli": "./dist/cli/index.js",
 		"./package.json": "./package.json"
 	},
 	"type": "module",
 	"scripts": {
 		"cli": "tsx ./src/cli/index.ts",
-		"build": "tsup ./src/index.ts"
+		"build": "tsup"
 	},
 	"repository": {
 		"type": "git",
@@ -37,14 +41,14 @@
 		"@octokit/rest": "^22.0.1",
 		"dotenv": "^17.2.3",
 		"simple-git": "^3.30.0",
-		"yaml": "^2.8.2"
+		"yaml": "^2.8.2",
+		"yargs": "^18.0.0"
 	},
 	"devDependencies": {
 		"@types/node": "^24.0.0",
 		"@types/yargs": "^17.0.35",
 		"tsup": "^8.5.1",
 		"tsx": "^4.20.6",
-		"typescript": "^5.9.3",
-		"yargs": "^18.0.0"
+		"typescript": "^5.9.3"
 	}
 }
