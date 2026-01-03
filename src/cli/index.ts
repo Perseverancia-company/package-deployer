@@ -8,6 +8,7 @@ import PackageDeployerConfiguration from "../PackageDeployerConfiguration";
 import { appsToNodePackages, getAllApps } from "../apps";
 import { dependencyBuildOrder } from "@/graph";
 import DefaultConfigFolder from "@/DefaultConfigFolder";
+import RepositoriesFolder from "@/repository/RepositoriesFolder";
 
 /**
  * Main
@@ -21,12 +22,7 @@ async function main() {
 
 	const [config] = await Promise.all([
 		PackageDeployerConfiguration.load(DefaultConfigFolder.getPath()),
-		// Create cache file if it doesn't exists
-		async () => {
-			try {
-				await fsp.mkdir("cache");
-			} catch (err) {}
-		},
+		new RepositoriesFolder().createFolder(),
 	]);
 
 	// Github token
@@ -61,6 +57,10 @@ async function main() {
 					.option("build-order", {
 						type: "boolean",
 						description: "Print the build order",
+					})
+					.option("configuration", {
+						type: "boolean",
+						description: "Print configuration",
 					});
 			},
 			async (args) => {
@@ -79,6 +79,10 @@ async function main() {
 					const nodePackages = await appsToNodePackages(allPackages);
 					const buildOrder = dependencyBuildOrder(nodePackages);
 					console.log(`Build order: `, buildOrder);
+				}
+
+				if (args.configuration) {
+					console.log(`Configuration: \n`, config);
 				}
 			}
 		)
@@ -116,6 +120,9 @@ async function main() {
 				if (args.githubToken) {
 					config.configuration.githubToken = args.githubToken;
 				}
+
+				// Save configuration
+				await config.save(DefaultConfigFolder.getPath());
 			}
 		)
 		.command(

@@ -3,6 +3,7 @@ import fsp from "fs/promises";
 import path from "path";
 
 import { IPackageDeployerConfiguration } from "./types";
+import DefaultConfigFolder from "./DefaultConfigFolder";
 
 export const DEPLOYER_CONFIG_FILENAME = "deployer-config.yaml";
 
@@ -30,23 +31,38 @@ export default class PackageDeployerConfiguration {
 	 * Load
 	 */
 	static async load(configPath: string = process.cwd()) {
-		const fileData = await fsp.readFile(
-			path.join(configPath, DEPLOYER_CONFIG_FILENAME),
-			{
-				encoding: "utf-8",
-			}
-		);
-		const configuration = YAML.parse(fileData);
+		// File path
+		const filePath = path.join(configPath, DEPLOYER_CONFIG_FILENAME);
 
-		return new PackageDeployerConfiguration(configuration);
+		try {
+			// Read the file
+			const fileData = await fsp.readFile(filePath, {
+				encoding: "utf-8",
+			});
+			const configuration = YAML.parse(fileData);
+
+			// Instantiate
+			return new PackageDeployerConfiguration(configuration);
+		} catch (err) {}
+
+		// File doesn't exists, create it
+		const data: IPackageDeployerConfiguration = {
+			packagesPath: DefaultConfigFolder.repositoriesPath(),
+		};
+		await fsp.writeFile(filePath, YAML.stringify(data));
+		return new PackageDeployerConfiguration(data);
 	}
 
 	/**
 	 * Save
 	 */
-	async save() {
+	async save(configPath: string = process.cwd()) {
+		// Filepath
+		const filePath = path.join(configPath, DEPLOYER_CONFIG_FILENAME);
+
+		// Write file
 		const data = YAML.stringify(this.configuration);
-		await fsp.writeFile(DEPLOYER_CONFIG_FILENAME, data, {
+		await fsp.writeFile(filePath, data, {
 			encoding: "utf-8",
 		});
 	}

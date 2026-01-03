@@ -7,10 +7,24 @@ import fsp from "fs/promises";
  */
 export default class DefaultConfigFolder {
 	/**
+	 * Main folder
+	 */
+	static mainFolderPath() {
+		return path.join(os.homedir(), "perseverancia");
+	}
+	
+	/**
+	 * Repositories path
+	 */
+	static repositoriesPath() {
+		return path.join(DefaultConfigFolder.mainFolderPath(), "repos")
+	}
+
+	/**
 	 * Get default configuration folder path
 	 */
 	static getPath() {
-		return path.join(os.homedir(), "perseverancia", "data");
+		return path.join(DefaultConfigFolder.mainFolderPath(), "data");
 	}
 
 	/**
