@@ -9,11 +9,16 @@ export interface IPackageDeployerConfiguration {
 }
 
 export interface RepositoryInfo {
-	link: string;
+	name: string;
+	fullName: string;
+	private: boolean;
+	description: string | null;
+	url: string;
+	language: string | null;
+	updatedAt: string | null;
 }
 
 export interface RepositoryFileConfiguration {
-	githubUsername: string;
 	lastUpdated: Date;
 	repositories: Array<RepositoryInfo>;
 }

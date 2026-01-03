@@ -2,6 +2,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import fsp from "fs/promises";
 import { Octokit } from "@octokit/rest";
+import dotenv from "dotenv";
 
 import PackageDeployerConfiguration from "../PackageDeployerConfiguration";
 import { appsToNodePackages, getAllApps } from "../apps";
@@ -11,6 +12,10 @@ import { dependencyBuildOrder } from "@/graph";
  * Main
  */
 async function main() {
+	// Read dotenv
+	dotenv.config({});
+
+	// Run some asynchronous tasks
 	const [config, _] = await Promise.all([
 		PackageDeployerConfiguration.load(),
 		// Create cache file if it doesn't exists
@@ -70,6 +75,21 @@ async function main() {
 					const nodePackages = await appsToNodePackages(allPackages);
 					const buildOrder = dependencyBuildOrder(nodePackages);
 					console.log(`Build order: `, buildOrder);
+				}
+			}
+		)
+		.command(
+			"sync",
+			"Sync configuration",
+			(args) => {
+				return args.option("repositories", {
+					type: "boolean",
+					description: "Get repositories information",
+				});
+			},
+			async (args) => {
+				if (args.repositories) {
+					
 				}
 			}
 		)
