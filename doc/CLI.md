@@ -12,6 +12,18 @@ Set packages path to not need to give it every time.
 npm run cli -- config set --packages-path PATH_TO_PACKAGES
 ```
 
+Set github token
+
+```bash
+npm run cli -- config set --github-token GITHUB_TOKEN
+```
+
+Set github user link
+
+```bash
+npm run cli -- config set --github-user-url GITHUB_USER_URL
+```
+
 ## Packages path
 
 The path where packages are to be deployed, this is required for most commands.

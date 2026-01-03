@@ -1,5 +1,6 @@
 import YAML from "yaml";
 import fsp from "fs/promises";
+import path from "path";
 
 import { IPackageDeployerConfiguration } from "./types";
 
@@ -28,10 +29,13 @@ export default class PackageDeployerConfiguration {
 	/**
 	 * Load
 	 */
-	static async load() {
-		const fileData = await fsp.readFile(DEPLOYER_CONFIG_FILENAME, {
-			encoding: "utf-8",
-		});
+	static async load(configPath: string = process.cwd()) {
+		const fileData = await fsp.readFile(
+			path.join(configPath, DEPLOYER_CONFIG_FILENAME),
+			{
+				encoding: "utf-8",
+			}
+		);
 		const configuration = YAML.parse(fileData);
 
 		return new PackageDeployerConfiguration(configuration);

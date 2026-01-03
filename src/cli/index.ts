@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import PackageDeployerConfiguration from "../PackageDeployerConfiguration";
 import { appsToNodePackages, getAllApps } from "../apps";
 import { dependencyBuildOrder } from "@/graph";
+import DefaultConfigFolder from "@/DefaultConfigFolder";
 
 /**
  * Main
@@ -16,8 +17,10 @@ async function main() {
 	dotenv.config({});
 
 	// Run some asynchronous tasks
-	const [config, _] = await Promise.all([
-		PackageDeployerConfiguration.load(),
+	const [_a] = await Promise.all([DefaultConfigFolder.createFolder()]);
+
+	const [config] = await Promise.all([
+		PackageDeployerConfiguration.load(DefaultConfigFolder.getPath()),
 		// Create cache file if it doesn't exists
 		async () => {
 			try {
@@ -78,21 +81,26 @@ async function main() {
 				}
 			}
 		)
-		.command("config", "Set configuration by key", (args) => {
-			return args.option("github-token", {
-				type: "string",
-				description: "User github token."
-			}).option("profile-url", {
-				type: "string",
-				description: "User profile url."
-			});
-		}, async (args) => {
-			
-			// Store user profile URL
-			if(args.profileUrl) {
-				
+		.command(
+			"config",
+			"Set configuration by key",
+			(args) => {
+				return args
+					.option("github-token", {
+						type: "string",
+						description: "User github token.",
+					})
+					.option("profile-url", {
+						type: "string",
+						description: "User profile url.",
+					});
+			},
+			async (args) => {
+				// Store user profile URL
+				if (args.profileUrl) {
+				}
 			}
-		})
+		)
 		.command(
 			"sync",
 			"Sync configuration",
@@ -104,7 +112,6 @@ async function main() {
 			},
 			async (args) => {
 				if (args.repositories) {
-					
 				}
 			}
 		)

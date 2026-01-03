@@ -1,4 +1,5 @@
 import { appsToNodePackages, getAllApps, getAppsInfoAtPath } from "./apps";
+import DefaultConfigFolder from "./DefaultConfigFolder";
 import { dependencyBuildOrder } from "./graph";
 import NodePackage from "./NodePackage";
 import PackageDeployerConfiguration, {
@@ -8,6 +9,7 @@ import { IAppInfo } from "./types";
 
 export {
 	DEPLOYER_CONFIG_FILENAME,
+	DefaultConfigFolder,
 	NodePackage,
 	PackageDeployerConfiguration,
 	appsToNodePackages,
