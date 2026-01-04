@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.1.0
+
+* Changed `pkgdep config` to `pkgdep config set`
+
 ## 2.0.0
 
 * Github integration

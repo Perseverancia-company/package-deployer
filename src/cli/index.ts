@@ -12,8 +12,6 @@ import DefaultConfigFolder from "@/DefaultConfigFolder";
 import RepositoriesFolder from "@/repository/RepositoriesFolder";
 import PackageDeployer from "@/PackageDeployer";
 import RepositoryList from "@/repository/RepositoryList";
-import Repository from "@/repository/Repository";
-import simpleGit from "simple-git";
 
 /**
  * Main
@@ -80,39 +78,50 @@ async function main() {
 							await config.save(DefaultConfigFolder.getPath());
 						}
 					)
-					.option("packages-path", {
-						type: "string",
-						description:
-							"Set the packages path to clone packages to, read and deploy from.",
-					})
-					.option("github-token", {
-						type: "string",
-						description: "User github token.",
-					})
-					.option("profile-url", {
-						type: "string",
-						description: "User profile url.",
-					});
+					.command(
+						"set",
+						"Set configuration",
+						(args) => {
+							return args
+								.option("packages-path", {
+									type: "string",
+									description:
+										"Set the packages path to clone packages to, read and deploy from.",
+								})
+								.option("github-token", {
+									type: "string",
+									description: "User github token.",
+								})
+								.option("profile-url", {
+									type: "string",
+									description: "User profile url.",
+								});
+						},
+						async (args) => {
+							// Set packages path
+							if (args.packagesPath) {
+								config.configuration.packagesPath =
+									args.packagesPath;
+							}
+
+							// Store user profile URL
+							if (args.profileUrl) {
+								config.configuration.githubProfileUrl =
+									args.profileUrl;
+							}
+
+							// Store user github token
+							if (args.githubToken) {
+								config.configuration.githubToken =
+									args.githubToken;
+							}
+
+							// Save configuration
+							await config.save(DefaultConfigFolder.getPath());
+						}
+					);
 			},
-			async (args) => {
-				// Set packages path
-				if (args.packagesPath) {
-					config.configuration.packagesPath = args.packagesPath;
-				}
-
-				// Store user profile URL
-				if (args.profileUrl) {
-					config.configuration.githubProfileUrl = args.profileUrl;
-				}
-
-				// Store user github token
-				if (args.githubToken) {
-					config.configuration.githubToken = args.githubToken;
-				}
-
-				// Save configuration
-				await config.save(DefaultConfigFolder.getPath());
-			}
+			async (args) => {}
 		)
 		.command(
 			"deploy",
@@ -197,7 +206,7 @@ async function main() {
 						RepositoryList.defaultConfigurationFile(),
 						octokit
 					);
-					
+
 					// Clone all repositories
 					// They are processed in batchs internally
 					await repositoryList.cloneAll();

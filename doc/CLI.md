@@ -9,51 +9,69 @@ Set configuration.
 Set packages path to not need to give it every time.
 
 ```bash
-npm run cli -- config set --packages-path PATH_TO_PACKAGES
+pkgdep config set --packages-path PATH_TO_PACKAGES
 ```
 
 Set github token
 
 ```bash
-npm run cli -- config set --github-token GITHUB_TOKEN
+pkgdep config set --github-token GITHUB_TOKEN
 ```
 
 Set github user link
 
 ```bash
-npm run cli -- config set --github-user-url GITHUB_USER_URL
+pkgdep config set --github-user-url GITHUB_USER_URL
 ```
 
-## Packages path
-
-The path where packages are to be deployed, this is required for most commands.
+Blacklist
 
 ```bash
-npm run cli -- --packages-path PATH_TO_PACKAGES
+pkgdep config blacklist --name PACKAGE_NAME --add 
 ```
 
 ## Deployment
 
-Deploy all apps at a given path, including workspaces.
+Deploy all apps, including workspaces.
 
 The apps packages are installed, they are built and then published.
 
 ```bash
-npm run cli -- deploy --packages-path PATH_TO_PACKAGES
+pkgdep deploy
 ```
 
 ## Print
 
 Print information to the terminal.
 
-Print all packages found at the given path.
+Print all packages found at the configured packages path.
 
 ```bash
-npm run cli -- print --packages-path PATH_TO_PACKAGES --packages
+pkgdep print --packages
 ```
 
 Print packages build order.
 
 ```bash
-npm run cli -- print --packages-path PATH_TO_PACKAGES --packages
+pkgdep print --build-order
+```
+
+## Repositories
+
+Handle user repositories
+
+Clone all repositories
+
+```bash
+pkgdep repositories --clone-all
+```
+
+## Sync
+
+Sync configuration
+
+Sync repositories
+
+```bash
+pkgdep sync --repositories
 ```

@@ -4,9 +4,7 @@ Simple app to deploy all given packages.
 
 ## Usage
 
-```bash
-npm run cli -- --packages-path PATH_TO_PACKAGES
-```
+[Usage](./doc/CLI.md)
 
 ## Development Rules
 
@@ -23,6 +21,15 @@ These are some environment variables used for configuration.
 ```bash
 # Github token to list repositories from
 GITHUB_TOKEN=YOUR_TOKEN
+
+# Packages path
+PACKAGES_PATH=PACKAGES_PATH
+```
+
+Although these can be used, it would be better to set them using the CLI.
+
+```bash
+pkdep config --packages-path PACKAGES_PATH --github-token GITHUB_TOKEN
 ```
 
 ## List of tasks to do
@@ -58,8 +65,8 @@ Would serve as a dry run to check if the blacklist works
 	- [x] Set github profile
 	- [x] Set github credentials
 	- [x] Add a package to the blacklist
-- [ ] Repositories
-	- [ ] Clone all
+- [x] Repositories
+	- [x] Clone all
 - [ ] Remove repositories that don't have package.json
 That is they aren't nodejs packages
 
