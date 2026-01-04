@@ -48,17 +48,27 @@ export default class NodePackage {
 
 	/**
 	 * Run npm install on the package
+	 * 
+	 * Package lock is ignored as I'm changing computers often
 	 */
 	async install() {
 		if (os.platform() === "win32") {
-			return await promisifiedSpawn("npm", ["install"], {
-				cwd: this.path,
-				shell: true,
-			});
+			return await promisifiedSpawn(
+				"npm",
+				["install", "--no-package-lock"],
+				{
+					cwd: this.path,
+					shell: true,
+				}
+			);
 		} else {
-			return await promisifiedSpawn("npm", ["install"], {
-				cwd: this.path,
-			});
+			return await promisifiedSpawn(
+				"npm",
+				["install", "--no-package-lock"],
+				{
+					cwd: this.path,
+				}
+			);
 		}
 	}
 
