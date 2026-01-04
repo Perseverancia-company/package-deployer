@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.1.2
+
+Important fixes
+* Npm commands to work on windows
+* Deployment to run in order
+
 ## 2.1.0
 
 * Changed `pkgdep config` to `pkgdep config set`

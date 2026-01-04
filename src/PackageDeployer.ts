@@ -36,38 +36,34 @@ export default class PackageDeployer {
 		const buildOrder = dependencyBuildOrder(nodePackages);
 
 		// Deploy all packages
-		let deployPromises = [];
+		const packageDeploymentResult: Array<ITaskDeploymentResult> = [];
 		for (const nodePackage of buildOrder) {
-			const handler = (async () => {
-				try {
-					await nodePackage.install();
-					await nodePackage.build();
+			try {
+				await nodePackage.install();
+				await nodePackage.build();
 
-					// Check that the package isn't private
-					if (!nodePackage.packageJson.private) {
-						await nodePackage.publish();
-					}
-
-					console.log(`Package ${nodePackage.packageName} deployed`);
-					return {
-						packageName: nodePackage.packageName,
-						name: nodePackage.name,
-						success: true,
-					};
-				} catch (err) {
-					console.log(
-						`Package ${nodePackage.packageName} failed to be deployed`
-					);
-					return {
-						packageName: nodePackage.packageName,
-						name: nodePackage.name,
-						success: false,
-					};
+				// Check that the package isn't private
+				if (!nodePackage.packageJson.private) {
+					await nodePackage.publish();
 				}
-			})();
-			deployPromises.push(handler);
+
+				console.log(`Package ${nodePackage.packageName} deployed`);
+				packageDeploymentResult.push({
+					packageName: nodePackage.packageName,
+					name: nodePackage.name,
+					success: true,
+				});
+			} catch (err) {
+				console.log(
+					`Package ${nodePackage.packageName} failed to be deployed`
+				);
+				packageDeploymentResult.push({
+					packageName: nodePackage.packageName,
+					name: nodePackage.name,
+					success: false,
+				});
+			}
 		}
-		const packageDeploymentResult = await Promise.all(deployPromises);
 
 		// Save as json
 		this.saveDeploymentResult(packageDeploymentResult);

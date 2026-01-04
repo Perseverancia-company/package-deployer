@@ -1,5 +1,6 @@
 import path from "path";
 import fsp from "fs/promises";
+import os from "os";
 
 import { appPackageJson } from "./apps";
 import { promisifiedSpawn } from "./cmd";
@@ -49,24 +50,47 @@ export default class NodePackage {
 	 * Run npm install on the package
 	 */
 	async install() {
-		return await promisifiedSpawn("npm", ["install"], { cwd: this.path });
+		if (os.platform() === "win32") {
+			return await promisifiedSpawn("npm", ["install"], {
+				cwd: this.path,
+				shell: true,
+			});
+		} else {
+			return await promisifiedSpawn("npm", ["install"], {
+				cwd: this.path,
+			});
+		}
 	}
 
 	/**
 	 * Run npm build
 	 */
 	async build() {
-		return await promisifiedSpawn("npm", ["run", "build"], {
-			cwd: this.path,
-		});
+		if (os.platform() === "win32") {
+			return await promisifiedSpawn("npm", ["run", "build"], {
+				cwd: this.path,
+				shell: true,
+			});
+		} else {
+			return await promisifiedSpawn("npm", ["run", "build"], {
+				cwd: this.path,
+			});
+		}
 	}
 
 	/**
 	 * Run npm publish command
 	 */
 	async publish() {
-		return await promisifiedSpawn("npm", ["publish"], {
-			cwd: this.path,
-		});
+		if (os.platform() === "win32") {
+			return await promisifiedSpawn("npm", ["publish"], {
+				cwd: this.path,
+				shell: true,
+			});
+		} else {
+			return await promisifiedSpawn("npm", ["publish"], {
+				cwd: this.path,
+			});
+		}
 	}
 }

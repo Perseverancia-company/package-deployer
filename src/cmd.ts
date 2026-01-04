@@ -10,6 +10,7 @@ export function promisifiedSpawn(
 	args: string[] = [],
 	options: {
 		cwd?: string;
+		shell?: boolean;
 	} = {}
 ) {
 	return new Promise<number>((resolve, reject) => {
