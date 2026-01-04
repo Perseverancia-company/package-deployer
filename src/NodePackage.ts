@@ -16,7 +16,13 @@ export default class NodePackage {
 	constructor(appPath: string, packageJson: any) {
 		this.path = appPath;
 		this.packageJson = packageJson;
+
+		// Get package name
 		this.packageName = packageJson["name"];
+		if (!this.packageName) {
+			console.warn(`Package at ${this.path} doesn't has a name!`);
+		}
+
 		this.name = path.basename(appPath);
 	}
 

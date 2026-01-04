@@ -1,1 +1,7 @@
-{ "main": "dist/cli/index.mjs", "output": "sea-prep.blob", "useESM": true }
+{
+	"main": "dist/cli/index.mjs",
+	"output": "sea-prep.blob",
+	"assets": {
+		"package.json": "./package.json"
+	}
+}

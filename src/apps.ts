@@ -6,7 +6,7 @@ import NodePackage from "./NodePackage";
 /**
  * Read app package.json
  */
-export function appPackageJson(appPath: string) {
+export function appPackageJson(appPath: string): any | undefined {
 	if (fs.existsSync(appPath)) {
 		const packagePath = path.join(appPath, `package.json`);
 		const rawPackageJson = fs.readFileSync(packagePath, {
@@ -21,8 +21,8 @@ export function appPackageJson(appPath: string) {
  * Get app info
  */
 export async function getAppInfo(appPath: string) {
+	// Check if it's a npm package
 	const packageJsonPath = path.join(appPath, "package.json");
-
 	if (!fs.existsSync(packageJsonPath)) {
 		return;
 	}
@@ -33,7 +33,12 @@ export async function getAppInfo(appPath: string) {
 		"utf8"
 	);
 	const packageJson = JSON.parse(packageStr);
+
+	// Get package name, if there's none, return undefined
 	const packageName = packageJson.name as string;
+	if (!packageName) {
+		return;
+	}
 
 	// Extract name from path (e.g., last folder name)
 	const appName = path.basename(appPath);
@@ -47,7 +52,7 @@ export async function getAppInfo(appPath: string) {
 
 /**
  * Get all apps info at a path
- * 
+ *
  * Doesn't searches workspaces
  */
 export async function getAppsInfoAtPath(
@@ -72,8 +77,8 @@ export async function getAppsInfoAtPath(
 			// App path
 			const appPath = path.join(appsPath, appName);
 
+			// Check that it's a npm package
 			const appInfo = await getAppInfo(appPath);
-
 			if (appInfo) {
 				apps.push(appInfo);
 			}
