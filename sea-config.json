@@ -1,0 +1,1 @@
+{ "main": "dist/cli/index.mjs", "output": "sea-prep.blob", "useESM": true }

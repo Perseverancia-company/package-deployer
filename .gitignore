@@ -17,6 +17,8 @@ frontend-config.json
 deployer-config.yaml
 deploymentResult.json
 cache/
+sea-prep.blob
+pkgdep.exe
 
 # Output
 app_log.txt
