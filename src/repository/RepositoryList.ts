@@ -5,6 +5,8 @@ import path from "path";
 import { RepositoryFileConfiguration } from "@/types";
 import { getAllRepositories } from ".";
 import DefaultConfigFolder from "@/DefaultConfigFolder";
+import simpleGit from "simple-git";
+import Repository from "./Repository";
 
 /**
  * Repository list
@@ -107,5 +109,53 @@ export default class RepositoryList {
 			// Instantiate class
 			return new RepositoryList(configurationFilePath, config, octokit);
 		}
+	}
+
+	/**
+	 * Clone all the repositories
+	 */
+	async cloneAll() {
+		// Create repository classes
+		const repositories = this.getRepositories().map(
+			(repository) => new Repository(repository)
+		);
+
+		// Clone at path
+		const cloneAt = DefaultConfigFolder.repositoriesPath();
+
+		const git = simpleGit();
+
+		// Concurrency limit
+		const CONCURRENCY_LIMIT = 5;
+		const results = { success: 0, failed: 0 };
+
+		// We process clones in batchs to not saturate bandwidth
+		for (let i = 0; i < repositories.length; i += CONCURRENCY_LIMIT) {
+			const chunk = repositories.slice(i, i + CONCURRENCY_LIMIT);
+
+			await Promise.all(
+				chunk.map(async (repo) => {
+					const dest = path.join(cloneAt, repo.repositoryInfo.name);
+
+					try {
+						console.log(
+							`[Cloning] ${repo.repositoryInfo.name}...`
+						);
+						await git.clone(repo.sshUrl, dest);
+						results.success++;
+					} catch (err: any) {
+						console.error(
+							`❌ Error at ${repo.repositoryInfo.name}:`,
+							err.message
+						);
+						results.failed++;
+					}
+				})
+			);
+		}
+
+		console.log(
+			`\n✅ Process finished with: ${results.success} successful clones and ${results.failed} failed clones.`
+		);
 	}
 }

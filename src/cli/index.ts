@@ -12,6 +12,8 @@ import DefaultConfigFolder from "@/DefaultConfigFolder";
 import RepositoriesFolder from "@/repository/RepositoriesFolder";
 import PackageDeployer from "@/PackageDeployer";
 import RepositoryList from "@/repository/RepositoryList";
+import Repository from "@/repository/Repository";
+import simpleGit from "simple-git";
 
 /**
  * Main
@@ -176,6 +178,29 @@ async function main() {
 						`Repository list: \n`,
 						repositoryList.getRepositories()
 					);
+				}
+			}
+		)
+		.command(
+			"repositories",
+			"Repositories",
+			(args) => {
+				return args.option("clone-all", {
+					type: "boolean",
+					description: "Clone all repositories",
+				});
+			},
+			async (args) => {
+				if (args.cloneAll) {
+					// Get(locally) or fetch(from github) repository list
+					const repositoryList = await RepositoryList.fromPath(
+						RepositoryList.defaultConfigurationFile(),
+						octokit
+					);
+					
+					// Clone all repositories
+					// They are processed in batchs internally
+					await repositoryList.cloneAll();
 				}
 			}
 		)
