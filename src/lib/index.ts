@@ -14,6 +14,9 @@ const execPromise = promisify(exec);
  *
  * Make sure these files exist in the working directory:
  * ".gitignore", ".npmrc", ".prettierrc", "LICENSE"
+ * 
+ * Warning:
+ * It also copies .git directory
  */
 export async function generateMonorepo(
 	packagesPath: string,
@@ -92,10 +95,11 @@ export async function generateMonorepo(
 	let promiseList = [];
 	for (const fileName of files) {
 		// Copy file over promise
-		const filePromise = fsp.copyFile(
-			path.join(process.cwd(), fileName),
-			monorepoPath
-		);
+		const filePath = path.join(process.cwd(), fileName);
+
+		// File destination
+		const fileDestination = path.join(monorepoPath, fileName);
+		const filePromise = fsp.copyFile(filePath, fileDestination);
 
 		// Append to the promise list
 		promiseList.push(filePromise);
