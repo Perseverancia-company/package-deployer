@@ -25,6 +25,20 @@ export default class PackageJson {
 	}
 
 	/**
+	 * Add a workspace
+	 */
+	addWorkspace(relativePath: string) {
+		const workspaces = this.packageJson.workspaces;
+		if (workspaces) {
+			// Cast to array
+			const workspacesArray: Array<string> = workspaces;
+			workspacesArray.push(relativePath);
+		} else {
+			this.packageJson.workspaces = [relativePath];
+		}
+	}
+
+	/**
 	 * Load
 	 */
 	static async load(path: string) {
@@ -32,7 +46,7 @@ export default class PackageJson {
 		const data = await fsp.readFile(path, {
 			encoding: "utf-8",
 		});
-		
+
 		// Parse package json
 		const packageJson = JSON.parse(data);
 		return new PackageJson(packageJson, path);

@@ -14,7 +14,7 @@ const execPromise = promisify(exec);
  *
  * Make sure these files exist in the working directory:
  * ".gitignore", ".npmrc", ".prettierrc", "LICENSE"
- * 
+ *
  * Warning:
  * It also copies .git directory
  */
@@ -87,7 +87,11 @@ export async function generateMonorepo(
 	const pkgJson = await PackageJson.load(
 		path.join(monorepoPath, "package.json")
 	);
+	// Set name to master
 	pkgJson.setName("@perseverancia/master");
+	// Add global workspaces
+	pkgJson.addWorkspace("apps/*");
+	pkgJson.addWorkspace("packages/*");
 	await pkgJson.save();
 
 	// Copy files from this repository
