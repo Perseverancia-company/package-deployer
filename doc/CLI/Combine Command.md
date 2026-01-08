@@ -6,7 +6,7 @@ Combine command takes all the repositories at a place and creates a monorepo fro
 
 - [x] Create folders
 - [x] Copy packages
-	- [ ] Filter out "node_modules"
+	- [x] Filter out "node_modules"
 - [x] Init npm
 - [x] Set name
 - [x] Copy miscellaneous files(e.g: .gitignore, .npmrc)

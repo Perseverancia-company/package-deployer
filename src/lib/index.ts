@@ -52,23 +52,28 @@ export async function generateMonorepo(
 	// Create node packages class
 	const nodePackages = await appsToNodePackages(allPackages);
 
-	// Iterate over the node packages
+	// Iterate over the node packages and copy them to their folder
+	const copyOptions = {
+		recursive: true,
+		filter: (source: string, dest: string) => {
+			// Check whether the current one is node modules or not
+			const isNodeModules = source
+				.split(path.sep)
+				.includes("node_modules");
+
+			// Ignore when it's node modules
+			return !isNodeModules;
+		},
+	};
 	for (const pkg of nodePackages) {
-		// If it's private it's an app
-		if (pkg.packageJson.private === true) {
-			// TODO: Filter node modules out
-			await fsp.cp(pkg.path, appsFolder, {
-				// Idea
-				// filter: (source, destination) => {
-				// 	const containsNodeModulues =
-				// 		source.search("node_modules");
-				// 	return containsNodeModulues <= 0;
-				// },
-			});
-		} else {
-			// It's a package
-			await fsp.cp(pkg.path, packagesFolder);
-		}
+		// Choose either apps or packages based on whether the package is private or not
+		const destination =
+			pkg.packageJson.private === true
+				? path.join(appsFolder, path.basename(pkg.path))
+				: path.join(packagesFolder, path.basename(pkg.path));
+
+		// Copy files to the destination with the given options
+		await fsp.cp(pkg.path, destination, copyOptions);
 	}
 
 	// Init npm
