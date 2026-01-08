@@ -10,6 +10,7 @@ import { IAppInfo } from "./types";
 import Repository from "./repository/Repository";
 import RepositoriesFolder from "./repository/RepositoriesFolder";
 import RepositoryList from "./repository/RepositoryList";
+import { generateMonorepo } from "./lib";
 
 export {
 	DEPLOYER_CONFIG_FILENAME,
@@ -23,6 +24,7 @@ export {
 	appsToNodePackages,
 	getAllApps,
 	getAppsInfoAtPath,
+	generateMonorepo,
 	dependencyBuildOrder,
 };
 

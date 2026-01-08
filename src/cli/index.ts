@@ -11,14 +11,13 @@ import fsp from "fs/promises";
 import { inject } from "postject";
 
 import PackageDeployerConfiguration from "../PackageDeployerConfiguration";
-import { appsToNodePackages, getAllApps, getAllPackages } from "../apps";
+import { appsToNodePackages, getAllApps } from "../apps";
 import { dependencyBuildOrder } from "@/graph";
 import DefaultConfigFolder from "@/DefaultConfigFolder";
 import RepositoriesFolder from "@/repository/RepositoriesFolder";
 import PackageDeployer from "@/PackageDeployer";
 import RepositoryList from "@/repository/RepositoryList";
-import path from "path";
-import PackageJson from "@/PackageJson";
+import { generateMonorepo } from "@/lib";
 
 const execPromise = promisify(exec);
 
@@ -119,94 +118,11 @@ async function main() {
 			async (args) => {
 				// Check that the packages path exists
 				const pkgsPath = args.path;
-				try {
-					await fsp.stat(pkgsPath);
-				} catch (err) {
-					throw new Error("The packages path doesn't exists");
-				}
 
 				// Create the monorepo path
 				const monorepoPath = args.monorepoPath;
-				try {
-					await fsp.mkdir(monorepoPath, { recursive: true });
-				} catch (err) {
-					throw new Error("Couldn't create the monorepo path");
-				}
 
-				// Create app and packages folder
-				const appsFolder = path.join(monorepoPath, "apps");
-				const packagesFolder = path.join(monorepoPath, "packages");
-				try {
-					await fsp.mkdir(appsFolder, { recursive: true });
-					await fsp.mkdir(packagesFolder, { recursive: true });
-				} catch (err) {
-					throw new Error("Couldn't create app and packages folder");
-				}
-
-				// Get all packages
-				const allPackages = await getAllPackages(pkgsPath, {
-					blacklist: config.getBlacklist(),
-				});
-
-				// Create node packages class
-				const nodePackages = await appsToNodePackages(allPackages);
-
-				// Iterate over the node packages
-				for (const pkg of nodePackages) {
-					// If it's private it's an app
-					if (pkg.packageJson.private === true) {
-						// TODO: Filter node modules out
-						await fsp.cp(pkg.path, appsFolder, {
-							// Idea
-							// filter: (source, destination) => {
-							// 	const containsNodeModulues =
-							// 		source.search("node_modules");
-							// 	return containsNodeModulues <= 0;
-							// },
-						});
-					} else {
-						// It's a package
-						await fsp.cp(pkg.path, packagesFolder);
-					}
-				}
-
-				// Init npm
-				const command = [
-					"cd",
-					monorepoPath,
-					"&&",
-					"npm",
-					"init",
-					"-y",
-				].join(" ");
-				const npmInit = await execPromise(command);
-
-				// Read package json
-				const pkgJson = await PackageJson.load(
-					path.join(monorepoPath, "package.json")
-				);
-				pkgJson.setName("@perseverancia/master");
-				await pkgJson.save();
-
-				// Copy files from this repository
-				const files = [
-					".gitignore",
-					".npmrc",
-					".prettierrc",
-					"LICENSE",
-				];
-				let promiseList = [];
-				for (const fileName of files) {
-					// Copy file over promise
-					const filePromise = fsp.copyFile(
-						path.join(process.cwd(), fileName),
-						monorepoPath
-					);
-
-					// Append to the promise list
-					promiseList.push(filePromise);
-				}
-				await Promise.all(promiseList);
+				await generateMonorepo(pkgsPath, monorepoPath, config);
 			}
 		)
 		.command(
