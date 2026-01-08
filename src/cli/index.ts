@@ -5,7 +5,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { Octokit } from "@octokit/rest";
 import dotenv from "dotenv";
-import { exec } from "child_process";
+import { exec, spawn } from "child_process";
 import { promisify } from "util";
 import fsp from "fs/promises";
 import { inject } from "postject";
@@ -18,6 +18,7 @@ import RepositoriesFolder from "@/repository/RepositoriesFolder";
 import PackageDeployer from "@/PackageDeployer";
 import RepositoryList from "@/repository/RepositoryList";
 import path from "path";
+import PackageJson from "@/PackageJson";
 
 const execPromise = promisify(exec);
 
@@ -155,12 +156,57 @@ async function main() {
 					// If it's private it's an app
 					if (pkg.packageJson.private === true) {
 						// TODO: Filter node modules out
-						await fsp.cp(pkg.path, appsFolder, {});
+						await fsp.cp(pkg.path, appsFolder, {
+							// Idea
+							// filter: (source, destination) => {
+							// 	const containsNodeModulues =
+							// 		source.search("node_modules");
+							// 	return containsNodeModulues <= 0;
+							// },
+						});
 					} else {
 						// It's a package
 						await fsp.cp(pkg.path, packagesFolder);
 					}
 				}
+
+				// Init npm
+				const command = [
+					"cd",
+					monorepoPath,
+					"&&",
+					"npm",
+					"init",
+					"-y",
+				].join(" ");
+				const npmInit = await execPromise(command);
+
+				// Read package json
+				const pkgJson = await PackageJson.load(
+					path.join(monorepoPath, "package.json")
+				);
+				pkgJson.setName("@perseverancia/master");
+				await pkgJson.save();
+
+				// Copy files from this repository
+				const files = [
+					".gitignore",
+					".npmrc",
+					".prettierrc",
+					"LICENSE",
+				];
+				let promiseList = [];
+				for (const fileName of files) {
+					// Copy file over promise
+					const filePromise = fsp.copyFile(
+						path.join(process.cwd(), fileName),
+						monorepoPath
+					);
+
+					// Append to the promise list
+					promiseList.push(filePromise);
+				}
+				await Promise.all(promiseList);
 			}
 		)
 		.command(
