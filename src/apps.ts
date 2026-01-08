@@ -151,6 +151,20 @@ export async function getAllApps(
 }
 
 /**
+ * Get all packages
+ *
+ * Get all apps alias, it shouldn't have been called get all apps anyways
+ */
+export async function getAllPackages(
+	packagesPath: string,
+	options: {
+		blacklist?: Array<string>;
+	} = {}
+) {
+	return await getAllApps(packagesPath, options);
+}
+
+/**
  * Apps to node package
  */
 export async function appsToNodePackages(packages: IAppInfo[]) {

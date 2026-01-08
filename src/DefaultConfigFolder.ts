@@ -12,12 +12,19 @@ export default class DefaultConfigFolder {
 	static mainFolderPath() {
 		return path.join(os.homedir(), "perseverancia");
 	}
-	
+
 	/**
 	 * Repositories path
 	 */
 	static repositoriesPath() {
-		return path.join(DefaultConfigFolder.mainFolderPath(), "repos")
+		return path.join(DefaultConfigFolder.mainFolderPath(), "repos");
+	}
+
+	/**
+	 * Default monorepo path
+	 */
+	static monorepoPath() {
+		return path.join(DefaultConfigFolder.mainFolderPath(), "monorepo");
 	}
 
 	/**

@@ -11,12 +11,13 @@ import fsp from "fs/promises";
 import { inject } from "postject";
 
 import PackageDeployerConfiguration from "../PackageDeployerConfiguration";
-import { appsToNodePackages, getAllApps } from "../apps";
+import { appsToNodePackages, getAllApps, getAllPackages } from "../apps";
 import { dependencyBuildOrder } from "@/graph";
 import DefaultConfigFolder from "@/DefaultConfigFolder";
 import RepositoriesFolder from "@/repository/RepositoriesFolder";
 import PackageDeployer from "@/PackageDeployer";
 import RepositoryList from "@/repository/RepositoryList";
+import path from "path";
 
 const execPromise = promisify(exec);
 
@@ -68,7 +69,7 @@ async function main() {
 				// Create .mjs copy, to force ESM in the EXE file
 				await fsp.copyFile(distPath, mjsPath);
 				console.log(`✅ .mjs wrapper created`);
-				
+
 				// Create blob
 				await execPromise(
 					"node --experimental-sea-config sea-config.json"
@@ -94,6 +95,72 @@ async function main() {
 				});
 
 				console.log("✨ Executable created successfully!");
+			}
+		)
+		.command(
+			"combine",
+			"Combinate all packages into a single monorepo",
+			(yargs) => {
+				return yargs
+					.option("path", {
+						type: "string",
+						description:
+							"The path to the packages, defaults to the default packages path",
+						default: packagesPath,
+					})
+					.option("monorepo-path", {
+						type: "string",
+						description:
+							"The absolute path where the monorepo will be located",
+						default: DefaultConfigFolder.monorepoPath(),
+					});
+			},
+			async (args) => {
+				// Check that the packages path exists
+				const pkgsPath = args.path;
+				try {
+					await fsp.stat(pkgsPath);
+				} catch (err) {
+					throw new Error("The packages path doesn't exists");
+				}
+
+				// Create the monorepo path
+				const monorepoPath = args.monorepoPath;
+				try {
+					await fsp.mkdir(monorepoPath, { recursive: true });
+				} catch (err) {
+					throw new Error("Couldn't create the monorepo path");
+				}
+
+				// Create app and packages folder
+				const appsFolder = path.join(monorepoPath, "apps");
+				const packagesFolder = path.join(monorepoPath, "packages");
+				try {
+					await fsp.mkdir(appsFolder, { recursive: true });
+					await fsp.mkdir(packagesFolder, { recursive: true });
+				} catch (err) {
+					throw new Error("Couldn't create app and packages folder");
+				}
+
+				// Get all packages
+				const allPackages = await getAllPackages(pkgsPath, {
+					blacklist: config.getBlacklist(),
+				});
+
+				// Create node packages class
+				const nodePackages = await appsToNodePackages(allPackages);
+
+				// Iterate over the node packages
+				for (const pkg of nodePackages) {
+					// If it's private it's an app
+					if (pkg.packageJson.private === true) {
+						// TODO: Filter node modules out
+						await fsp.cp(pkg.path, appsFolder, {});
+					} else {
+						// It's a package
+						await fsp.cp(pkg.path, packagesFolder);
+					}
+				}
 			}
 		)
 		.command(
