@@ -1,4 +1,4 @@
-import { appsToNodePackages, getAllApps, getAppsInfoAtPath } from "./apps";
+import { appsToNodePackages, getAllApps, getAllPackages, getAppsInfoAtPath } from "./apps";
 import DefaultConfigFolder from "./DefaultConfigFolder";
 import { dependencyBuildOrder } from "./graph";
 import NodePackage from "./NodePackage";
@@ -23,6 +23,7 @@ export {
 	RepositoryList,
 	appsToNodePackages,
 	getAllApps,
+	getAllPackages,
 	getAppsInfoAtPath,
 	generateMonorepo,
 	dependencyBuildOrder,
