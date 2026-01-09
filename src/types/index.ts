@@ -18,6 +18,8 @@ export interface IPackageDeployerConfiguration {
 	packagesPath: string;
 	// Blacklisted repositories to not deploy
 	blacklist: Array<string>;
+	// Blacklisted packages to not manage
+	packagesBlacklist: Array<string>;
 	// Github profile url of the user to clone repositories
 	githubProfileUrl?: string;
 	// The github token of the user to clone the repositories

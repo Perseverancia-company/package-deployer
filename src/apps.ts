@@ -54,22 +54,30 @@ export async function getAppInfo(appPath: string) {
  * Get all packages info at a path
  *
  * Doesn't searches workspaces
+ *
+ * ## Blacklists
+ *
+ * 'blacklist' is for the folder name, which often times is just the repository name too.
+ * 'packageNameBlacklist' is for the package names, if the name matches a package the package is excluded.
  */
 export async function getAppsInfoAtPath(
 	appsPath: string,
 	options: {
 		blacklist?: Array<string>;
+		packageNameBlacklist?: Array<string>;
 	} = {}
 ) {
 	let apps: IAppInfo[] = [];
 	const blacklist = (options && options.blacklist) || [];
+	const packageNameBlacklist =
+		(options && options.packageNameBlacklist) || [];
 
 	// Check if the folder exists
 	if (fs.existsSync(appsPath)) {
 		// Get all apps in the folder
 		const foundApps = fs.readdirSync(appsPath);
 		for (const appName of foundApps) {
-			// If the name is in the blacklist continue with the next one
+			// If the name is in the repositories blacklist continue with the next one
 			if (blacklist.includes(appName)) {
 				continue;
 			}
@@ -80,6 +88,11 @@ export async function getAppsInfoAtPath(
 			// Check that it's a npm package
 			const appInfo = await getAppInfo(appPath);
 			if (appInfo) {
+				// If the name is in the package name blacklist continue with the next one
+				if (packageNameBlacklist.includes(appInfo.packageName)) {
+					continue;
+				}
+
 				apps.push(appInfo);
 			}
 		}
@@ -118,11 +131,17 @@ export async function getWorkspacesPackages(
  * Get all apps
  *
  * Get all apps including those inside a workspace
+ *
+ * ## Blacklists
+ *
+ * 'blacklist' is for the folder name, which often times is just the repository name too.
+ * 'packageNameBlacklist' is for the package names, if the name matches a package the package is excluded.
  */
 export async function getAllApps(
 	appsPath: string,
 	options: {
 		blacklist?: Array<string>;
+		packageNameBlacklist?: Array<string>;
 	} = {}
 ) {
 	// 1. We get all apps
@@ -154,11 +173,17 @@ export async function getAllApps(
  * Get all packages
  *
  * Get all apps alias, it shouldn't have been called get all apps anyways
+ *
+ * ## Blacklists
+ *
+ * 'blacklist' is for the folder name, which often times is just the repository name too.
+ * 'packageNameBlacklist' is for the package names, if the name matches a package the package is excluded.
  */
 export async function getAllPackages(
 	packagesPath: string,
 	options: {
 		blacklist?: Array<string>;
+		packageNameBlacklist?: Array<string>;
 	} = {}
 ) {
 	return await getAllApps(packagesPath, options);
