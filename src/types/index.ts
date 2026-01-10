@@ -11,13 +11,22 @@ export interface ITaskDeploymentResult {
 }
 
 /**
+ * Whether to allow or disallow packages
+ */
+export interface RepositoryAllowanceListing {
+	blacklist: Array<string>;
+	whitelist: Array<string>;
+	use: "whitelist" | "blacklist";
+}
+
+/**
  * Package deployer configuration
  */
 export interface IPackageDeployerConfiguration {
 	// Packages path
 	packagesPath: string;
-	// Blacklisted repositories to not deploy
-	blacklist: Array<string>;
+	// Repositories allow listing
+	repositoriesListing: RepositoryAllowanceListing;
 	// Blacklisted packages to not manage
 	packagesBlacklist: Array<string>;
 	// Github profile url of the user to clone repositories

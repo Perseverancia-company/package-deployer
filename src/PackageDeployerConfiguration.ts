@@ -24,21 +24,21 @@ export default class PackageDeployerConfiguration {
 	 * Add to the repository blacklist
 	 */
 	blacklistAdd(repositoryName: string) {
-		this.configuration.blacklist.push(repositoryName);
+		this.configuration.repositoriesListing.blacklist.push(repositoryName);
 	}
 
 	/**
 	 * Add package name to the packages blacklist
 	 */
 	packageBlacklistAdd(packageName: string) {
-		this.configuration.blacklist.push(packageName);
+		this.configuration.repositoriesListing.blacklist.push(packageName);
 	}
 
 	/**
 	 * Get blacklist
 	 */
 	getBlacklist() {
-		return this.configuration.blacklist;
+		return this.configuration.repositoriesListing.blacklist;
 	}
 
 	/**
@@ -68,7 +68,11 @@ export default class PackageDeployerConfiguration {
 
 		// File doesn't exists, create it
 		const data: IPackageDeployerConfiguration = {
-			blacklist: [],
+			repositoriesListing: {
+				blacklist: [],
+				whitelist: [],
+				use: "whitelist",
+			},
 			packagesPath: DefaultConfigFolder.repositoriesPath(),
 			packagesBlacklist: [],
 		};
