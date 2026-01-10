@@ -114,11 +114,20 @@ export default class RepositoryList {
 	/**
 	 * Clone all the repositories
 	 */
-	async cloneAll() {
+	async cloneAll(
+		options: {
+			whitelist?: Array<string>;
+		} = {}
+	) {
+		// Get whitelist
+		const whitelist = (options.whitelist && options.whitelist) || [];
+
 		// Create repository classes
-		const repositories = this.getRepositories().map(
-			(repository) => new Repository(repository)
-		);
+		const repositories = this.getRepositories()
+			// Filter repositories using the whitelist
+			.filter((repository) => whitelist.includes(repository.name))
+			// Create object
+			.map((repository) => new Repository(repository));
 
 		// Clone at path
 		const cloneAt = DefaultConfigFolder.repositoriesPath();
@@ -138,9 +147,7 @@ export default class RepositoryList {
 					const dest = path.join(cloneAt, repo.repositoryInfo.name);
 
 					try {
-						console.log(
-							`[Cloning] ${repo.repositoryInfo.name}...`
-						);
+						console.log(`[Cloning] ${repo.repositoryInfo.name}...`);
 						await git.clone(repo.sshUrl, dest);
 						results.success++;
 					} catch (err: any) {

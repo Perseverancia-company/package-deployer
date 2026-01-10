@@ -271,12 +271,22 @@ async function main() {
 			"repositories",
 			"Repositories",
 			(args) => {
-				return args.option("clone-all", {
-					type: "boolean",
-					description: "Clone all repositories",
-				});
+				return args
+					.option("use-whitelist", {
+						type: "boolean",
+						description: "Use the configuration whitelist",
+						default: false,
+					})
+					.option("clone-all", {
+						type: "boolean",
+						description: "Clone all repositories",
+					});
 			},
 			async (args) => {
+				// Use whitelist
+				const useWhitelist = args.useWhitelist;
+
+				// Clone all the repositories
 				if (args.cloneAll) {
 					// Get(locally) or fetch(from github) repository list
 					const repositoryList = await RepositoryList.fromPath(
@@ -286,7 +296,13 @@ async function main() {
 
 					// Clone all repositories
 					// They are processed in batchs internally
-					await repositoryList.cloneAll();
+					if (!useWhitelist) {
+						await repositoryList.cloneAll();
+					} else {
+						await repositoryList.cloneAll({
+							whitelist: config.getWhitelist(),
+						});
+					}
 				}
 			}
 		)
