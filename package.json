@@ -1,6 +1,6 @@
 {
 	"name": "@perseverancia/package-deployer",
-	"version": "2.3.1",
+	"version": "2.3.2",
 	"description": "",
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
