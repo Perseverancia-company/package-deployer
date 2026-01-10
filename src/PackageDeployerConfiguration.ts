@@ -21,6 +21,27 @@ export default class PackageDeployerConfiguration {
 	}
 
 	/**
+	 * Add a repository to the whitelist
+	 */
+	whitelistAdd(repositoryName: string) {
+		this.configuration.repositoriesListing.whitelist.push(repositoryName);
+	}
+
+	/**
+	 * Get whitelist
+	 */
+	getWhitelist() {
+		return this.configuration.repositoriesListing.whitelist;
+	}
+
+	/**
+	 * Set list in effect
+	 */
+	setListType(listType: "whitelist" | "blacklist") {
+		this.configuration.repositoriesListing.use = listType;
+	}
+
+	/**
 	 * Add to the repository blacklist
 	 */
 	blacklistAdd(repositoryName: string) {
