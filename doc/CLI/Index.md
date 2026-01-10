@@ -63,7 +63,13 @@ Handle user repositories
 Clone all repositories
 
 ```bash
-pkgdep repositories --clone-all
+pkgdep repositories clone --all
+```
+
+Clone all repositories in the whitelist
+
+```bash
+pkgdep repositories clone --all --use-whitelist
 ```
 
 ## Sync
