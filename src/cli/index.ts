@@ -19,6 +19,7 @@ import PackageDeployer from "@/PackageDeployer";
 import RepositoryList from "@/repository/RepositoryList";
 import { generateMonorepo } from "@/lib";
 import repositoriesMain from "./repositories";
+import configurationMain from "./config";
 
 const execPromise = promisify(exec);
 
@@ -59,6 +60,7 @@ async function main() {
 	// Run commands
 	const yargsInstance = yargs();
 	await repositoriesMain(yargsInstance, config, octokit);
+	await configurationMain(yargsInstance, config, octokit);
 
 	return yargsInstance
 		.command(
@@ -101,109 +103,6 @@ async function main() {
 
 				console.log("✨ Executable created successfully!");
 			}
-		)
-		.command(
-			"combine",
-			"Combinate all packages into a single monorepo",
-			(yargs) => {
-				return yargs
-					.option("path", {
-						type: "string",
-						description:
-							"The path to the packages, defaults to the default packages path",
-						default: packagesPath,
-					})
-					.option("monorepo-path", {
-						type: "string",
-						description:
-							"The absolute path where the monorepo will be located",
-						default: DefaultConfigFolder.monorepoPath(),
-					});
-			},
-			async (args) => {
-				// Check that the packages path exists
-				const pkgsPath = args.path;
-
-				// Create the monorepo path
-				const monorepoPath = args.monorepoPath;
-
-				await generateMonorepo(pkgsPath, monorepoPath, config);
-			}
-		)
-		.command(
-			"config",
-			"Set configuration by key",
-			(args) => {
-				return args
-					.command(
-						"blacklist",
-						"Manage the package blacklist",
-						(args) => {
-							return args
-								.option("name", {
-									demandOption: true,
-									type: "string",
-									description:
-										"Package name(including the workspace)",
-								})
-								.option("add", {
-									type: "boolean",
-									description:
-										"Add an element to the blacklist",
-								});
-						},
-						async (args) => {
-							if (args.add) {
-								config.blacklistAdd(args["name"]);
-							}
-
-							await config.save(DefaultConfigFolder.getPath());
-						}
-					)
-					.command(
-						"set",
-						"Set configuration",
-						(args) => {
-							return args
-								.option("packages-path", {
-									type: "string",
-									description:
-										"Set the packages path to clone packages to, read and deploy from.",
-								})
-								.option("github-token", {
-									type: "string",
-									description: "User github token.",
-								})
-								.option("profile-url", {
-									type: "string",
-									description: "User profile url.",
-								});
-						},
-						async (args) => {
-							// Set packages path
-							if (args.packagesPath) {
-								config.configuration.packagesPath =
-									args.packagesPath;
-							}
-
-							// Store user profile URL
-							if (args.profileUrl) {
-								config.configuration.githubProfileUrl =
-									args.profileUrl;
-							}
-
-							// Store user github token
-							if (args.githubToken) {
-								config.configuration.githubToken =
-									args.githubToken;
-							}
-
-							// Save configuration
-							await config.save(DefaultConfigFolder.getPath());
-						}
-					);
-			},
-			async (args) => {}
 		)
 		.command(
 			"deploy",

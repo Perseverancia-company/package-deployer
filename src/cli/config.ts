@@ -1,23 +1,22 @@
-import { Octokit } from "@octokit/rest";
 import fsp from "fs/promises";
 import path from "path";
+import { Octokit } from "@octokit/rest";
 
 import DefaultConfigFolder from "@/DefaultConfigFolder";
 import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
 import RepositoryList from "@/repository/RepositoryList";
-import { generateMonorepo } from "@/lib";
 
 /**
- * Repositories command
+ * Configuration
  */
-export default async function repositoriesMain(
+export default async function configurationMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
 	octokit: Octokit
 ) {
 	return yargs.command(
-		"repositories",
-		"Repositories management",
+		"config",
+		"Configuration management",
 		function (yargs: any) {
 			return yargs
 				.command(
@@ -123,34 +122,6 @@ export default async function repositoriesMain(
 								});
 							}
 						}
-					}
-				)
-				.command(
-					"combine",
-					"Combinate all packages into a single monorepo",
-					(yargs: any) => {
-						return yargs
-							.option("path", {
-								type: "string",
-								description:
-									"The path to the packages, defaults to the default packages path",
-								default: config.getPackagesPath(),
-							})
-							.option("monorepo-path", {
-								type: "string",
-								description:
-									"The absolute path where the monorepo will be located",
-								default: DefaultConfigFolder.monorepoPath(),
-							});
-					},
-					async (args: any) => {
-						// Check that the packages path exists
-						const pkgsPath = args.path;
-
-						// Create the monorepo path
-						const monorepoPath = args.monorepoPath;
-
-						await generateMonorepo(pkgsPath, monorepoPath, config);
 					}
 				)
 				.option("select", {
