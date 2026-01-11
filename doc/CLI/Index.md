@@ -72,6 +72,24 @@ Clone all repositories in the whitelist
 pkgdep repositories clone --all --use-whitelist
 ```
 
+Add repositories to the blacklist by using comma-separated values
+
+```bash
+pkgdep repositories blacklist --list-add REPOSITORY_1_NAME,REPOSITORY_2_NAME
+```
+
+Delete blacklisted repositories.
+
+```bash
+pkgdep repositories --delete-blacklisted
+```
+
+Add repositories to the whitelist
+
+```bash
+pkgdep repositories whitelist --list-add REPOSITORY_1_NAME,REPOSITORY_2_NAME
+```
+
 ## Sync
 
 Sync configuration
