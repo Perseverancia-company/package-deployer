@@ -68,7 +68,28 @@ export default class PackageDeployerConfiguration {
 	getPackagesPath() {
 		return this.configuration.packagesPath;
 	}
+	
+	/**
+	 * Set packages path
+	 */
+	setPackagesPath(packagesPath: string) {
+		this.configuration.packagesPath = packagesPath;
+	}
 
+	/**
+	 * Set the github token
+	 */
+	setGithubToken(githubToken: string) {
+		this.configuration.githubToken = githubToken;
+	}
+	
+	/**
+	 * Set the github user url
+	 */
+	setGithubUserUrl(githubUserUrl: string) {
+		this.configuration.githubProfileUrl = githubUserUrl;
+	}
+	
 	/**
 	 * Load
 	 */

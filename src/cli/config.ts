@@ -85,45 +85,35 @@ export default async function configurationMain(
 						await config.save(DefaultConfigFolder.getPath());
 					}
 				)
-				.command(
-					"clone",
-					"Clone repositories",
-					(yargs: any) => {
-						return yargs
-							.option("use-whitelist", {
-								type: "boolean",
-								description: "Use the configuration whitelist",
-							})
-							.option("all", {
-								type: "boolean",
-								description: "Clone all the repositories",
-							});
-					},
-					async (args: any) => {
-						// Use whitelist
-						const useWhitelist = args.useWhitelist;
-
-						// Clone all the repositories
-						if (args.all) {
-							// Get(locally) or fetch(from github) repository list
-							const repositoryList =
-								await RepositoryList.fromPath(
-									RepositoryList.defaultConfigurationFile(),
-									octokit
-								);
-
-							// Clone all repositories
-							// They are processed in batchs internally
-							if (!useWhitelist) {
-								await repositoryList.cloneAll();
-							} else {
-								await repositoryList.cloneAll({
-									whitelist: config.getWhitelist(),
-								});
-							}
-						}
+				.command("set", "Set configuration", (yargs: any) => {
+					return yargs.option("packages-path", {
+						type: "string",
+						description: "Set the packages path, where to clone and deploy."
+					}).option("github-token", {
+						type: "string",
+						description: "Set the github token to read and write repositories to/from"
+					}).option("github-user-link", {
+						type: "string",
+						description: "Set the github user link"
+					});
+				}, async (args: any) => {
+					// Packages path
+					if(args.packagesPath) {
+						config.setPackagesPath(args.packagesPath)
 					}
-				)
+					
+					// Github token
+					if(args.githubToken) {
+						config.setGithubToken(args.githubToken);
+					}
+					
+					// Github user link
+					if(args.githubUserLink) {
+						config.setGithubUserUrl(args.githubUserLink);
+					}
+					
+					await config.save(DefaultConfigFolder.getPath());
+				})
 				.option("select", {
 					type: "string",
 					description: "Select what type of allow list to use",
