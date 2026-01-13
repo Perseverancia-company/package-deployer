@@ -56,6 +56,12 @@ Print packages build order.
 pkgdep print --build-order
 ```
 
+Print configuration
+
+```bash
+pkgdep print --configuration
+```
+
 ## Repositories
 
 Handle user repositories
