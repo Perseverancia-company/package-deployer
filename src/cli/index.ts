@@ -17,7 +17,6 @@ import DefaultConfigFolder from "@/DefaultConfigFolder";
 import RepositoriesFolder from "@/repository/RepositoriesFolder";
 import PackageDeployer from "@/PackageDeployer";
 import RepositoryList from "@/repository/RepositoryList";
-import { generateMonorepo } from "@/lib";
 import repositoriesMain from "./repositories";
 import configurationMain from "./config";
 
@@ -34,7 +33,7 @@ async function main() {
 	const [_a] = await Promise.all([DefaultConfigFolder.createFolder()]);
 
 	const [config] = await Promise.all([
-		PackageDeployerConfiguration.load(DefaultConfigFolder.getPath()),
+		PackageDeployerConfiguration.load(),
 		new RepositoriesFolder().createFolder(),
 	]);
 

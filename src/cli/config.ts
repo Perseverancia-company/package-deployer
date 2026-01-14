@@ -4,7 +4,6 @@ import { Octokit } from "@octokit/rest";
 
 import DefaultConfigFolder from "@/DefaultConfigFolder";
 import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
-import RepositoryList from "@/repository/RepositoryList";
 
 /**
  * Configuration

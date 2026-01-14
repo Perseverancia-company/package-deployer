@@ -68,7 +68,7 @@ export default class PackageDeployerConfiguration {
 	getPackagesPath() {
 		return this.configuration.packagesPath;
 	}
-	
+
 	/**
 	 * Set packages path
 	 */
@@ -82,20 +82,51 @@ export default class PackageDeployerConfiguration {
 	setGithubToken(githubToken: string) {
 		this.configuration.githubToken = githubToken;
 	}
-	
+
 	/**
 	 * Set the github user url
 	 */
 	setGithubUserUrl(githubUserUrl: string) {
 		this.configuration.githubProfileUrl = githubUserUrl;
 	}
-	
+
+	/**
+	 * Load default package deployer configuration
+	 */
+	static async loadDefaultPackageDeployerConfiguration() {
+		// File path
+		const filePath = path.join(process.cwd(), "defaultPackageDeployerConfiguration.yaml");
+
+		try {
+			// Read the file
+			const fileData = await fsp.readFile(filePath, {
+				encoding: "utf-8",
+			});
+			const configuration: IPackageDeployerConfiguration =
+				YAML.parse(fileData);
+
+			// Instantiate
+			return configuration;
+		} catch (err) {}
+	}
+
 	/**
 	 * Load
 	 */
-	static async load(configPath: string = process.cwd()) {
+	static async load(
+		configuration: {
+			configPath: string;
+			useDefaults: boolean;
+		} = {
+			configPath: DefaultConfigFolder.getPath(),
+			useDefaults: true,
+		}
+	) {
 		// File path
-		const filePath = path.join(configPath, DEPLOYER_CONFIG_FILENAME);
+		const filePath = path.join(
+			configuration.configPath,
+			DEPLOYER_CONFIG_FILENAME
+		);
 
 		try {
 			// Read the file
@@ -108,6 +139,15 @@ export default class PackageDeployerConfiguration {
 			return new PackageDeployerConfiguration(configuration);
 		} catch (err) {}
 
+		// Default package deployer configuration
+		const defaultPackageDeployerConfiguration:
+			| IPackageDeployerConfiguration
+			| undefined = await this.loadDefaultPackageDeployerConfiguration();
+		console.log(
+			`Default package deployer configuration: `,
+			defaultPackageDeployerConfiguration
+		);
+
 		// File doesn't exists, create it
 		const data: IPackageDeployerConfiguration = {
 			repositoriesListing: {
@@ -117,6 +157,8 @@ export default class PackageDeployerConfiguration {
 			},
 			packagesPath: DefaultConfigFolder.repositoriesPath(),
 			packagesBlacklist: [],
+			// Override with default options
+			...defaultPackageDeployerConfiguration,
 		};
 		await fsp.writeFile(filePath, YAML.stringify(data));
 		return new PackageDeployerConfiguration(data);
@@ -125,7 +167,7 @@ export default class PackageDeployerConfiguration {
 	/**
 	 * Save
 	 */
-	async save(configPath: string = process.cwd()) {
+	async save(configPath: string = DefaultConfigFolder.getPath()) {
 		// Filepath
 		const filePath = path.join(configPath, DEPLOYER_CONFIG_FILENAME);
 
