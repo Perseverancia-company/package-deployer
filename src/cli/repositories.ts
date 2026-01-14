@@ -5,7 +5,7 @@ import path from "path";
 import DefaultConfigFolder from "@/DefaultConfigFolder";
 import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
 import RepositoryList from "@/repository/RepositoryList";
-import { generateMonorepo } from "@/lib";
+import { cloneAllAtPath, generateMonorepo } from "@/lib";
 
 /**
  * Repositories command
@@ -106,22 +106,19 @@ export default async function repositoriesMain(
 
 						// Clone all the repositories
 						if (args.all) {
-							// Get(locally) or fetch(from github) repository list
-							const repositoryList =
-								await RepositoryList.fromPath(
-									RepositoryList.defaultConfigurationFile(),
-									octokit
-								);
-
-							// Clone all repositories
-							// They are processed in batchs internally
-							if (!useWhitelist) {
-								await repositoryList.cloneAll();
-							} else {
-								await repositoryList.cloneAll({
-									whitelist: config.getWhitelist(),
-								});
+							// Get the whitelist if allowed
+							let whitelist: Array<string> | undefined =
+								undefined;
+							if (useWhitelist) {
+								whitelist = config.getWhitelist();
 							}
+
+							// Clone all at path
+							await cloneAllAtPath(
+								config.getPackagesPath(),
+								octokit,
+								whitelist
+							);
 						}
 					}
 				)

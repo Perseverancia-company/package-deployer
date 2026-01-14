@@ -64,7 +64,7 @@ pkgdep print --configuration
 
 ## Repositories
 
-Handle user repositories
+Handle user repositories, doesn't clones repositories that were already cloned.
 
 Clone all repositories
 
