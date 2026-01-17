@@ -94,6 +94,7 @@ export default async function repositoriesMain(
 							.option("use-whitelist", {
 								type: "boolean",
 								description: "Use the configuration whitelist",
+								default: false,
 							})
 							.option("all", {
 								type: "boolean",
@@ -116,10 +117,13 @@ export default async function repositoriesMain(
 							// Clone all repositories
 							// They are processed in batchs internally
 							if (!useWhitelist) {
-								await repositoryList.cloneAll();
+								await repositoryList.cloneAll({
+									cloneAt: config.getPackagesPath(),
+								});
 							} else {
 								await repositoryList.cloneAll({
 									whitelist: config.getWhitelist(),
+									cloneAt: config.getPackagesPath(),
 								});
 							}
 						}

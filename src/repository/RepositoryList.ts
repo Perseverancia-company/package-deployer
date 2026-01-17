@@ -117,6 +117,7 @@ export default class RepositoryList {
 	async cloneAll(
 		options: {
 			whitelist?: Array<string>;
+			cloneAt?: string;
 		} = {}
 	) {
 		// Get whitelist
@@ -130,7 +131,9 @@ export default class RepositoryList {
 			.map((repository) => new Repository(repository));
 
 		// Clone at path
-		const cloneAt = DefaultConfigFolder.repositoriesPath();
+		const cloneAt =
+			(options.cloneAt && options.cloneAt) ||
+			DefaultConfigFolder.repositoriesPath();
 
 		const git = simpleGit();
 

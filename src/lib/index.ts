@@ -59,13 +59,30 @@ export async function generateMonorepo(
 	const copyOptions = {
 		recursive: true,
 		filter: (source: string, dest: string) => {
-			// Check whether the current one is node modules or not
-			const isNodeModules = source
-				.split(path.sep)
-				.includes("node_modules");
+			// Get the basename
+			const filename = path.basename(source);
 
-			// Ignore when it's node modules
-			return !isNodeModules;
+			// Ignore node modules
+			if (filename === "node_modules") {
+				return false;
+			}
+
+			// Ignore lock files
+			if (
+				filename === "package-lock.json" ||
+				filename === "pnpm-lock.yaml" ||
+				filename === "yarn.lock"
+			) {
+				return false;
+			}
+
+			// Don't copy ".git" repository information
+			if (filename === ".git") {
+				return false;
+			}
+
+			// If it's none of those, continue
+			return true;
 		},
 	};
 	for (const pkg of nodePackages) {
