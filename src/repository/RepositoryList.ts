@@ -117,18 +117,38 @@ export default class RepositoryList {
 	async cloneAll(
 		options: {
 			whitelist?: Array<string>;
+			blacklist?: Array<string>;
 			cloneAt?: string;
 		} = {}
 	) {
-		// Get whitelist
-		const whitelist = (options.whitelist && options.whitelist) || [];
+		// Get lists
+		const whitelist = options.whitelist;
+		const blacklist = options.blacklist;
+
+		// Cannot use both parameters
+		if (blacklist && whitelist) {
+			throw new Error(
+				"Cannot pass both parameters 'blacklist' and 'whitelist' use one of them."
+			);
+		}
 
 		// Create repository classes
-		const repositories = this.getRepositories()
-			// Filter repositories using the whitelist
-			.filter((repository) => whitelist.includes(repository.name))
+		let repositories = this.getRepositories()
 			// Create object
 			.map((repository) => new Repository(repository));
+
+		// If no list was given then all the repositories will be cloned
+		if (whitelist) {
+			// Filter repositories using the whitelist
+			repositories = repositories.filter((repository) =>
+				whitelist.includes(repository.repositoryInfo.name)
+			);
+		} else if (blacklist) {
+			// Filter repositories using the blacklist
+			repositories = repositories.filter((repository) =>
+				blacklist.includes(repository.repositoryInfo.name)
+			);
+		}
 
 		// Clone at path
 		const cloneAt =

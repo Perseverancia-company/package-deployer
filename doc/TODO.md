@@ -13,8 +13,8 @@
 	- [x] Clone all
 	- [x] Combine into a monorepo
 	Create a copy of every repository as a monorepo.
-	- [ ] Clone and combine
-	This should be interpreted as clone all nodejs repositories, combine and MOVE them into a monorepo.
+	
+	Cannot really be used because of the package-lock problem
 	- [ ] Pull all repositories from the remote
 	- [ ] Remove repositories that don't have package.json
 	That is they aren't nodejs packages
@@ -47,3 +47,10 @@ Would serve as a dry run to check if the blacklist works
 
 - [x] Read all repositories of a user in github
 	- [x] Clone them all
+
+## Cancelled
+
+- [-] Clone and combine
+This should be interpreted as clone all nodejs repositories, combine and MOVE them into a monorepo.
+
+Not really viable because each repository has their own package-lock, and if you wanted to make a commit you would have to restore the package lock.

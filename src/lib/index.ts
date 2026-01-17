@@ -6,6 +6,8 @@ import { promisify } from "util";
 import { appsToNodePackages, getAllPackages } from "@/apps";
 import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
 import PackageJson from "@/PackageJson";
+import { Octokit } from "@octokit/rest";
+import RepositoryList from "@/repository/RepositoryList";
 
 const execPromise = promisify(exec);
 
@@ -126,4 +128,46 @@ export async function generateMonorepo(
 		promiseList.push(filePromise);
 	}
 	await Promise.all(promiseList);
+}
+
+/**
+ * Clone all at a path
+ */
+export async function cloneAllAtPath(
+	cloneFolderPath: string,
+	octokit: Octokit,
+	whitelist?: Array<string>
+) {
+	// Read all the folders at the path
+	const folders = await fsp.readdir(cloneFolderPath);
+
+	// Get(locally) or fetch(from github) repository list
+	const repositoryList = await RepositoryList.fromPath(
+		RepositoryList.defaultConfigurationFile(),
+		octokit
+	);
+
+	// Clone all repositories
+	// They are processed in batchs internally
+	if (whitelist) {
+		// Filter out already cloned repositories from the whitelist
+		const newWhitelist = whitelist.filter(
+			(repositoryName) => !folders.includes(repositoryName)
+		);
+
+		console.log(`Clone whitelist: `, newWhitelist);
+
+		// Clone all repositories
+		await repositoryList.cloneAll({
+			whitelist: newWhitelist,
+		});
+	} else {
+		// Already cloned repositories can be thought of a black list in this ocassion
+		const blacklist = folders;
+
+		// Clone all repositories excluding already cloned ones
+		await repositoryList.cloneAll({
+			blacklist,
+		});
+	}
 }

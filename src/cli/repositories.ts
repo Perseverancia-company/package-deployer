@@ -5,7 +5,7 @@ import path from "path";
 import DefaultConfigFolder from "@/DefaultConfigFolder";
 import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
 import RepositoryList from "@/repository/RepositoryList";
-import { generateMonorepo } from "@/lib";
+import { cloneAllAtPath, generateMonorepo } from "@/lib";
 
 /**
  * Repositories command
