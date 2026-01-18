@@ -90,6 +90,17 @@ Add repositories to the whitelist
 pkgdep repositories whitelist --list-add REPOSITORY_1_NAME,REPOSITORY_2_NAME
 ```
 
+Set preferred configuration to all repositories
+
+What this does is:
+- Set the default url as a push url
+- Set a local path as a push url(if it exists)
+The repository in the local path are checked at "/srv/git/user/Javascript/{REPO_NAME}.git"
+
+```bash
+pkgdep repositories local-config --preferred-configuration
+```
+
 Combine all packages/repositories into a single monorepo
 
 ```bash

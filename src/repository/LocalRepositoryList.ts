@@ -27,15 +27,26 @@ export default class LocalRepositoryList {
 	 */
 	static async fromPath(folderPath: string) {
 		// Repository list names
-		const repositoryListNames = await fsp.readdir(folderPath);
+		const entries = await fsp.readdir(folderPath, { withFileTypes: true });
 		const repositories: Array<LocalRepositoryInfo> = [];
 
 		// Fill list of repositories
-		for (const repositoryName of repositoryListNames) {
-			repositories.push({
-				name: repositoryName,
-				path: path.join(folderPath, repositoryName),
-			});
+		for (const entry of entries) {
+			if (entry.isDirectory()) {
+				const fullPath = path.join(folderPath, entry.name);
+				const gitPath = path.join(fullPath, ".git");
+
+				// Only add if it contains a .git folder
+				try {
+					await fsp.access(gitPath);
+					repositories.push({
+						name: entry.name,
+						path: fullPath,
+					});
+				} catch {
+					// Not a git repo, skip
+				}
+			}
 		}
 
 		return new LocalRepositoryList(folderPath, repositories);
