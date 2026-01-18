@@ -33,6 +33,11 @@ Would serve as a dry run to check if the blacklist works
 	- [x] Add a package to the blacklist
 - [x] Repositories
 	- [x] Clone all
+	- [x] Combine
+	- [ ] Local config
+		- [ ] Preferred configuration
+			- [ ] Set remote as push url
+			- [ ] Set local path as push url
 - [ ] Remove repositories that don't have package.json
 That is they aren't nodejs packages
 

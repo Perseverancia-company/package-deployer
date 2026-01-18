@@ -49,3 +49,8 @@ export interface RepositoryFileConfiguration {
 	lastUpdated: Date;
 	repositories: Array<RepositoryInfo>;
 }
+
+export interface LocalRepositoryInfo {
+	name: string;
+	path: string;
+}

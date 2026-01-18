@@ -6,6 +6,7 @@ import DefaultConfigFolder from "@/DefaultConfigFolder";
 import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
 import RepositoryList from "@/repository/RepositoryList";
 import { cloneAllAtPath, generateMonorepo } from "@/lib";
+import LocalRepositoryList from "@/repository/LocalRepositoryList";
 
 /**
  * Repositories command
@@ -13,7 +14,7 @@ import { cloneAllAtPath, generateMonorepo } from "@/lib";
 export default async function repositoriesMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
-	octokit: Octokit
+	octokit: Octokit,
 ) {
 	return yargs.command(
 		"repositories",
@@ -51,7 +52,7 @@ export default async function repositoriesMain(
 
 						// Save configuration
 						await config.save(DefaultConfigFolder.getPath());
-					}
+					},
 				)
 				.command(
 					"whitelist",
@@ -84,7 +85,7 @@ export default async function repositoriesMain(
 
 						// Save configuration
 						await config.save(DefaultConfigFolder.getPath());
-					}
+					},
 				)
 				.command(
 					"clone",
@@ -117,10 +118,10 @@ export default async function repositoriesMain(
 							await cloneAllAtPath(
 								config.getPackagesPath(),
 								octokit,
-								whitelist
+								whitelist,
 							);
 						}
-					}
+					},
 				)
 				.command(
 					"combine",
@@ -148,7 +149,36 @@ export default async function repositoriesMain(
 						const monorepoPath = args.monorepoPath;
 
 						await generateMonorepo(pkgsPath, monorepoPath, config);
-					}
+					},
+				)
+				.command(
+					"local-config",
+					"Configure local repositories",
+					(yargs: any) => {
+						return yargs
+							.option("path", {
+								type: "string",
+								description:
+									"The path to the repositories, defaults to the default repositories path",
+								default: config.getPackagesPath(),
+							})
+							.option("preferred-configuration", {
+								type: "boolean",
+								description:
+									"Set the preferred configuration check documentation for specifics",
+								default: false,
+							});
+					},
+					async (args: any) => {
+						// Set preferred configuration on every repository
+						if (args.preferredConfiguration) {
+							// Read all the repositories at the path
+							const localRepositories =
+								await LocalRepositoryList.fromPath(args.path);
+							
+							
+						}
+					},
 				)
 				.option("select", {
 					type: "string",
@@ -171,7 +201,7 @@ export default async function repositoriesMain(
 					config.setListType(select);
 				} else {
 					throw new Error(
-						"Select can be only 'blacklist' or 'whitelist'"
+						"Select can be only 'blacklist' or 'whitelist'",
 					);
 				}
 			}
@@ -198,6 +228,6 @@ export default async function repositoriesMain(
 					}
 				}
 			}
-		}
+		},
 	);
 }
