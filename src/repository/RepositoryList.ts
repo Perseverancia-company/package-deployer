@@ -118,6 +118,7 @@ export default class RepositoryList {
 		options: {
 			whitelist?: Array<string>;
 			blacklist?: Array<string>;
+			cloneAt?: string;
 		} = {}
 	) {
 		// Get lists
@@ -135,7 +136,7 @@ export default class RepositoryList {
 		let repositories = this.getRepositories()
 			// Create object
 			.map((repository) => new Repository(repository));
-		
+
 		// If no list was given then all the repositories will be cloned
 		if (whitelist) {
 			// Filter repositories using the whitelist
@@ -150,7 +151,9 @@ export default class RepositoryList {
 		}
 
 		// Clone at path
-		const cloneAt = DefaultConfigFolder.repositoriesPath();
+		const cloneAt =
+			(options.cloneAt && options.cloneAt) ||
+			DefaultConfigFolder.repositoriesPath();
 
 		const git = simpleGit();
 

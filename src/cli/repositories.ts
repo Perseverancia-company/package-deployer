@@ -95,6 +95,7 @@ export default async function repositoriesMain(
 							.option("use-whitelist", {
 								type: "boolean",
 								description: "Use the configuration whitelist",
+								default: false,
 							})
 							.option("all", {
 								type: "boolean",
@@ -107,19 +108,25 @@ export default async function repositoriesMain(
 
 						// Clone all the repositories
 						if (args.all) {
-							// Get the whitelist if allowed
-							let whitelist: Array<string> | undefined =
-								undefined;
-							if (useWhitelist) {
-								whitelist = config.getWhitelist();
-							}
+							// Get(locally) or fetch(from github) repository list
+							const repositoryList =
+								await RepositoryList.fromPath(
+									RepositoryList.defaultConfigurationFile(),
+									octokit
+								);
 
-							// Clone all at path
-							await cloneAllAtPath(
-								config.getPackagesPath(),
-								octokit,
-								whitelist,
-							);
+							// Clone all repositories
+							// They are processed in batchs internally
+							if (!useWhitelist) {
+								await repositoryList.cloneAll({
+									cloneAt: config.getPackagesPath(),
+								});
+							} else {
+								await repositoryList.cloneAll({
+									whitelist: config.getWhitelist(),
+									cloneAt: config.getPackagesPath(),
+								});
+							}
 						}
 					},
 				)
