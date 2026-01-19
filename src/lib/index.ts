@@ -9,7 +9,7 @@ import PackageJson from "@/PackageJson";
 import { Octokit } from "@octokit/rest";
 import RepositoryList from "@/repository/RepositoryList";
 
-const execPromise = promisify(exec);
+export const execPromise = promisify(exec);
 
 /**
  * Generate monorepo repository with all the packages at a given path

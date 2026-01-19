@@ -1,13 +1,14 @@
 import { Octokit } from "@octokit/rest";
 import fsp from "fs/promises";
 import path from "path";
+import { execSync } from "child_process";
 
 import DefaultConfigFolder from "@/DefaultConfigFolder";
 import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
 import RepositoryList from "@/repository/RepositoryList";
-import { cloneAllAtPath, generateMonorepo } from "@/lib";
+import { generateMonorepo } from "@/lib";
 import LocalRepositoryList from "@/repository/LocalRepositoryList";
-import { execSync } from "child_process";
+import { setRepositoriesRemotePushUrls } from "@/repository";
 
 /**
  * Repositories command
@@ -184,84 +185,7 @@ export default async function repositoriesMain(
 							const localRepositories =
 								await LocalRepositoryList.fromPath(args.path);
 
-							for (const repo of localRepositories.repositories) {
-								console.log(
-									`Checking configuration for: ${repo.name}...`,
-								);
-								try {
-									// Get current fetch URL (the primary one)
-									const fetchUrl = execSync(
-										"git remote get-url origin",
-										{
-											cwd: repo.path,
-											encoding: "utf8",
-										},
-									).trim();
-
-									// Get all currently set PUSH URLs
-									// --all is important because there can be multiple
-									let existingPushUrls: string[] = [];
-									try {
-										const output = execSync(
-											"git remote get-url --push --all origin",
-											{
-												cwd: repo.path,
-												encoding: "utf8",
-											},
-										);
-										existingPushUrls = output
-											.split("\n")
-											.map((u) => u.trim())
-											.filter(Boolean);
-									} catch {
-										// If no push URLs are set, git returns an error code.
-										// In that case, the fetchUrl is used by default for pushing.
-										existingPushUrls = [];
-									}
-
-									// Add GitHub Push URL if missing
-									if (!existingPushUrls.includes(fetchUrl)) {
-										execSync(
-											`git remote set-url --add --push origin ${fetchUrl}`,
-											{ cwd: repo.path },
-										);
-										console.log(
-											`[${repo.name}] Added GitHub push URL.`,
-										);
-									}
-
-									// Define our target URLs
-									const localBarePath = `/srv/git/user/Javascript/${repo.name}.git`;
-									try {
-										// Check if the local bare repository path actually exists
-										await fsp.access(localBarePath);
-
-										// Add Local Bare Push URL if missing
-										if (
-											!existingPushUrls.includes(
-												localBarePath,
-											)
-										) {
-											execSync(
-												`git remote set-url --add --push origin ${localBarePath}`,
-												{ cwd: repo.path },
-											);
-											console.log(
-												`[${repo.name}] Added Local Bare push URL.`,
-											);
-										}
-									} catch (error) {
-										// This block triggers if fsp.access fails
-										console.warn(
-											`⚠️ [${repo.name}] Skipping local backup: Path ${localBarePath} does not exist.`,
-										);
-									}
-								} catch (err) {
-									console.error(
-										`❌ Skipped ${repo.name}: Not a git repository or origin missing.`,
-									);
-								}
-							}
+							await setRepositoriesRemotePushUrls(localRepositories);
 
 							console.log("🚀 Configuration update complete.");
 						}
