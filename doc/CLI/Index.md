@@ -66,6 +66,12 @@ pkgdep print --configuration
 
 Handle user repositories, doesn't clones repositories that were already cloned.
 
+Add repositories to the blacklist by using comma-separated values
+
+```bash
+pkgdep repositories blacklist --list-add REPOSITORY_1_NAME,REPOSITORY_2_NAME
+```
+
 Clone all repositories
 
 ```bash
@@ -78,16 +84,10 @@ Clone all repositories in the whitelist
 pkgdep repositories clone --all --use-whitelist
 ```
 
-Add repositories to the blacklist by using comma-separated values
+Combine all packages/repositories into a single monorepo
 
 ```bash
-pkgdep repositories blacklist --list-add REPOSITORY_1_NAME,REPOSITORY_2_NAME
-```
-
-Add repositories to the whitelist
-
-```bash
-pkgdep repositories whitelist --list-add REPOSITORY_1_NAME,REPOSITORY_2_NAME
+pkgdep repositories combine
 ```
 
 Set preferred configuration to all repositories
@@ -101,10 +101,16 @@ The repository in the local path are checked at "/srv/git/user/Javascript/{REPO_
 pkgdep repositories local-config --preferred-configuration
 ```
 
-Combine all packages/repositories into a single monorepo
+Pull all repositories from the remote
 
 ```bash
-pkgdep repositories combine
+pkgdep repositories pull
+```
+
+Add repositories to the whitelist
+
+```bash
+pkgdep repositories whitelist --list-add REPOSITORY_1_NAME,REPOSITORY_2_NAME
 ```
 
 Delete blacklisted repositories.

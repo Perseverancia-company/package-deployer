@@ -9,6 +9,7 @@ import RepositoryList from "@/repository/RepositoryList";
 import { generateMonorepo } from "@/lib";
 import LocalRepositoryList from "@/repository/LocalRepositoryList";
 import { setRepositoriesRemotePushUrls } from "@/repository";
+import simpleGit from "simple-git";
 
 /**
  * Repositories command
@@ -49,39 +50,6 @@ export default async function repositoriesMain(
 								}
 
 								config.blacklistAdd(repository);
-							}
-						}
-
-						// Save configuration
-						await config.save(DefaultConfigFolder.getPath());
-					},
-				)
-				.command(
-					"whitelist",
-					"Manage the whitelist",
-					(yargs: any) => {
-						return yargs.option("list-add", {
-							type: "string",
-							description:
-								"Add a list of repositories comma separated",
-						});
-					},
-					async (args: any) => {
-						// The list of repositories to add to the whitelist
-						if (args.listAdd) {
-							// List of repositories to whitelist
-							const repositories = args.listAdd.split(",");
-
-							const whitelist = config.getWhitelist();
-
-							// Add repositories to the configuration file
-							for (const repository of repositories) {
-								// Check that the repository wasn't added already
-								if (whitelist.includes(repository)) {
-									continue;
-								}
-
-								config.whitelistAdd(repository);
 							}
 						}
 
@@ -185,10 +153,88 @@ export default async function repositoriesMain(
 							const localRepositories =
 								await LocalRepositoryList.fromPath(args.path);
 
-							await setRepositoriesRemotePushUrls(localRepositories);
+							await setRepositoriesRemotePushUrls(
+								localRepositories,
+							);
 
 							console.log("🚀 Configuration update complete.");
 						}
+					},
+				)
+				.command(
+					"pull",
+					"Pull all repositories",
+					(yargs: any) => {
+						return yargs.option("path", {
+							type: "string",
+							description:
+								"The path to the repositories, defaults to the default repositories path",
+							default: config.getPackagesPath(),
+						});
+					},
+					async (args: any) => {
+						const repositoriesPath = args.path;
+
+						// Get list from the given path
+						const localRepositories =
+							await LocalRepositoryList.fromPath(
+								repositoriesPath,
+							);
+
+						for (const repository of localRepositories.repositories) {
+							try {
+								// Create git object and pull
+								const git = simpleGit(repository.path);
+								const remote = await git.remote([
+									"get-url",
+									"origin",
+								]);
+
+								if (remote) {
+									await git.pull(remote);
+									console.log(`Pulled ${repository.name}`);
+								} else {
+									console.log(
+										`Repository ${repository.name} has no remote`,
+									);
+								}
+							} catch (err) {
+								console.error(`Error: `, err);
+							}
+						}
+					},
+				)
+				.command(
+					"whitelist",
+					"Manage the whitelist",
+					(yargs: any) => {
+						return yargs.option("list-add", {
+							type: "string",
+							description:
+								"Add a list of repositories comma separated",
+						});
+					},
+					async (args: any) => {
+						// The list of repositories to add to the whitelist
+						if (args.listAdd) {
+							// List of repositories to whitelist
+							const repositories = args.listAdd.split(",");
+
+							const whitelist = config.getWhitelist();
+
+							// Add repositories to the configuration file
+							for (const repository of repositories) {
+								// Check that the repository wasn't added already
+								if (whitelist.includes(repository)) {
+									continue;
+								}
+
+								config.whitelistAdd(repository);
+							}
+						}
+
+						// Save configuration
+						await config.save(DefaultConfigFolder.getPath());
 					},
 				)
 				.option("select", {
