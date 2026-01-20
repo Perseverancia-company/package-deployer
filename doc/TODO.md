@@ -60,6 +60,8 @@ Would serve as a dry run to check if the blacklist works
 			Must be idempotent, that is, no matter how many times it is run, it always gives the same results.
 			- [x] Set remote as push url
 			- [x] Set local path as push url
+	- [x] Pull all
+	- [ ] Push all
 - [ ] Remove repositories that don't have package.json
 That is they aren't nodejs packages
 

@@ -5,7 +5,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { Octokit } from "@octokit/rest";
 import dotenv from "dotenv";
-import { exec, spawn } from "child_process";
+import { exec } from "child_process";
 import { promisify } from "util";
 import fsp from "fs/promises";
 import { inject } from "postject";

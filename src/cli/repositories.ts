@@ -10,6 +10,7 @@ import { generateMonorepo } from "@/lib";
 import LocalRepositoryList from "@/repository/LocalRepositoryList";
 import { setRepositoriesRemotePushUrls } from "@/repository";
 import simpleGit from "simple-git";
+import LocalRepositories from "@/repository/LocalRepositories";
 
 /**
  * Repositories command
@@ -175,33 +176,10 @@ export default async function repositoriesMain(
 					async (args: any) => {
 						const repositoriesPath = args.path;
 
-						// Get list from the given path
+						// Pull all repositories
 						const localRepositories =
-							await LocalRepositoryList.fromPath(
-								repositoriesPath,
-							);
-
-						for (const repository of localRepositories.repositories) {
-							try {
-								// Create git object and pull
-								const git = simpleGit(repository.path);
-								const remote = await git.remote([
-									"get-url",
-									"origin",
-								]);
-
-								if (remote) {
-									await git.pull(remote);
-									console.log(`Pulled ${repository.name}`);
-								} else {
-									console.log(
-										`Repository ${repository.name} has no remote`,
-									);
-								}
-							} catch (err) {
-								console.error(`Error: `, err);
-							}
-						}
+							await LocalRepositories.fromPath(repositoriesPath);
+						await localRepositories.pull();
 					},
 				)
 				.command(
