@@ -9,15 +9,19 @@
 	- [x] Set github profile
 	- [x] Set github credentials
 	- [x] Add a package to the blacklist
+	- [ ] Toggle logging
 - [x] Repositories
 	- [x] Clone all
-	- [x] Combine into a monorepo
-	Create a copy of every repository as a monorepo.
-	
-	Cannot really be used because of the package-lock problem
-	- [ ] Pull all repositories from the remote
-	- [ ] Remove repositories that don't have package.json
-	That is they aren't nodejs packages
+	- [x] Combine
+	- [x] Local config
+		- [x] Preferred configuration
+			Must be idempotent, that is, no matter how many times it is run, it always gives the same results.
+			- [x] Set remote as push url
+			- [x] Set local path as push url
+	- [x] Pull all
+	- [x] Push all
+- [ ] Remove repositories that don't have package.json
+That is they aren't nodejs packages
 
 ## API
 
@@ -43,27 +47,7 @@ Would serve as a dry run to check if the blacklist works
 
 - [x] Save package deployment result as json
 
-## CLI
-
-- [x] Deploy packages
-- [x] Print packages
-- [x] Config
-	- [x] Set packages path
-	- [x] Set github profile
-	- [x] Set github credentials
-	- [x] Add a package to the blacklist
-- [x] Repositories
-	- [x] Clone all
-	- [x] Combine
-	- [x] Local config
-		- [x] Preferred configuration
-			Must be idempotent, that is, no matter how many times it is run, it always gives the same results.
-			- [x] Set remote as push url
-			- [x] Set local path as push url
-	- [x] Pull all
-	- [x] Push all
-- [ ] Remove repositories that don't have package.json
-That is they aren't nodejs packages
+- [ ] Logging
 
 ## Github integration
 
