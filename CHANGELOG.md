@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.10.0
+
+- Push all command
+
+## 2.9.0
+
+- Pull all command
+
+## 2.8.0
+
+- Configure repository remotes
+
+## 2.5.0
+
+- Default package configuration
+
 ## 2.1.2
 
 Important fixes
