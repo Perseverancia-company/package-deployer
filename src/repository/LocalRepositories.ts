@@ -48,4 +48,19 @@ export default class LocalRepositories {
 			}
 		}
 	}
+
+	/**
+	 * Push all repositories
+	 */
+	async push() {
+		for (const repository of this.repositoryList.repositories) {
+			try {
+				const git = simpleGit(repository.path);
+				await git.push();
+				console.log(`Pushed ${repository.name}`);
+			} catch (err) {
+				console.error(`Error when pushing ${repository.name}: `, err);
+			}
+		}
+	}
 }

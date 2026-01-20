@@ -61,7 +61,7 @@ Would serve as a dry run to check if the blacklist works
 			- [x] Set remote as push url
 			- [x] Set local path as push url
 	- [x] Pull all
-	- [ ] Push all
+	- [x] Push all
 - [ ] Remove repositories that don't have package.json
 That is they aren't nodejs packages
 

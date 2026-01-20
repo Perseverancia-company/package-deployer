@@ -183,6 +183,26 @@ export default async function repositoriesMain(
 					},
 				)
 				.command(
+					"push",
+					"Push all repositories",
+					(yargs: any) => {
+						return yargs.option("path", {
+							type: "string",
+							description:
+								"The path to the repositories, defaults to the default repositories path",
+							default: config.getPackagesPath(),
+						});
+					},
+					async (args: any) => {
+						const repositoriesPath = args.path;
+
+						// Pull all repositories
+						const localRepositories =
+							await LocalRepositories.fromPath(repositoriesPath);
+						await localRepositories.push();
+					},
+				)
+				.command(
 					"whitelist",
 					"Manage the whitelist",
 					(yargs: any) => {
