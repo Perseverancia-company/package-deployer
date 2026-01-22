@@ -143,10 +143,6 @@ export default class PackageDeployerConfiguration {
 		const defaultPackageDeployerConfiguration:
 			| IPackageDeployerConfiguration
 			| undefined = await this.loadDefaultPackageDeployerConfiguration();
-		console.log(
-			`Default package deployer configuration: `,
-			defaultPackageDeployerConfiguration
-		);
 
 		// File doesn't exists, create it
 		const data: IPackageDeployerConfiguration = {
