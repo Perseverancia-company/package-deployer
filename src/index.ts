@@ -17,12 +17,14 @@ import RepositoriesFolder from "./repository/RepositoriesFolder";
 import RepositoryList from "./repository/RepositoryList";
 import { generateMonorepo } from "./lib";
 import NPM from "./packageManager/NPM";
+import PNPM from "./packageManager/PNPM";
 
 export {
 	DEPLOYER_CONFIG_FILENAME,
 	DefaultConfigFolder,
 	NodePackage,
 	NPM,
+	PNPM,
 	PackageDeployerConfiguration,
 	PackageDeployer,
 	RepositoriesFolder,

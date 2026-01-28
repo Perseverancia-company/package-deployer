@@ -60,25 +60,17 @@ export default class NPM {
 			throw new Error("No first command?");
 		}
 
-		// For windows
-		if (os.platform() === "win32") {
-			return promisifiedSpawn(
-				firstCommand,
-				[...this.commands, ...this.args],
-				{
-					shell: true,
-					cwd: this.packagePath,
-				}
-			);
-		} else {
-			// Any other OS
-			return promisifiedSpawn(
-				firstCommand,
-				[...this.commands, ...this.args],
-				{
-					cwd: this.packagePath,
-				}
-			);
-		}
+		// Use shell on windows environments
+		const useShell = os.platform() === "win32";
+
+		// Run command and return
+		return promisifiedSpawn(
+			firstCommand,
+			[...this.commands, ...this.args],
+			{
+				shell: useShell,
+				cwd: this.packagePath,
+			}
+		);
 	}
 }

@@ -25,9 +25,9 @@ That is they aren't nodejs packages
 
 ## API
 
-- [ ] Package managers support
-	- [ ] NPM
-	- [ ] pnpm
+- [x] Package managers support
+	- [x] NPM
+	- [x] pnpm
 I want to migrate to pnpm therefore I will create support for both just in case.
 
 - [x] Get all packages at a path
