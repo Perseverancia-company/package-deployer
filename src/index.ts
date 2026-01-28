@@ -1,21 +1,28 @@
-import { appsToNodePackages, getAllApps, getAllPackages, getAppsInfoAtPath } from "./apps";
+import {
+	appsToNodePackages,
+	getAllApps,
+	getAllPackages,
+	getAppsInfoAtPath,
+} from "./apps";
 import DefaultConfigFolder from "./DefaultConfigFolder";
 import { dependencyBuildOrder } from "./graph";
-import NodePackage from "./NodePackage";
+import NodePackage from "./package/NodePackage";
 import PackageDeployer from "./PackageDeployer";
 import PackageDeployerConfiguration, {
 	DEPLOYER_CONFIG_FILENAME,
 } from "./PackageDeployerConfiguration";
-import { IAppInfo } from "./types";
+import { IPackageInfo } from "./types";
 import Repository from "./repository/Repository";
 import RepositoriesFolder from "./repository/RepositoriesFolder";
 import RepositoryList from "./repository/RepositoryList";
 import { generateMonorepo } from "./lib";
+import NPM from "./packageManager/NPM";
 
 export {
 	DEPLOYER_CONFIG_FILENAME,
 	DefaultConfigFolder,
 	NodePackage,
+	NPM,
 	PackageDeployerConfiguration,
 	PackageDeployer,
 	RepositoriesFolder,
@@ -29,4 +36,4 @@ export {
 	dependencyBuildOrder,
 };
 
-export type { IAppInfo };
+export type { IPackageInfo };

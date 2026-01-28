@@ -2,8 +2,8 @@ import path from "path";
 import fsp from "fs/promises";
 import os from "os";
 
-import { appPackageJson } from "./apps";
-import { promisifiedSpawn } from "./cmd";
+import { appPackageJson } from "../apps";
+import { promisifiedSpawn } from "../cmd";
 
 /**
  * Node package

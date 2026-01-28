@@ -1,5 +1,6 @@
-export interface IAppInfo {
+export interface IPackageInfo {
 	packageName: string;
+	
 	path: string;
 	name: string;
 }

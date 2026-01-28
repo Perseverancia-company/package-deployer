@@ -25,6 +25,11 @@ That is they aren't nodejs packages
 
 ## API
 
+- [ ] Package managers support
+	- [ ] NPM
+	- [ ] pnpm
+I want to migrate to pnpm therefore I will create support for both just in case.
+
 - [x] Get all packages at a path
 	- [x] When gathering the list, add a black list to ignore some packages
 	This is principally useful for the main monorepo "perseverancia-deployment"

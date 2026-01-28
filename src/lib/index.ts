@@ -5,7 +5,7 @@ import { promisify } from "util";
 
 import { appsToNodePackages, getAllPackages } from "@/apps";
 import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
-import PackageJson from "@/PackageJson";
+import PackageJson from "@/package/PackageJson";
 import { Octokit } from "@octokit/rest";
 import RepositoryList from "@/repository/RepositoryList";
 

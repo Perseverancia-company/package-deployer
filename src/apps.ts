@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { IAppInfo } from "./types";
-import NodePackage from "./NodePackage";
+import { IPackageInfo } from "./types";
+import NodePackage from "./package/NodePackage";
 
 /**
  * Read app package.json
@@ -67,7 +67,7 @@ export async function getAppsInfoAtPath(
 		packageNameBlacklist?: Array<string>;
 	} = {}
 ) {
-	let apps: IAppInfo[] = [];
+	let apps: IPackageInfo[] = [];
 	const blacklist = (options && options.blacklist) || [];
 	const packageNameBlacklist =
 		(options && options.packageNameBlacklist) || [];
@@ -108,7 +108,7 @@ export async function getWorkspacesPackages(
 	appPath: string,
 	workspaces: string[]
 ) {
-	let newApps: IAppInfo[] = [];
+	let newApps: IPackageInfo[] = [];
 
 	for (const workspace of workspaces) {
 		// We have to read all the apps of the workspace
@@ -147,7 +147,7 @@ export async function getAllApps(
 	// 1. We get all apps
 	const apps = await getAppsInfoAtPath(appsPath, options);
 
-	let newApps: IAppInfo[] = [];
+	let newApps: IPackageInfo[] = [];
 
 	// 2. We check which ones have workspace/s
 	for (const app of apps) {
@@ -192,7 +192,7 @@ export async function getAllPackages(
 /**
  * Apps to node package
  */
-export async function appsToNodePackages(packages: IAppInfo[]) {
+export async function appsToNodePackages(packages: IPackageInfo[]) {
 	// Create node packages class and push them to the list
 	let nodePackagesPromise: Array<Promise<NodePackage>> = [];
 	for (const nodePackage of packages) {
