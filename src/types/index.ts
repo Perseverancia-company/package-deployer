@@ -1,9 +1,13 @@
+import NPM from "@/packageManager/NPM";
+import PNPM from "@/packageManager/PNPM";
+
 export interface IPackageInfo {
 	packageName: string;
-	
 	path: string;
 	name: string;
 }
+
+export type PackageManagerEngine = NPM | PNPM;
 
 export interface ITaskDeploymentResult {
 	packageName: string;

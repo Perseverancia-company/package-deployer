@@ -4,6 +4,10 @@ import os from "os";
 
 import { appPackageJson } from "../apps";
 import { promisifiedSpawn } from "../cmd";
+import { PackageManagerEngine } from "@/types";
+import NPM from "@/packageManager/NPM";
+import PNPM from "@/packageManager/PNPM";
+import PackageManagerController from "@/packageManager/PackageManagerController";
 
 /**
  * Node package
@@ -14,7 +18,10 @@ export default class NodePackage {
 	packageName: string;
 	name: string;
 
-	constructor(appPath: string, packageJson: any) {
+	constructor(
+		appPath: string,
+		packageJson: any
+	) {
 		this.path = appPath;
 		this.packageJson = packageJson;
 
@@ -28,11 +35,30 @@ export default class NodePackage {
 	}
 
 	/**
+	 * Create package manager based on whether it's npm or pnpm
+	 */
+	static async createPackageManager(
+		packagePath: string
+	): Promise<PackageManagerEngine> {
+		try {
+			// Check if it has package lock
+			await fsp.stat(path.join(packagePath, "package-lock.json"));
+
+			// Create npm engine
+			return new NPM(packagePath);
+		} catch (err) {
+			// Assume it's pnpm for now
+			return new PNPM(packagePath);
+		}
+	}
+
+	/**
 	 * Create from a given path
 	 */
-	static async fromPath(appPath: string) {
-		const packageJson = await appPackageJson(appPath);
-		return new NodePackage(appPath, packageJson);
+	static async fromPath(packagePath: string) {
+		// Get package json
+		const packageJson = await appPackageJson(packagePath);
+		return new NodePackage(packagePath, packageJson);
 	}
 
 	/**
@@ -48,7 +74,7 @@ export default class NodePackage {
 
 	/**
 	 * Run npm install on the package
-	 * 
+	 *
 	 * Package lock is ignored as I'm changing computers often
 	 */
 	async install() {

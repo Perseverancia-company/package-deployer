@@ -1,11 +1,11 @@
 import os from "os";
 import { promisifiedSpawn } from "@/cmd";
+import PackageManagerController from "./PackageManagerController";
 
 /**
  * Npm package manager
  */
-export default class NPM {
-	packagePath: string;
+export default class NPM extends PackageManagerController {
 	commands: Array<string> = ["npm"];
 	args: Array<string> = [];
 
@@ -13,7 +13,7 @@ export default class NPM {
 	 * NPM
 	 */
 	constructor(packagePath: string) {
-		this.packagePath = packagePath;
+		super(packagePath);
 	}
 
 	/**
@@ -41,6 +41,14 @@ export default class NPM {
 	}
 
 	/**
+	 * Publish command
+	 */
+	publish(): this {
+		this.commands.push("publish");
+		return this;
+	}
+
+	/**
 	 * Set arg to not use package lock
 	 */
 	noPackageLock() {
@@ -64,7 +72,7 @@ export default class NPM {
 		const useShell = os.platform() === "win32";
 
 		// Run command and return
-		return promisifiedSpawn(
+		return await promisifiedSpawn(
 			firstCommand,
 			[...this.commands, ...this.args],
 			{
