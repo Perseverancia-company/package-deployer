@@ -1,7 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import fsp from "fs/promises";
 import path from "path";
-import { execSync } from "child_process";
 
 import DefaultConfigFolder from "@/DefaultConfigFolder";
 import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
@@ -9,7 +8,6 @@ import RepositoryList from "@/repository/RepositoryList";
 import { generateMonorepo } from "@/lib";
 import LocalRepositoryList from "@/repository/LocalRepositoryList";
 import { setRepositoriesRemotePushUrls } from "@/repository";
-import simpleGit from "simple-git";
 import LocalRepositories from "@/repository/LocalRepositories";
 
 /**

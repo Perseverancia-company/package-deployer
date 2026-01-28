@@ -19,6 +19,7 @@ import PackageDeployer from "@/PackageDeployer";
 import RepositoryList from "@/repository/RepositoryList";
 import repositoriesMain from "./repositories";
 import configurationMain from "./config";
+import updateMain from "./update";
 
 const execPromise = promisify(exec);
 
@@ -60,6 +61,7 @@ async function main() {
 	const yargsInstance = yargs();
 	await repositoriesMain(yargsInstance, config, octokit);
 	await configurationMain(yargsInstance, config, octokit);
+	await updateMain(yargsInstance, config, octokit);
 
 	return yargsInstance
 		.command(
