@@ -7,6 +7,8 @@ Added
 -   Package manager abstract class
 -   NPM class
 -   PNPM class
+- Pull all repositories if they are newer
+- Update command
 
 ## 2.10.0
 

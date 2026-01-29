@@ -3,6 +3,7 @@ import fsp from "fs/promises";
 
 import LocalRepositoryList from "./LocalRepositoryList";
 import { execPromise } from "@/lib";
+import simpleGit from "simple-git";
 
 /**
  * Get all repositories
@@ -114,5 +115,37 @@ export async function setRepositoriesRemotePushUrls(
 				`❌ Skipped ${repo.name}: Not a git repository or origin missing.`,
 			);
 		}
+	}
+}
+
+/**
+ * Pull if newer
+ */
+export async function pullRepositoryIfNewer(repositoryPath: string) {
+	const git = simpleGit(repositoryPath);
+
+	// Fetch the latest metadata
+	await git.fetch();
+
+	// Get the latest local commit date
+	const localLog = await git.log({ n: 1 });
+	if (!localLog.latest) {
+		throw new Error("Couldn't fetch the local repository date")
+	}
+	const localDate = new Date(localLog.latest.date);
+
+	// Get the latest remote commit date (tracking branch)
+	// We assume 'origin/main' or 'origin/master'.
+	// Using '@{u}' (upstream) is the most robust way to reference the remote tracking branch.
+	const remoteLog = await git.log(["-1", "@{u}"]);
+	if (!remoteLog.latest) {
+		throw new Error("Couldn't fetch the remote date")
+	}
+	const remoteDate = new Date(remoteLog.latest.date);
+
+	// Check if the remote date is greater than the local date
+	if (remoteDate > localDate) {
+		// Update local repository
+		await git.pull();
 	}
 }
