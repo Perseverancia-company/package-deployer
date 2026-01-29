@@ -50,6 +50,32 @@ export default class LocalRepositories {
 	}
 
 	/**
+	 * Pull if newer
+	 */
+	async pullIfNewer() {
+		for (const repository of this.repositoryList.repositories) {
+			const git = simpleGit(repository.path);
+
+			// Fetch the latest metadata
+			await git.fetch();
+
+			// Get the latest local commit date
+			const localLog = await git.log({ n: 1 });
+			const localDate = localLog.latest
+				? new Date(localLog.latest.date)
+				: new Date(0);
+
+			// Get the latest remote commit date (tracking branch)
+			// We assume 'origin/main' or 'origin/master'.
+			// Using '@{u}' (upstream) is the most robust way to reference the remote tracking branch.
+			const remoteLog = await git.log(["-1", "@{u}"]);
+			const remoteDate = remoteLog
+				? new Date(remoteLog.latest.date)
+				: new Date(0);
+		}
+	}
+
+	/**
 	 * Push all repositories
 	 */
 	async push() {
