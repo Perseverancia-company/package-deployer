@@ -20,6 +20,7 @@ import RepositoryList from "@/repository/RepositoryList";
 import repositoriesMain from "./repositories";
 import configurationMain from "./config";
 import updateMain from "./update";
+import deployMain from "./deploy";
 
 const execPromise = promisify(exec);
 
@@ -50,7 +51,7 @@ async function main() {
 		process.env.PACKAGES_PATH ?? config.configuration.packagesPath;
 	if (!packagesPath) {
 		console.warn(
-			"No packages path found, be sure to set it using `config --packages-path PACKAGES_PATH`"
+			"No packages path found, be sure to set it using `config --packages-path PACKAGES_PATH`",
 		);
 	}
 
@@ -59,8 +60,9 @@ async function main() {
 
 	// Run commands
 	const yargsInstance = yargs();
-	await repositoriesMain(yargsInstance, config, octokit);
 	await configurationMain(yargsInstance, config, octokit);
+	await deployMain(yargsInstance, config);
+	await repositoriesMain(yargsInstance, config, octokit);
 	await updateMain(yargsInstance, config, octokit);
 
 	return yargsInstance
@@ -80,7 +82,7 @@ async function main() {
 
 				// Create blob
 				await execPromise(
-					"node --experimental-sea-config sea-config.json"
+					"node --experimental-sea-config sea-config.json",
 				);
 				console.log(`Created blob`);
 				const exeFile = "pkgdep.exe";
@@ -103,16 +105,7 @@ async function main() {
 				});
 
 				console.log("✨ Executable created successfully!");
-			}
-		)
-		.command(
-			"deploy",
-			"Read a folder and deploy all packages",
-			(args) => {},
-			async (args) => {
-				const pkgDeployer = new PackageDeployer(config);
-				await pkgDeployer.deploy();
-			}
+			},
 		)
 		.command(
 			"print",
@@ -162,15 +155,15 @@ async function main() {
 					// Get(locally) or fetch(from github) repository list
 					const repositoryList = await RepositoryList.fromPath(
 						RepositoryList.defaultConfigurationFile(),
-						octokit
+						octokit,
 					);
 
 					console.log(
 						`Repository list: \n`,
-						repositoryList.getRepositories()
+						repositoryList.getRepositories(),
 					);
 				}
-			}
+			},
 		)
 		.command(
 			"sync",
@@ -187,13 +180,13 @@ async function main() {
 					// Get(locally) or fetch(from github) repository list
 					const repositoryList = await RepositoryList.sync(
 						RepositoryList.defaultConfigurationFile(),
-						octokit
+						octokit,
 					);
 
 					// Save
 					await repositoryList.save();
 				}
-			}
+			},
 		)
 		.help()
 		.parse(hideBin(process.argv));

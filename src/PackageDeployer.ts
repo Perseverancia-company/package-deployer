@@ -55,7 +55,7 @@ export default class PackageDeployer {
 				});
 			} catch (err) {
 				console.log(
-					`Package ${nodePackage.packageName} failed to be deployed`
+					`Package ${nodePackage.packageName} failed to be deployed`,
 				);
 				packageDeploymentResult.push({
 					packageName: nodePackage.packageName,
@@ -76,7 +76,7 @@ export default class PackageDeployer {
 		// File path
 		const filePath = path.join(
 			DefaultConfigFolder.getPath(),
-			"deploymentResult.json"
+			"deploymentResult.json",
 		);
 
 		// Save as json

@@ -37,7 +37,7 @@ export function myDependencyBuildOrder(nodePackages: Array<NodePackage>) {
 
 			// From the copy remove this package
 			packagesCopy = packagesCopy.filter(
-				(pkg) => pkg.packageName === nodePkg.name
+				(pkg) => pkg.packageName === nodePkg.name,
 			);
 
 			continue;
@@ -47,7 +47,7 @@ export function myDependencyBuildOrder(nodePackages: Array<NodePackage>) {
 		const currentNode = packageTree[nodePkg.packageName];
 		for (const dep of perDeps) {
 			const packageDependency = packagesCopy.filter(
-				(pkg) => pkg.packageName === dep
+				(pkg) => pkg.packageName === dep,
 			);
 			// currentNode[dep]
 		}
@@ -60,15 +60,9 @@ export function myDependencyBuildOrder(nodePackages: Array<NodePackage>) {
  * Dependency build order
  */
 export function dependencyBuildOrder(nodePackages: Array<NodePackage>) {
-	// Filter only the workspace packages
-	const workspacePrefix = "@perseverancia/";
-	const workspacePackages = nodePackages.filter((nodePkg) =>
-		nodePkg.packageName.startsWith(workspacePrefix)
-	);
-
 	// Create a map for quick lookup of packages by name
 	const packageMap = new Map<string, NodePackage>();
-	workspacePackages.forEach((pkg) => {
+	nodePackages.forEach((pkg) => {
 		if (pkg.packageName) {
 			packageMap.set(pkg.packageName, pkg);
 		}
@@ -82,14 +76,14 @@ export function dependencyBuildOrder(nodePackages: Array<NodePackage>) {
 	const sortedPackages: NodePackage[] = [];
 
 	// Initialize all workspace packages in the maps
-	workspacePackages.forEach((pkg) => {
+	nodePackages.forEach((pkg) => {
 		const name = pkg.packageName;
 		adj.set(name, new Set());
 		inDegree.set(name, 0);
 	});
 
 	// Build graph and calculate in degrees
-	for (const dependentPackage of workspacePackages) {
+	for (const dependentPackage of nodePackages) {
 		const dependentName = dependentPackage.packageName;
 
 		// Iterate over all dependencies(direct and dev)
@@ -99,11 +93,15 @@ export function dependencyBuildOrder(nodePackages: Array<NodePackage>) {
 		};
 
 		for (const dependencyName of Object.keys(dependencies)) {
-			// Check if the dependency is another workspace package
-			if (
-				dependencyName.startsWith(workspacePrefix) &&
-				packageMap.has(dependencyName)
-			) {
+			// We have to check if it is one of our own packages
+			const isOurPackage = (dependencyName: string) => {
+				return nodePackages.some(
+					(nodepkg) => nodepkg.packageName === dependencyName,
+				);
+			};
+
+			// Check if the dependency is one of the given packages
+			if (packageMap.has(dependencyName)) {
 				// Edge dependency to dependent
 				// Dependency must be built before the dependent
 				// In the graph: dependency -> dependent
@@ -113,14 +111,14 @@ export function dependencyBuildOrder(nodePackages: Array<NodePackage>) {
 				// (it has one more dependency that has to be built first)
 				inDegree.set(
 					dependentName,
-					(inDegree.get(dependentName) ?? 0) + 1
+					(inDegree.get(dependentName) ?? 0) + 1,
 				);
 			}
 		}
 	}
 
 	// Initializing Queue with packages having an in-degree of 0(no workspace dependencies)
-	for (const pkg of workspacePackages) {
+	for (const pkg of nodePackages) {
 		const name = pkg.packageName;
 		if (inDegree.get(name) === 0) {
 			queue.push(pkg);
@@ -155,20 +153,20 @@ export function dependencyBuildOrder(nodePackages: Array<NodePackage>) {
 	}
 
 	// Check for cycles
-	if (sortedPackages.length !== workspacePackages.length) {
+	if (sortedPackages.length !== nodePackages.length) {
 		// Filter the original list:
-		const cyclePackages = workspacePackages
+		const cyclePackages = nodePackages
 			.filter((pkg) => !sortedPackages.includes(pkg))
 			.map((pkg) => pkg.packageJson.name);
 
 		console.error(
 			"Circular Dependency Detected! Packages involved:",
-			cyclePackages
+			cyclePackages,
 		);
 
 		// This indicates a circular dependency, which prevents a valid build order.
 		throw new Error(
-			"Error: Circular dependency detected in workspace packages. A valid build order cannot be determined"
+			"Error: Circular dependency detected in workspace packages. A valid build order cannot be determined",
 		);
 	}
 
