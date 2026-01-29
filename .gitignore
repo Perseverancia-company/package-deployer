@@ -7,7 +7,6 @@ log/
 next-env.d.ts
 nextjs_dev.pid
 public/user
-repositories/
 test-results.json
 pid
 nginx_build/
