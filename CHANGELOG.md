@@ -11,6 +11,7 @@ Added
 -   Update command
     -   Update repository information
     -   Update all repositories if the remote is newer
+	-	Update all packages
 
 ## 2.10.0
 
