@@ -1,13 +1,10 @@
 import path from "path";
 import fsp from "fs/promises";
-import os from "os";
 
 import { appPackageJson } from "../apps";
-import { promisifiedSpawn } from "../cmd";
 import { PackageManagerEngine } from "@/types";
 import NPM from "@/packageManager/NPM";
 import PNPM from "@/packageManager/PNPM";
-import PackageManagerController from "@/packageManager/PackageManagerController";
 
 /**
  * Node package
@@ -18,10 +15,13 @@ export default class NodePackage {
 	packageName: string;
 	name: string;
 
-	constructor(
-		appPath: string,
-		packageJson: any
-	) {
+	/**
+	 * Constructor
+	 * 
+	 * @param appPath 
+	 * @param packageJson 
+	 */
+	constructor(appPath: string, packageJson: any) {
 		this.path = appPath;
 		this.packageJson = packageJson;
 
@@ -78,55 +78,23 @@ export default class NodePackage {
 	 * Package lock is ignored as I'm changing computers often
 	 */
 	async install() {
-		if (os.platform() === "win32") {
-			return await promisifiedSpawn(
-				"npm",
-				["install", "--no-package-lock"],
-				{
-					cwd: this.path,
-					shell: true,
-				}
-			);
-		} else {
-			return await promisifiedSpawn(
-				"npm",
-				["install", "--no-package-lock"],
-				{
-					cwd: this.path,
-				}
-			);
-		}
+		const pkgMng = await NodePackage.createPackageManager(this.path);
+		return await pkgMng.install().noPackageLock().run();
 	}
 
 	/**
 	 * Run npm build
 	 */
 	async build() {
-		if (os.platform() === "win32") {
-			return await promisifiedSpawn("npm", ["run", "build"], {
-				cwd: this.path,
-				shell: true,
-			});
-		} else {
-			return await promisifiedSpawn("npm", ["run", "build"], {
-				cwd: this.path,
-			});
-		}
+		const pkgMng = await NodePackage.createPackageManager(this.path);
+		return await pkgMng.runCommand().build().run();
 	}
 
 	/**
 	 * Run npm publish command
 	 */
 	async publish() {
-		if (os.platform() === "win32") {
-			return await promisifiedSpawn("npm", ["publish"], {
-				cwd: this.path,
-				shell: true,
-			});
-		} else {
-			return await promisifiedSpawn("npm", ["publish"], {
-				cwd: this.path,
-			});
-		}
+		const pkgMng = await NodePackage.createPackageManager(this.path);
+		return await pkgMng.publish().run();
 	}
 }
