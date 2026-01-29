@@ -9,6 +9,8 @@ Added
 -   PNPM class
 - Pull all repositories if they are newer
 - Update command
+    - Update repository information
+    - Update all repositories if the remote is newer
 
 ## 2.10.0
 
