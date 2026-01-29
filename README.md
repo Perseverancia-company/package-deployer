@@ -10,19 +10,9 @@ Simple app to deploy all given packages.
 
 [Contributing](./doc/Contributing.md)
 
-## Environment variables
+## Configuring
 
-These are some environment variables used for configuration.
-
-```bash
-# Github token to list repositories from
-GITHUB_TOKEN=YOUR_TOKEN
-
-# Packages path
-PACKAGES_PATH=PACKAGES_PATH
-```
-
-Although these can be used, it would be better to set them using the CLI.
+Two important configuration is where to clone the repositories/packages and to set the github token.
 
 ```bash
 pkdep config --packages-path PACKAGES_PATH --github-token GITHUB_TOKEN
