@@ -18,10 +18,12 @@ import RepositoryList from "./repository/RepositoryList";
 import { generateMonorepo } from "./lib";
 import NPM from "./packageManager/NPM";
 import PNPM from "./packageManager/PNPM";
+import KhansDependencyGraph from "./graph/KhansDependencyGraph";
 
 export {
 	DEPLOYER_CONFIG_FILENAME,
 	DefaultConfigFolder,
+	KhansDependencyGraph,
 	NodePackage,
 	NPM,
 	PNPM,
