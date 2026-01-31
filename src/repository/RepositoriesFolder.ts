@@ -1,6 +1,6 @@
 import fsp from "fs/promises";
 
-import DefaultConfigFolder from "@/DefaultConfigFolder";
+import DefaultConfigFolder from "@/configuration/DefaultConfigFolder";
 
 /**
  * Repositories folder

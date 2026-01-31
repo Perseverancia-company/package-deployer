@@ -6,7 +6,7 @@ import { Octokit } from "@octokit/rest";
 import dotenv from "dotenv";
 
 import PackageDeployerConfiguration from "../packageDeployer/PackageDeployerConfiguration";
-import DefaultConfigFolder from "@/DefaultConfigFolder";
+import DefaultConfigFolder from "@/configuration/DefaultConfigFolder";
 import RepositoriesFolder from "@/repository/RepositoriesFolder";
 import repositoriesMain from "./repositories";
 import configurationMain from "./config";

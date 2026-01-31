@@ -3,9 +3,9 @@ import fsp from "fs/promises";
 
 import { appsToNodePackages, getAllApps } from "../lib/apps";
 import PackageDeployerConfiguration from "./PackageDeployerConfiguration";
-import { dependencyBuildOrder } from "../lib/graph";
 import DefaultConfigFolder from "../configuration/DefaultConfigFolder";
 import { ITaskDeploymentResult } from "../types";
+import KhansDependencyGraph from "@/graph/KhansDependencyGraph";
 
 /**
  * Package deployer
@@ -33,7 +33,8 @@ export default class PackageDeployer {
 
 		// Create node packages class
 		const nodePackages = await appsToNodePackages(allPackages);
-		const buildOrder = dependencyBuildOrder(nodePackages);
+		const dependencyGraph = new KhansDependencyGraph(nodePackages);
+		const buildOrder = dependencyGraph.getBuildOrder();
 
 		// Deploy all packages
 		const packageDeploymentResult: Array<ITaskDeploymentResult> = [];
@@ -55,7 +56,7 @@ export default class PackageDeployer {
 				});
 			} catch (err) {
 				console.log(
-					`Package ${nodePackage.packageName} failed to be deployed`,
+					`Package ${nodePackage.packageName} failed to be deployed`
 				);
 				packageDeploymentResult.push({
 					packageName: nodePackage.packageName,
@@ -76,7 +77,7 @@ export default class PackageDeployer {
 		// File path
 		const filePath = path.join(
 			DefaultConfigFolder.getPath(),
-			"deploymentResult.json",
+			"deploymentResult.json"
 		);
 
 		// Save as json

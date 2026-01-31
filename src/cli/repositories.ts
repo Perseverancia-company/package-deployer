@@ -2,7 +2,7 @@ import { Octokit } from "@octokit/rest";
 import fsp from "fs/promises";
 import path from "path";
 
-import DefaultConfigFolder from "@/DefaultConfigFolder";
+import DefaultConfigFolder from "@/configuration/DefaultConfigFolder";
 import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 import RepositoryList from "@/repository/RepositoryList";
 import { generateMonorepo } from "@/lib";

@@ -1,5 +1,5 @@
 import os from "os";
-import { promisifiedSpawn } from "@/cmd";
+import { promisifiedSpawn } from "@/lib/cmd";
 import PackageManagerController from "./PackageManagerController";
 
 /**

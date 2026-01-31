@@ -2,7 +2,7 @@ import fsp from "fs/promises";
 import path from "path";
 import { Octokit } from "@octokit/rest";
 
-import DefaultConfigFolder from "@/DefaultConfigFolder";
+import DefaultConfigFolder from "@/configuration/DefaultConfigFolder";
 import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 
 /**

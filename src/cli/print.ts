@@ -1,8 +1,9 @@
-import { appsToNodePackages, getAllApps } from "@/apps";
-import { dependencyBuildOrder } from "@/graph";
+import KhansDependencyGraph from "@/graph/KhansDependencyGraph";
 import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 import RepositoryList from "@/repository/RepositoryList";
 import { Octokit } from "@octokit/rest";
+
+import { appsToNodePackages, getAllApps } from "@/lib/apps";
 
 /**
  * Print things
@@ -48,8 +49,10 @@ export default async function printMain(
 					blacklist: config.getBlacklist(),
 				});
 				const nodePackages = await appsToNodePackages(allPackages);
-				const buildOrder = dependencyBuildOrder(nodePackages);
-				console.log(`Build order: `, buildOrder);
+				
+				// Calculate the build order
+				const dependencyGraph = new KhansDependencyGraph(nodePackages);
+				console.log(`Build order: `, dependencyGraph.getBuildOrder());
 			}
 
 			if (args.configuration) {

@@ -4,7 +4,7 @@ import path from "path";
 
 import { RepositoryFileConfiguration } from "@/types";
 import { getAllRepositories } from ".";
-import DefaultConfigFolder from "@/DefaultConfigFolder";
+import DefaultConfigFolder from "@/configuration/DefaultConfigFolder";
 import simpleGit from "simple-git";
 import Repository from "./Repository";
 
