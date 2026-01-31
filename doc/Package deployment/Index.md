@@ -6,29 +6,35 @@ A smarter way would be to deploy only the packages that have beenn updated and h
 
 ## TODO
 
-- [x] Get all packages at a path
-	- [x] When gathering the list, add a black list to ignore some packages
-	This is principally useful for the main monorepo "perseverancia-deployment"
+-   [x] Get all packages at a path
 
-- [x] Configuration file
-	- [x] YAML file(because it's easy to read)
-	- [x] Blacklist names
+    -   [x] When gathering the list, add a black list to ignore some packages
+            This is principally useful for the main monorepo "perseverancia-deployment"
 
-- [x] Print packages obtained
+-   [x] Configuration file
+
+    -   [x] YAML file(because it's easy to read)
+    -   [x] Blacklist names
+
+-   [x] Print packages obtained
 
 Would serve as a dry run to check if the blacklist works
 
-- [x] Order packages by dependencies(dependency graph)
-- [x] Command to print build order
+-   [x] Order packages by dependencies(dependency graph)
+-   [x] Command to print build order
 
-- [x] Package deployment
-	- [x] Run "npm install" on the package
-	- [x] Run "npm build"
-	- [x] Finally "npm publish"
+-   [x] Package deployment
 
-- [x] Save package deployment result as json
+    -   [x] Run "npm install" on the package
+    -   [x] Run "npm build"
+    -   [x] Finally "npm publish"
 
-- [ ] Smart deployment
-	- [ ] Get newer packages
-	- [ ] Get packages that depend on newer packages
-	- [ ] Update packages, build and publish them
+-   [x] Save package deployment result as json
+
+-   [ ] Smart deployment
+
+    -   [ ] Get newer packages list
+    -   [ ] Get packages that depend on the newer packages list
+    -   [ ] Update newer packages and dependent on newer packages, build and publish them
+
+Smart deployment will only update what's necesssary, it won't re-build and publish a package that has already been published.
