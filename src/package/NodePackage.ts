@@ -1,7 +1,7 @@
 import path from "path";
 import fsp from "fs/promises";
 
-import { appPackageJson } from "../apps";
+import { appPackageJson } from "../lib/apps";
 import { PackageManagerEngine } from "@/types";
 import NPM from "@/packageManager/NPM";
 import PNPM from "@/packageManager/PNPM";

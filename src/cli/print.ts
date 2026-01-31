@@ -1,6 +1,6 @@
 import { appsToNodePackages, getAllApps } from "@/apps";
 import { dependencyBuildOrder } from "@/graph";
-import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 import RepositoryList from "@/repository/RepositoryList";
 import { Octokit } from "@octokit/rest";
 

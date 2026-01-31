@@ -1,4 +1,4 @@
-import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 import LocalRepositories from "@/repository/LocalRepositories";
 import LocalRepositoryList from "@/repository/LocalRepositoryList";
 import RepositoryList from "@/repository/RepositoryList";

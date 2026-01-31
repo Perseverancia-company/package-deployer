@@ -4,6 +4,10 @@ Package deployment is about deploying packages in the right way, building a depe
 
 A smarter way would be to deploy only the packages that have beenn updated and have different versions locally(in a git repository) from the remote(verdaccio).
 
+## Smart deployment
+
+Smart deployment will only update what's necesssary, it won't re-build and publish a package that has already been published.
+
 ## TODO
 
 -   [x] Get all packages at a path
@@ -36,5 +40,3 @@ Would serve as a dry run to check if the blacklist works
     -   [ ] Get newer packages list
     -   [ ] Get packages that depend on the newer packages list
     -   [ ] Update newer packages and dependent on newer packages, build and publish them
-
-Smart deployment will only update what's necesssary, it won't re-build and publish a package that has already been published.

@@ -1,4 +1,4 @@
-import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 import { PackageDeployer } from "..";
 
 /**

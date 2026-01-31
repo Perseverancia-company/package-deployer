@@ -1,11 +1,11 @@
 import path from "path";
 import fsp from "fs/promises";
 
-import { appsToNodePackages, getAllApps } from "./apps";
+import { appsToNodePackages, getAllApps } from "../lib/apps";
 import PackageDeployerConfiguration from "./PackageDeployerConfiguration";
-import { dependencyBuildOrder } from "./graph";
-import DefaultConfigFolder from "./DefaultConfigFolder";
-import { ITaskDeploymentResult } from "./types";
+import { dependencyBuildOrder } from "../lib/graph";
+import DefaultConfigFolder from "../configuration/DefaultConfigFolder";
+import { ITaskDeploymentResult } from "../types";
 
 /**
  * Package deployer

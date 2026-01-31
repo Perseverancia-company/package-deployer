@@ -3,14 +3,14 @@ import {
 	getAllApps,
 	getAllPackages,
 	getAppsInfoAtPath,
-} from "./apps";
-import DefaultConfigFolder from "./DefaultConfigFolder";
-import { dependencyBuildOrder } from "./graph";
+} from "./lib/apps";
+import DefaultConfigFolder from "./configuration/DefaultConfigFolder";
+import { dependencyBuildOrder } from "./lib/graph";
 import NodePackage from "./package/NodePackage";
-import PackageDeployer from "./PackageDeployer";
+import PackageDeployer from "./packageDeployer/PackageDeployer";
 import PackageDeployerConfiguration, {
 	DEPLOYER_CONFIG_FILENAME,
-} from "./PackageDeployerConfiguration";
+} from "./packageDeployer/PackageDeployerConfiguration";
 import { IPackageInfo } from "./types";
 import Repository from "./repository/Repository";
 import RepositoriesFolder from "./repository/RepositoriesFolder";

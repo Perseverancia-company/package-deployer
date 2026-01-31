@@ -5,7 +5,7 @@ import { hideBin } from "yargs/helpers";
 import { Octokit } from "@octokit/rest";
 import dotenv from "dotenv";
 
-import PackageDeployerConfiguration from "../PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "../packageDeployer/PackageDeployerConfiguration";
 import DefaultConfigFolder from "@/DefaultConfigFolder";
 import RepositoriesFolder from "@/repository/RepositoriesFolder";
 import repositoriesMain from "./repositories";

@@ -2,8 +2,8 @@ import YAML from "yaml";
 import fsp from "fs/promises";
 import path from "path";
 
-import { IPackageDeployerConfiguration } from "./types";
-import DefaultConfigFolder from "./DefaultConfigFolder";
+import { IPackageDeployerConfiguration } from "../types";
+import DefaultConfigFolder from "../configuration/DefaultConfigFolder";
 
 export const DEPLOYER_CONFIG_FILENAME = "deployer-config.yaml";
 

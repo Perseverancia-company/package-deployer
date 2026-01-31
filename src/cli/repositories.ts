@@ -3,7 +3,7 @@ import fsp from "fs/promises";
 import path from "path";
 
 import DefaultConfigFolder from "@/DefaultConfigFolder";
-import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 import RepositoryList from "@/repository/RepositoryList";
 import { generateMonorepo } from "@/lib";
 import LocalRepositoryList from "@/repository/LocalRepositoryList";

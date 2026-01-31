@@ -1,4 +1,4 @@
-import NodePackage from "./package/NodePackage";
+import NodePackage from "../../package/NodePackage";
 
 /**
  * TODO: My dependency build order

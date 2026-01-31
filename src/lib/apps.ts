@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { IPackageInfo } from "./types";
-import NodePackage from "./package/NodePackage";
+import { IPackageInfo } from "../types";
+import NodePackage from "../package/NodePackage";
 
 /**
  * Read app package.json

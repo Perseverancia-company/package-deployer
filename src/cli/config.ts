@@ -3,7 +3,7 @@ import path from "path";
 import { Octokit } from "@octokit/rest";
 
 import DefaultConfigFolder from "@/DefaultConfigFolder";
-import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 
 /**
  * Configuration

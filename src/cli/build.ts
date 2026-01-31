@@ -3,7 +3,7 @@ import os from "os";
 import fsp from "fs/promises";
 import { inject } from "postject";
 
-import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 import { execPromise } from "@/lib";
 
 /**

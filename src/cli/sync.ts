@@ -1,6 +1,6 @@
 import { Octokit } from "@octokit/rest";
 
-import PackageDeployerConfiguration from "@/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 import RepositoryList from "@/repository/RepositoryList";
 
 /**
