@@ -19,6 +19,7 @@ import { generateMonorepo } from "./lib";
 import NPM from "./packageManager/NPM";
 import PNPM from "./packageManager/PNPM";
 import KhansDependencyGraph from "./graph/KhansDependencyGraph";
+import VerdaccioClient from "./lib/VerdaccioClient";
 
 export {
 	DEPLOYER_CONFIG_FILENAME,
@@ -32,6 +33,7 @@ export {
 	RepositoriesFolder,
 	Repository,
 	RepositoryList,
+	VerdaccioClient,
 	appsToNodePackages,
 	getAllApps,
 	getAllPackages,

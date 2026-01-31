@@ -43,6 +43,7 @@
 	"homepage": "https://github.com/FelixRiddle/package-deployer#readme",
 	"dependencies": {
 		"@octokit/rest": "^22.0.1",
+		"axios": "^1.13.4",
 		"dotenv": "^17.2.3",
 		"postject": "^1.0.0-alpha.6",
 		"simple-git": "^3.30.0",

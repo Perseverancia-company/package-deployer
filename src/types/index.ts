@@ -38,6 +38,8 @@ export interface IPackageDeployerConfiguration {
 	githubProfileUrl?: string;
 	// The github token of the user to clone the repositories
 	githubToken?: string;
+	// The package registry url
+	registryUrl?: string;
 }
 
 export interface RepositoryInfo {

@@ -70,6 +70,13 @@ export default class PackageDeployerConfiguration {
 	}
 
 	/**
+	 * Get registry url
+	 */
+	getRegistryUrl() {
+		return this.configuration.registryUrl;
+	}
+
+	/**
 	 * Set packages path
 	 */
 	setPackagesPath(packagesPath: string) {
@@ -91,11 +98,21 @@ export default class PackageDeployerConfiguration {
 	}
 
 	/**
+	 * Set registry url
+	 */
+	setRegistryUrl(registryUrl: string) {
+		this.configuration.registryUrl = registryUrl;
+	}
+
+	/**
 	 * Load default package deployer configuration
 	 */
 	static async loadDefaultPackageDeployerConfiguration() {
 		// File path
-		const filePath = path.join(process.cwd(), "defaultPackageDeployerConfiguration.yaml");
+		const filePath = path.join(
+			process.cwd(),
+			"defaultPackageDeployerConfiguration.yaml"
+		);
 
 		try {
 			// Read the file
