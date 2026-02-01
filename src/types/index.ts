@@ -2,6 +2,7 @@ import NPM from "@/packageManager/NPM";
 import PNPM from "@/packageManager/PNPM";
 
 export interface IPackageInfo {
+	private: boolean;
 	version: string;
 	packageName: string;
 	path: string;

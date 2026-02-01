@@ -48,8 +48,15 @@ Deploy all apps, including workspaces.
 
 The apps packages are installed, they are built and then published.
 
+If the registry credentials are set, it will be able to do an incremental deployment.
+That is, it will only update packages which have newer versions locally saving a lot of unnecessary work.
+The tested registries that work with this are:
+- Verdaccio
+
+If the flag `--ignore-apps` is set, then it will ignore all packages which have the `private` field in the package json set to true.
+
 ```bash
-pkgdep deploy
+pkgdep deploy --ignore-apps
 ```
 
 ## Print

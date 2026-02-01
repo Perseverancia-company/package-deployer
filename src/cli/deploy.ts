@@ -20,15 +20,23 @@ export default async function deployMain(
 	return yargs.command(
 		"deploy",
 		"Read a folder and deploy all packages",
-		(args: any) => {},
+		(yargs: any) => {
+			return yargs.option("ignore-apps", {
+				type: "boolean",
+				description:
+					"Ignore applications(to detect them, just whether the package is private is checked)",
+			});
+		},
 		async (args: any) => {
+			const ignoreApps = args.ignoreApps;
+
 			const registryUsername = config.getRegistryUsername();
 			const registryPassword = config.getRegistryPassword();
 			if (registryPassword && registryUsername) {
 				console.log(`Smart(Incremental) package deployment`);
 
 				// Get all packages at path
-				const packages = await getAllPackages(
+				const fetchPackages = await getAllPackages(
 					config.getPackagesPath(),
 					{
 						// Filter out those that aren't in the whitelist
@@ -42,6 +50,18 @@ export default async function deployMain(
 						),
 					}
 				);
+
+				// Filter out applications if the argument was given
+				const packages = fetchPackages.filter((pkg) => {
+					// Check if the user flagged ignore apps as true
+					if (ignoreApps) {
+						// Check if the package is private
+						return !pkg.private;
+					}
+
+					// Otherwise all of them can pass
+					return true;
+				});
 
 				// Get verdaccio url
 				const registryUrl = config.getRegistryUrl();
@@ -91,10 +111,14 @@ export default async function deployMain(
 					// Just get the package names
 					.map((pkg) => pkg.name);
 
+				// Convert fetch packages to node packages
+				// FIXME: The package json is loaded once when all packages are obtained
+				// and it is loaded again here.
+				const nodePackages = await appsToNodePackages(fetchPackages);
+
 				// Use the Graph to find "Transitive" dependents
 				// Even if App-B didn't change version, if Core-A (its dependency) changed,
 				// App-B needs a redeploy.
-				const nodePackages = await appsToNodePackages(packages);
 				const graph = new KhansDependencyGraph(nodePackages);
 				const finalBuildOrder = graph.getAffectedPackages(
 					directlyAffectedNames
