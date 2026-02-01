@@ -1,14 +1,15 @@
 import path from "path";
 import fsp from "fs/promises";
 import semver from "semver";
+import pc from "picocolors";
 
-import { appsToNodePackages, getAllPackages } from "../lib/apps";
 import PackageDeployerConfiguration from "./PackageDeployerConfiguration";
 import DefaultConfigFolder from "../configuration/DefaultConfigFolder";
 import { IRemotePackageInfo, ITaskDeploymentResult } from "../types";
 import KhansDependencyGraph from "@/graph/KhansDependencyGraph";
 import VerdaccioClient from "@/lib/VerdaccioClient";
 import NodePackage from "@/package/NodePackage";
+import NodePackageList from "@/package/NodePackageList";
 
 /**
  * Package deployer
@@ -16,7 +17,7 @@ import NodePackage from "@/package/NodePackage";
 export default class PackageDeployer {
 	config: PackageDeployerConfiguration;
 	remotePackages: Map<string, IRemotePackageInfo> = new Map();
-	nodePackages: Array<NodePackage> = [];
+	nodePackagesList: NodePackageList;
 	whitelist: Array<string> = [];
 
 	// When building ignore apps
@@ -30,12 +31,14 @@ export default class PackageDeployer {
 	 */
 	constructor(
 		config: PackageDeployerConfiguration,
+		nodePackages: NodePackageList,
 		options?: {
 			whitelist?: Array<string>;
 			ignoreApps?: boolean;
 		}
 	) {
 		this.config = config;
+		this.nodePackagesList = nodePackages;
 
 		// Set options
 		if (options) {
@@ -57,7 +60,29 @@ export default class PackageDeployer {
 	 * Call this only after fetching node packages
 	 */
 	getNodePackages() {
-		return this.nodePackages;
+		// Whitelisted packages
+		const whitelistedPackages =
+			this.config.configuration.repositoriesListing.use === "whitelist"
+				? this.nodePackagesList.getNodePackagesFolderNameWhitelisted(
+						this.config.getWhitelist()
+				  )
+				: this.nodePackagesList.getNodePackagesFolderNameBlacklisted(
+						this.config.getBlacklist()
+				  );
+
+		// Filter out applications if the argument was given
+		const packages = whitelistedPackages.filter((pkg) => {
+			// Check if the user flagged ignore apps as true
+			if (this.ignoreApps) {
+				// Check if the package is private
+				return !pkg.packageJson.private;
+			}
+
+			// Otherwise all of them can pass
+			return true;
+		});
+
+		return packages;
 	}
 
 	/**
@@ -65,50 +90,6 @@ export default class PackageDeployer {
 	 */
 	getRemotePackages() {
 		return this.remotePackages;
-	}
-
-	/**
-	 * Fetch node packages
-	 */
-	async fetchNodePackages() {
-		// If there's at least one package return that
-		if (this.nodePackages.length > 0) {
-			return this.nodePackages;
-		}
-
-		// Get all packages at path
-		const fetchPackages = await getAllPackages(
-			this.config.getPackagesPath(),
-			{
-				// Filter out those that aren't in the whitelist
-				blacklist: (
-					await fsp.readdir(this.config.getPackagesPath())
-				).filter((folderName) =>
-					this.config.configuration.repositoriesListing.use ===
-					"whitelist"
-						? !this.config.getWhitelist().includes(folderName)
-						: this.config.getBlacklist().includes(folderName)
-				),
-			}
-		);
-
-		// Filter out applications if the argument was given
-		const allPackages = fetchPackages.filter((pkg) => {
-			// Check if the user flagged ignore apps as true
-			if (this.ignoreApps) {
-				// Check if the package is private
-				return !pkg.private;
-			}
-
-			// Otherwise all of them can pass
-			return true;
-		});
-
-		// Create node packages class
-		const nodePackages = await appsToNodePackages(allPackages);
-		this.nodePackages = nodePackages;
-
-		return this.nodePackages;
 	}
 
 	/**
@@ -175,7 +156,7 @@ export default class PackageDeployer {
 	 * Deploy
 	 */
 	async deploy(customBuildOrder?: Array<NodePackage>) {
-		const nodePackages = await this.fetchNodePackages();
+		const nodePackages = this.getNodePackages();
 		const buildOrder = customBuildOrder
 			? customBuildOrder
 			: this.getBuildOrder();
@@ -220,10 +201,16 @@ export default class PackageDeployer {
 	 * This will ignore the given whitelist it will make its own
 	 */
 	async incrementalDeployment() {
-		const nodePackages = await this.fetchNodePackages();
-		const remotePackages = await this.fetchRemotePackages();
+		await this.fetchRemotePackages();
 
+		// Get incremental build order and if it's zero return
 		const incrementalBuildOrder = this.getIncrementalBuildOrder();
+		if (incrementalBuildOrder.length === 0) {
+			console.log(
+				pc.green("✅ All packages are up to date. Nothing to deploy.")
+			);
+			return;
+		}
 
 		// Final build order and whitelist
 		const whitelist = incrementalBuildOrder.map((pkg) => pkg.packageName);

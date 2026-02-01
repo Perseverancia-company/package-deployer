@@ -4,6 +4,7 @@ import LocalRepositoryList from "@/repository/LocalRepositoryList";
 import RepositoryList from "@/repository/RepositoryList";
 import { Octokit } from "@octokit/rest";
 import { PackageDeployer } from "..";
+import NodePackageList from "@/package/NodePackageList";
 
 /**
  * Update things
@@ -41,6 +42,11 @@ export default async function updateMain(
 			);
 			await repositories.pullIfNewer();
 
+			// Get package list
+			const packageList = await NodePackageList.fromPackagesPath(
+				config.getPackagesPath()
+			);
+
 			// Deploy all packages
 			const registryUsername = config.getRegistryUsername();
 			const registryPassword = config.getRegistryPassword();
@@ -48,7 +54,7 @@ export default async function updateMain(
 				console.log(`Smart(Incremental) package deployment`);
 
 				// Package deployer
-				const pkgDeployer = new PackageDeployer(config);
+				const pkgDeployer = new PackageDeployer(config, packageList);
 				await pkgDeployer.incrementalDeployment();
 			} else {
 				console.log(
@@ -57,7 +63,7 @@ export default async function updateMain(
 					`are incremental, and you don't re-build what you already had.`
 				);
 				// Initialize package deployer and deploy all
-				const pkgDeployer = new PackageDeployer(config);
+				const pkgDeployer = new PackageDeployer(config, packageList);
 				await pkgDeployer.deploy();
 			}
 		}
