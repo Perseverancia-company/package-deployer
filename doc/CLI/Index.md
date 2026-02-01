@@ -18,6 +18,18 @@ Set github token
 pkgdep config set --github-token GITHUB_TOKEN
 ```
 
+Set registry username and password
+
+```bash
+pkgdep config set --registry-username USERNAME --registry-password PASSWORD
+```
+
+Set registry url
+
+```bash
+pkgdep config set --registry-url URL
+```
+
 Set github user link
 
 ```bash
@@ -27,7 +39,7 @@ pkgdep config set --github-user-url GITHUB_USER_URL
 Blacklist
 
 ```bash
-pkgdep config blacklist --name PACKAGE_NAME --add 
+pkgdep config blacklist --name PACKAGE_NAME --add
 ```
 
 ## Deployment
@@ -93,9 +105,10 @@ pkgdep repositories combine
 Set preferred configuration to all repositories
 
 What this does is:
-- Set the default url as a push url
-- Set a local path as a push url(if it exists)
-The repository in the local path are checked at "/srv/git/user/Javascript/{REPO_NAME}.git"
+
+-   Set the default url as a push url
+-   Set a local path as a push url(if it exists)
+    The repository in the local path are checked at "/srv/git/user/Javascript/{REPO_NAME}.git"
 
 ```bash
 pkgdep repositories local-config --preferred-configuration

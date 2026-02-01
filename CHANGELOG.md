@@ -5,13 +5,14 @@
 Added
 
 -   Package manager abstract class
--   NPM class
--   PNPM class
+    -   NPM class
+    -   PNPM class
 -   Pull all repositories if they are newer
 -   Update command
     -   Update repository information
     -   Update all repositories if the remote is newer
-	-	Update all packages
+    -   Update all packages
+-   Incremental package updates
 
 ## 2.10.0
 
