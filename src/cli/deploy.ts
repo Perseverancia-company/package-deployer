@@ -25,6 +25,8 @@ export default async function deployMain(
 			const registryUsername = config.getRegistryUsername();
 			const registryPassword = config.getRegistryPassword();
 			if (registryPassword && registryUsername) {
+				console.log(`Smart(Incremental) package deployment`);
+
 				// Get all packages at path
 				const packages = await getAllPackages(
 					config.getPackagesPath(),

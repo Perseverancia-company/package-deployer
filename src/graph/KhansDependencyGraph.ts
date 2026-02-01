@@ -172,14 +172,67 @@ export default class KhansDependencyGraph {
 	/**
 	 * Handle circular dependency
 	 */
-	private handleCircularDependency(sorted: NodePackage[]): never {
+	private handleCircularDependency(sorted: NodePackage[]) {
+		return this.detectCircularDependency(sorted);
+	}
+
+	/**
+	 * Detect circular dependency
+	 */
+	private detectCircularDependency(sorted: NodePackage[]): never {
 		const sortedNames = new Set(sorted.map((p) => p.packageName));
-		const offenders = this.nodePackages
-			.filter((p) => !sortedNames.has(p.packageName))
-			.map((p) => p.packageName);
+		const nodesInCycles = this.nodePackages.filter(
+			(p) => !sortedNames.has(p.packageName)
+		);
+
+		// We will use DFS to find the specific path of the cycle
+		const visited = new Set<string>();
+		const stack = new Set<string>();
+		const path: Array<string> = [];
+
+		// Find the cycles
+		const findCycle = (node: string): Array<string> | null => {
+			visited.add(node);
+			stack.add(node);
+			path.push(node);
+
+			const neighbors = this.adj.get(node) || new Set();
+			for (const neighbor of neighbors) {
+				if (stack.has(neighbor)) {
+					// Cycle found! Return the path from the neighbor onwards
+					const cycleStartIdx = path.indexOf(neighbor);
+					return [...path.slice(cycleStartIdx), neighbor];
+				}
+
+				if (!visited.has(neighbor)) {
+					const result = findCycle(neighbor);
+					if (result) {
+						return result;
+					}
+				}
+			}
+
+			stack.delete(node);
+			path.pop();
+			return null;
+		};
+
+		let specificCycle: Array<string> | null = null;
+		for (const pkg of nodesInCycles) {
+			specificCycle = findCycle(pkg.packageName);
+			if (specificCycle) {
+				break;
+			}
+		}
+
+		const cycleStr = specificCycle
+			? specificCycle.join(" ➔ ")
+			: nodesInCycles.map((p) => p.packageName).join(", ");
 
 		throw new Error(
-			`Circular dependency detected in workspace: ${offenders.join(", ")}`
+			`FATAL: Circular dependency detected!\n` +
+				`Trace: ${cycleStr}\n` +
+				`Check the 'package.json' files of these packages and remove the recursive link.`
 		);
 	}
 }
