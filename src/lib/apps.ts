@@ -44,6 +44,7 @@ export async function getAppInfo(appPath: string) {
 	const appName = path.basename(appPath);
 
 	return {
+		version: packageJson.version,
 		packageName,
 		name: appName,
 		path: appPath,

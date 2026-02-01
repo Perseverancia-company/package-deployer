@@ -70,10 +70,24 @@ export default class PackageDeployerConfiguration {
 	}
 
 	/**
+	 * Get registry password
+	 */
+	getRegistryPassword() {
+		return this.configuration.registryPassword;
+	}
+
+	/**
 	 * Get registry url
 	 */
 	getRegistryUrl() {
 		return this.configuration.registryUrl;
+	}
+
+	/**
+	 * Get registry username
+	 */
+	getRegistryUsername() {
+		return this.configuration.registryUsername;
 	}
 
 	/**
@@ -98,10 +112,24 @@ export default class PackageDeployerConfiguration {
 	}
 
 	/**
+	 * Set registry password
+	 */
+	setRegistryPassword(password: string) {
+		this.configuration.registryPassword = password;
+	}
+
+	/**
 	 * Set registry url
 	 */
 	setRegistryUrl(registryUrl: string) {
 		this.configuration.registryUrl = registryUrl;
+	}
+
+	/**
+	 * Set registry username
+	 */
+	setRegistryUsername(username: string) {
+		this.configuration.registryUsername = username;
 	}
 
 	/**

@@ -4,6 +4,7 @@ import fs from "fs";
 import os from "os";
 
 interface PackageInfo {
+	version: string;
 	name: string;
 	description: string;
 	[key: string]: any;

@@ -2,6 +2,7 @@ import NPM from "@/packageManager/NPM";
 import PNPM from "@/packageManager/PNPM";
 
 export interface IPackageInfo {
+	version: string;
 	packageName: string;
 	path: string;
 	name: string;
@@ -38,8 +39,13 @@ export interface IPackageDeployerConfiguration {
 	githubProfileUrl?: string;
 	// The github token of the user to clone the repositories
 	githubToken?: string;
+	
+	// Registry
 	// The package registry url
 	registryUrl?: string;
+	// Username and password
+	registryUsername?: string;
+	registryPassword?: string;
 }
 
 export interface RepositoryInfo {
