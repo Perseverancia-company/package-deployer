@@ -1,6 +1,19 @@
 import NPM from "@/packageManager/NPM";
 import PNPM from "@/packageManager/PNPM";
 
+/**
+ * Remote package info
+ */
+export interface IRemotePackageInfo {
+	version: string;
+	name: string;
+	description: string;
+	[key: string]: any;
+}
+
+/**
+ * Package info
+ */
 export interface IPackageInfo {
 	private: boolean;
 	version: string;
@@ -40,7 +53,7 @@ export interface IPackageDeployerConfiguration {
 	githubProfileUrl?: string;
 	// The github token of the user to clone the repositories
 	githubToken?: string;
-	
+
 	// Registry
 	// The package registry url
 	registryUrl?: string;

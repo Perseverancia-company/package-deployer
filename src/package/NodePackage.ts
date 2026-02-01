@@ -11,15 +11,16 @@ import PNPM from "@/packageManager/PNPM";
  */
 export default class NodePackage {
 	path: string;
+	version: string;
 	packageJson: any;
 	packageName: string;
 	name: string;
 
 	/**
 	 * Constructor
-	 * 
-	 * @param appPath 
-	 * @param packageJson 
+	 *
+	 * @param appPath
+	 * @param packageJson
 	 */
 	constructor(appPath: string, packageJson: any) {
 		this.path = appPath;
@@ -30,6 +31,8 @@ export default class NodePackage {
 		if (!this.packageName) {
 			console.warn(`Package at ${this.path} doesn't has a name!`);
 		}
+
+		this.version = packageJson.version;
 
 		this.name = path.basename(appPath);
 	}

@@ -2,13 +2,7 @@ import axios from "axios";
 import path from "path";
 import fs from "fs";
 import os from "os";
-
-interface PackageInfo {
-	version: string;
-	name: string;
-	description: string;
-	[key: string]: any;
-}
+import { IRemotePackageInfo } from "@/types";
 
 /**
  * Verdaccio Client Class
@@ -20,7 +14,7 @@ export default class VerdaccioClient {
 	private username: string;
 	private password: string;
 	credentials: string;
-	packages?: PackageInfo[];
+	packages?: IRemotePackageInfo[];
 
 	/**
 	 * Constructor
@@ -92,7 +86,7 @@ export default class VerdaccioClient {
 			// console.log("Retrieved all packages, packages: ", response.data);
 			console.log(`Retrieved all packages`);
 			return response.data as {
-				[key: string]: PackageInfo;
+				[key: string]: IRemotePackageInfo;
 			};
 		} catch (error: any) {
 			console.error(`Error getting packages: `, error);
