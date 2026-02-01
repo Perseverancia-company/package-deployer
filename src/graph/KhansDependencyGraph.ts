@@ -34,6 +34,37 @@ export default class KhansDependencyGraph {
 	}
 
 	/**
+	 * Get affected packages
+	 *
+	 * Get packages that are about to be affected by updating the version of their dependencies.
+	 */
+	public getAffectedPackages(
+		changedNames: Array<string>
+	): Array<NodePackage> {
+		const affected = new Set<string>(changedNames);
+		let sizeBefore: number;
+
+		// Keep expanding the set until no more dependents are found
+		do {
+			sizeBefore = affected.size;
+
+			for (const pkg of this.nodePackages) {
+				const deps = this.getUniqueWorkspaceDeps(pkg);
+				for (const dep of deps) {
+					if (affected.has(dep)) {
+						affected.add(pkg.packageName);
+					}
+				}
+			}
+		} while (affected.size > sizeBefore);
+
+		// Return the affected ones in the correct build order
+		return this.getBuildOrder().filter((pkg) =>
+			affected.has(pkg.packageName)
+		);
+	}
+
+	/**
 	 * Initialize nodes
 	 */
 	private initializeNodes(): void {

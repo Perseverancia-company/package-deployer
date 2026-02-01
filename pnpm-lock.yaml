@@ -20,6 +20,9 @@ importers:
       postject:
         specifier: ^1.0.0-alpha.6
         version: 1.0.0-alpha.6
+      semver:
+        specifier: ^7.7.3
+        version: 7.7.3
       simple-git:
         specifier: ^3.30.0
         version: 3.30.0
@@ -33,6 +36,9 @@ importers:
       '@types/node':
         specifier: ^24.0.0
         version: 24.10.9
+      '@types/semver':
+        specifier: ^7.7.1
+        version: 7.7.1
       '@types/yargs':
         specifier: ^17.0.35
         version: 17.0.35
@@ -406,6 +412,9 @@ packages:
   '@types/node@24.10.9':
     resolution: {integrity: sha512-ne4A0IpG3+2ETuREInjPNhUGis1SFjv1d5asp8MzEAGtOZeTeHVDOYqOgqfhvseqg/iXty2hjBf1zAOb7RNiNw==}
 
+  '@types/semver@7.7.1':
+    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
+
   '@types/yargs-parser@21.0.3':
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
 
@@ -698,6 +707,11 @@ packages:
   rollup@4.57.1:
     resolution: {integrity: sha512-oQL6lgK3e2QZeQ7gcgIkS2YZPg5slw37hYufJ3edKlfQSGGm8ICoxswK15ntSzF/a8+h7ekRy7k7oWc3BQ7y8A==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
+    hasBin: true
+
+  semver@7.7.3:
+    resolution: {integrity: sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==}
+    engines: {node: '>=10'}
     hasBin: true
 
   simple-git@3.30.0:
@@ -1045,6 +1059,8 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
+  '@types/semver@7.7.1': {}
+
   '@types/yargs-parser@21.0.3': {}
 
   '@types/yargs@17.0.35':
@@ -1332,6 +1348,8 @@ snapshots:
       '@rollup/rollup-win32-x64-gnu': 4.57.1
       '@rollup/rollup-win32-x64-msvc': 4.57.1
       fsevents: 2.3.3
+
+  semver@7.7.3: {}
 
   simple-git@3.30.0:
     dependencies:

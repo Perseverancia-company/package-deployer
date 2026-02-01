@@ -1,5 +1,12 @@
+import semver from "semver";
 import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
-import { getAllPackages, PackageDeployer, VerdaccioClient } from "..";
+import {
+	appsToNodePackages,
+	getAllPackages,
+	KhansDependencyGraph,
+	PackageDeployer,
+	VerdaccioClient,
+} from "..";
 
 /**
  * Deploy all packages
@@ -51,7 +58,7 @@ export default async function deployMain(
 				);
 
 				// The new whitelist will be the new packages
-				const whitelist = packages
+				const directlyAffectedNames = packages
 					.filter((pkg) => {
 						// Get the remote package info
 						const remotePkgInfo = remotePkgMap.get(pkg.name);
@@ -62,10 +69,22 @@ export default async function deployMain(
 						}
 
 						// Simple check, check if both versions differ
-						return remotePkgInfo.version !== pkg.version;
+						return semver.gt(pkg.version, remotePkgInfo.version);
 					})
 					// Just get the package names
 					.map((pkg) => pkg.name);
+
+				// Use the Graph to find "Transitive" dependents
+				// Even if App-B didn't change version, if Core-A (its dependency) changed,
+				// App-B needs a redeploy.
+				const nodePackages = await appsToNodePackages(packages);
+				const graph = new KhansDependencyGraph(nodePackages);
+				const finalBuildOrder = graph.getAffectedPackages(
+					directlyAffectedNames
+				);
+
+				// Final whitelist
+				const whitelist = finalBuildOrder.map((pkg) => pkg.name);
 
 				// Initialize package deployer and deploy all
 				const pkgDeployer = new PackageDeployer(config, whitelist);
