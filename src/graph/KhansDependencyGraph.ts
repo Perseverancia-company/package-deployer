@@ -142,7 +142,7 @@ export default class KhansDependencyGraph {
 
 		while (queue.length > 0) {
 			const pkg = queue.shift()!;
-			sorted.push();
+			sorted.push(pkg);
 
 			// Get package dependents
 			const dependents = this.adj.get(pkg.packageName);
