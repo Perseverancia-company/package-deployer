@@ -12,14 +12,19 @@ import KhansDependencyGraph from "@/graph/KhansDependencyGraph";
  */
 export default class PackageDeployer {
 	config: PackageDeployerConfiguration;
+	whitelist: Array<string> = [];
 
 	/**
 	 * Package deployer constructor
 	 *
 	 * @param config
 	 */
-	constructor(config: PackageDeployerConfiguration) {
+	constructor(
+		config: PackageDeployerConfiguration,
+		whitelist?: Array<string>
+	) {
 		this.config = config;
+		this.whitelist = whitelist ? whitelist : [];
 	}
 
 	/**
@@ -33,12 +38,22 @@ export default class PackageDeployer {
 
 		// Create node packages class
 		const nodePackages = await appsToNodePackages(allPackages);
+		
+		// Get the dependency graph
 		const dependencyGraph = new KhansDependencyGraph(nodePackages);
 		const buildOrder = dependencyGraph.getBuildOrder();
+		
+		// Filter out those that aren't in the whitelist
+		const finalBuildOrder =
+			this.whitelist.length > 0
+				? buildOrder.filter((pkg) =>
+						this.whitelist.includes(pkg.packageName)
+				  )
+				: buildOrder;
 
 		// Deploy all packages
 		const packageDeploymentResult: Array<ITaskDeploymentResult> = [];
-		for (const nodePackage of buildOrder) {
+		for (const nodePackage of finalBuildOrder) {
 			try {
 				await nodePackage.install();
 				await nodePackage.build();
