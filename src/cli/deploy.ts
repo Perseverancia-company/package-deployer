@@ -1,4 +1,6 @@
 import semver from "semver";
+import fsp from "fs/promises";
+
 import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 import {
 	appsToNodePackages,
@@ -23,8 +25,21 @@ export default async function deployMain(
 			const registryUsername = config.getRegistryUsername();
 			const registryPassword = config.getRegistryPassword();
 			if (registryPassword && registryUsername) {
-				// Get packages
-				const packages = await getAllPackages(config.getPackagesPath());
+				// Get all packages at path
+				const packages = await getAllPackages(
+					config.getPackagesPath(),
+					{
+						// Filter out those that aren't in the whitelist
+						blacklist: (
+							await fsp.readdir(config.getPackagesPath())
+						).filter((folderName) =>
+							config.configuration.repositoriesListing.use ===
+							"whitelist"
+								? !config.getWhitelist().includes(folderName)
+								: config.getBlacklist().includes(folderName)
+						),
+					}
+				);
 
 				// Get verdaccio url
 				const registryUrl = config.getRegistryUrl();
@@ -89,6 +104,8 @@ export default async function deployMain(
 				// Initialize package deployer and deploy all
 				const pkgDeployer = new PackageDeployer(config, whitelist);
 				await pkgDeployer.deploy();
+
+				console.log(`🚀 Packages to deploy: ${whitelist.join(", ")}`);
 			} else {
 				console.log(
 					`No registry password nor username, defaulting to deploying all at once.\n`,
