@@ -37,6 +37,6 @@ Would serve as a dry run to check if the blacklist works
 
 -   [ ] Smart deployment
 
-    -   [ ] Get newer packages list
+    -   [x] Get newer packages list
     -   [ ] Get packages that depend on the newer packages list
-    -   [ ] Update newer packages and dependent on newer packages, build and publish them
+    -   [x] Update newer packages and dependent on newer packages, build and publish them

@@ -106,6 +106,14 @@ export default async function configurationMain(
 							.option("registry-url", {
 								type: "string",
 								description: "Set registry url",
+							})
+							.option("registry-username", {
+								type: "string",
+								description: "Set registry username",
+							})
+							.option("registry-password", {
+								type: "string",
+								description: "Set registry password",
 							});
 					},
 					async (args: any) => {
@@ -123,9 +131,20 @@ export default async function configurationMain(
 						if (args.githubUserLink) {
 							config.setGithubUserUrl(args.githubUserLink);
 						}
-						
+
 						// Set registry url
-						if(args.registryUrl) {
+						if (args.registryUrl) {
+							config.setRegistryUrl(args.registryUrl);
+						}
+
+						// Set registry username
+						if (args.registryUsername) {
+							config.setRegistryUsername(args.registryUsername);
+						}
+
+						// Set registry password
+						if (args.registryPassword) {
+							config.setRegistryPassword(args.registryPassword);
 						}
 
 						await config.save(DefaultConfigFolder.getPath());
