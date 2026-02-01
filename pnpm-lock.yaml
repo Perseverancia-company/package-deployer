@@ -17,6 +17,9 @@ importers:
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3
+      picocolors:
+        specifier: ^1.1.1
+        version: 1.1.1
       postject:
         specifier: ^1.0.0-alpha.6
         version: 1.0.0-alpha.6

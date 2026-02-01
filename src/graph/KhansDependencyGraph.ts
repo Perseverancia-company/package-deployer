@@ -1,3 +1,5 @@
+import pc from "picocolors";
+
 import NodePackage from "@/package/NodePackage";
 
 /**
@@ -225,14 +227,27 @@ export default class KhansDependencyGraph {
 			}
 		}
 
-		const cycleStr = specificCycle
-			? specificCycle.join(" ➔ ")
-			: nodesInCycles.map((p) => p.packageName).join(", ");
-
-		throw new Error(
-			`FATAL: Circular dependency detected!\n` +
-				`Trace: ${cycleStr}\n` +
-				`Check the 'package.json' files of these packages and remove the recursive link.`
+		console.error(
+			pc.red(
+				pc.bold(
+					"\n❌ FATAL: Circular dependency detected in Perseverancia!"
+				)
+			)
 		);
+		if (specificCycle) {
+			console.error(
+				pc.yellow(`Trace: ${pc.cyan(specificCycle.join(" ➔ "))}`)
+			);
+		} else {
+			console.error(
+				pc.yellow(
+					`Unsortable packages: ${nodesInCycles
+						.map((p) => p.packageName)
+						.join(", ")}`
+				)
+			);
+		}
+
+		throw new Error("Build halted due to circular dependencies.");
 	}
 }
