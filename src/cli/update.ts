@@ -3,7 +3,6 @@ import LocalRepositories from "@/repository/LocalRepositories";
 import LocalRepositoryList from "@/repository/LocalRepositoryList";
 import RepositoryList from "@/repository/RepositoryList";
 import { Octokit } from "@octokit/rest";
-import yargs from "yargs";
 import { PackageDeployer } from "..";
 
 /**
@@ -12,7 +11,7 @@ import { PackageDeployer } from "..";
 export default async function updateMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
-	octokit: Octokit,
+	octokit: Octokit
 ) {
 	return yargs.command(
 		"update",
@@ -24,7 +23,7 @@ export default async function updateMain(
 			// Get(locally) or fetch(from github) repository list
 			const repositoryList = await RepositoryList.sync(
 				RepositoryList.defaultConfigurationFile(),
-				octokit,
+				octokit
 			);
 
 			// Save
@@ -32,19 +31,35 @@ export default async function updateMain(
 
 			// Read all the repositories at the path
 			const localRepositories = await LocalRepositoryList.fromPath(
-				config.getPackagesPath(),
+				config.getPackagesPath()
 			);
 
 			// Pull all the repositories if they are newer on the remote
 			const repositories = new LocalRepositories(
 				config.getPackagesPath(),
-				localRepositories,
+				localRepositories
 			);
 			await repositories.pullIfNewer();
 
-			// Initialize package deployer and deploy all
-			const pkgDeployer = new PackageDeployer(config);
-			await pkgDeployer.deploy();
-		},
+			// Deploy all packages
+			const registryUsername = config.getRegistryUsername();
+			const registryPassword = config.getRegistryPassword();
+			if (registryPassword && registryUsername) {
+				console.log(`Smart(Incremental) package deployment`);
+
+				// Package deployer
+				const pkgDeployer = new PackageDeployer(config);
+				await pkgDeployer.incrementalDeployment();
+			} else {
+				console.log(
+					`No registry password nor username, defaulting to deploying all at once.\n`,
+					`Make sure you set the registry username and password so that updates\n`,
+					`are incremental, and you don't re-build what you already had.`
+				);
+				// Initialize package deployer and deploy all
+				const pkgDeployer = new PackageDeployer(config);
+				await pkgDeployer.deploy();
+			}
+		}
 	);
 }
