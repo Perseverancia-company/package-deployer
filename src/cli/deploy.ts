@@ -45,16 +45,20 @@ export default async function deployMain(
 					})
 				);
 
+				// Remote package map for O(1) lookups
+				const remotePkgMap = new Map(
+					remotePackages.map((pkg) => [pkg.name, pkg])
+				);
+
 				// The new whitelist will be the new packages
 				const whitelist = packages
 					.filter((pkg) => {
 						// Get the remote package info
-						const remotePkgInfo = remotePackages.find(
-							(pkgInfo) => pkgInfo.name === pkg.name
-						);
+						const remotePkgInfo = remotePkgMap.get(pkg.name);
 
+						// The package is not deployed
 						if (!remotePkgInfo) {
-							return false;
+							return true;
 						}
 
 						// Simple check, check if both versions differ
