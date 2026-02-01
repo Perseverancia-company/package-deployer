@@ -1,6 +1,7 @@
 import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 import { PackageDeployer } from "..";
 import NodePackageList from "@/package/NodePackageList";
+import RemotePackageList from "@/package/RemotePackageList";
 
 /**
  * Deploy all packages
@@ -34,15 +35,27 @@ export default async function deployMain(
 				config.getPackagesPath()
 			);
 
+			// Remote package list
+			const remotePackageList =
+				await RemotePackageList.fetchRemotePackages(
+					config,
+					packageList
+				);
+
 			const registryUsername = config.getRegistryUsername();
 			const registryPassword = config.getRegistryPassword();
 			if (registryPassword && registryUsername && incrementalEnabled) {
 				console.log(`Smart(Incremental) package deployment`);
 
 				// Package deployer
-				const pkgDeployer = new PackageDeployer(config, packageList, {
-					ignoreApps,
-				});
+				const pkgDeployer = new PackageDeployer(
+					config,
+					packageList,
+					remotePackageList,
+					{
+						ignoreApps,
+					}
+				);
 				await pkgDeployer.incrementalDeployment();
 			} else {
 				console.log(
@@ -51,9 +64,14 @@ export default async function deployMain(
 					`are incremental, and you don't re-build what you already had.`
 				);
 				// Initialize package deployer and deploy all
-				const pkgDeployer = new PackageDeployer(config, packageList, {
-					ignoreApps,
-				});
+				const pkgDeployer = new PackageDeployer(
+					config,
+					packageList,
+					remotePackageList,
+					{
+						ignoreApps,
+					}
+				);
 				await pkgDeployer.deploy();
 			}
 		}

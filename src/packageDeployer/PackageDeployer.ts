@@ -7,16 +7,16 @@ import PackageDeployerConfiguration from "./PackageDeployerConfiguration";
 import DefaultConfigFolder from "../configuration/DefaultConfigFolder";
 import { IRemotePackageInfo, ITaskDeploymentResult } from "../types";
 import KhansDependencyGraph from "@/graph/KhansDependencyGraph";
-import VerdaccioClient from "@/lib/VerdaccioClient";
 import NodePackage from "@/package/NodePackage";
 import NodePackageList from "@/package/NodePackageList";
+import RemotePackageList from "@/package/RemotePackageList";
 
 /**
  * Package deployer
  */
 export default class PackageDeployer {
 	config: PackageDeployerConfiguration;
-	remotePackages: Map<string, IRemotePackageInfo> = new Map();
+	remotePackageList: RemotePackageList;
 	nodePackagesList: NodePackageList;
 	whitelist: Array<string> = [];
 
@@ -32,6 +32,7 @@ export default class PackageDeployer {
 	constructor(
 		config: PackageDeployerConfiguration,
 		nodePackages: NodePackageList,
+		remotePackageList: RemotePackageList,
 		options?: {
 			whitelist?: Array<string>;
 			ignoreApps?: boolean;
@@ -39,6 +40,7 @@ export default class PackageDeployer {
 	) {
 		this.config = config;
 		this.nodePackagesList = nodePackages;
+		this.remotePackageList = remotePackageList;
 
 		// Set options
 		if (options) {
@@ -89,7 +91,7 @@ export default class PackageDeployer {
 	 * Get remote packages
 	 */
 	getRemotePackages() {
-		return this.remotePackages;
+		return this.remotePackageList.getPackages();
 	}
 
 	/**
@@ -116,6 +118,7 @@ export default class PackageDeployer {
 	}
 
 	/**
+	 * TODO: Has to be removed from this class
 	 * Get incremental build order
 	 *
 	 * Make sure both, node packages and remote packages were fetch.
@@ -156,7 +159,6 @@ export default class PackageDeployer {
 	 * Deploy
 	 */
 	async deploy(customBuildOrder?: Array<NodePackage>) {
-		const nodePackages = this.getNodePackages();
 		const buildOrder = customBuildOrder
 			? customBuildOrder
 			: this.getBuildOrder();
@@ -196,13 +198,12 @@ export default class PackageDeployer {
 	}
 
 	/**
+	 * TODO: Has to be removed from this class
 	 * Incremental deployment
 	 *
 	 * This will ignore the given whitelist it will make its own
 	 */
 	async incrementalDeployment() {
-		await this.fetchRemotePackages();
-
 		// Get incremental build order and if it's zero return
 		const incrementalBuildOrder = this.getIncrementalBuildOrder();
 		if (incrementalBuildOrder.length === 0) {
@@ -236,56 +237,5 @@ export default class PackageDeployer {
 		return await fsp.writeFile(filePath, JSON.stringify(deploymentResult), {
 			encoding: "utf-8",
 		});
-	}
-
-	/**
-	 * Fetch remote packages
-	 */
-	async fetchRemotePackages() {
-		// Get verdaccio url
-		const [registryUrl, registryUsername, registryPassword] = [
-			this.config.getRegistryUrl(),
-			this.config.getRegistryUsername(),
-			this.config.getRegistryPassword(),
-		];
-		const verdaccioUrl = registryUrl
-			? registryUrl
-			: "http://localhost:4873";
-
-		if (!registryUsername) {
-			throw new Error(
-				"Registry username is not set, cannot do incremental build."
-			);
-		}
-
-		if (!registryPassword) {
-			throw new Error(
-				"Registry password is not set, cannot do incremental build."
-			);
-		}
-
-		// We use verdaccio to get the remote packages
-		const verdaccioClient = new VerdaccioClient(
-			verdaccioUrl,
-			registryUsername,
-			registryPassword
-		);
-		const remotePackagesList = await verdaccioClient.getAllPackages();
-		const remotePackagesObjects = Object.values(remotePackagesList);
-
-		// Remove packages that aren't on the 'packages' array
-		const remotePkgs = remotePackagesObjects.filter((pkg) =>
-			this.getNodePackages().some((localPkg) => {
-				return pkg.name === localPkg.packageName;
-			})
-		);
-
-		// Remote package map for O(1) lookups
-		const remotePackages = new Map(
-			remotePkgs.map((pkg) => [pkg.name, pkg])
-		);
-
-		this.remotePackages = remotePackages;
-		return this.remotePackages;
 	}
 }
