@@ -54,9 +54,12 @@ export default class RemotePackageList {
 		const remotePackagesList = await verdaccioClient.getAllPackages();
 		const remotePackagesObjects = Object.values(remotePackagesList);
 
+		// Local packages
+		const localPackages = nodePackages.getNodePackages();
+
 		// Remove packages that aren't on the 'packages' array
 		const remotePkgs = remotePackagesObjects.filter((pkg) =>
-			nodePackages.getNodePackages().some((localPkg) => {
+			localPackages.some((localPkg) => {
 				return pkg.name === localPkg.packageName;
 			})
 		);
