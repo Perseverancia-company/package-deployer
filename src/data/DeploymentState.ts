@@ -100,12 +100,8 @@ export default class DeploymentState {
 		const data = stringify(this.deploymentState);
 
 		// Save as json
-		return await fsp.writeFile(
-			DeploymentState.filePath(),
-			JSON.stringify(data),
-			{
-				encoding: "utf-8",
-			}
-		);
+		return await fsp.writeFile(DeploymentState.filePath(), data, {
+			encoding: "utf-8",
+		});
 	}
 }
