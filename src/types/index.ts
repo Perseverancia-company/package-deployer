@@ -24,6 +24,9 @@ export interface IPackageInfo {
 
 export type PackageManagerEngine = NPM | PNPM;
 
+/**
+ * Deployment result
+ */
 export interface ITaskDeploymentResult {
 	packageName: string;
 	version: string;
