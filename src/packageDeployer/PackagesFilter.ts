@@ -52,6 +52,7 @@ export default class PackagesFilter {
 		const filteredPackages = this.localNodePackages
 			.getNodePackages()
 			.filter((pkg) =>
+				// Configuration whitelist/blacklist uses repositories/folder names
 				this.config.configuration.repositoriesListing.use ===
 				"whitelist"
 					? this.config.getWhitelist().includes(pkg.name)
@@ -79,7 +80,8 @@ export default class PackagesFilter {
 	 * The result of incremental build, can leave gaps between packages
 	 */
 	public getIncrementalBuildOrder(): Array<NodePackage> {
-		const directlyAffected = this.filterByConfiguration().filter((pkg) => {
+		const filteredPackages = this.filterByConfiguration();
+		const directlyAffected = filteredPackages.filter((pkg) => {
 			// Get remote package
 			const remote = this.remotePackageList
 				.getPackages()

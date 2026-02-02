@@ -76,15 +76,14 @@ export default class VerdaccioClient {
 	 */
 	async getAllPackages() {
 		try {
-			const response = await axios.get(`${this.url}/all`, {
+			const response = await axios.get(`${this.url}/-/all`, {
 				headers: {
 					Authorization: `Basic ${this.credentials}`,
 					"Content-Type": "application/json",
 				},
 			});
-
-			// console.log("Retrieved all packages, packages: ", response.data);
-			console.log(`Retrieved all packages`);
+			
+			console.log("Retrieved all packages, packages: ", response.data);
 			return response.data as {
 				[key: string]: IRemotePackageInfo;
 			};

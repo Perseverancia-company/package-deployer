@@ -4,6 +4,7 @@ import RepositoryList from "@/repository/RepositoryList";
 import { Octokit } from "@octokit/rest";
 
 import { appsToNodePackages, getAllApps } from "@/lib/apps";
+import getVerdaccioFromConfiguration from "@/lib/verdaccio";
 
 /**
  * Print things
@@ -33,6 +34,11 @@ export default async function printMain(
 				.option("user-repositories", {
 					type: "boolean",
 					description: "Print user repositories",
+				})
+				.option("remote-packages", {
+					type: "boolean",
+					description:
+						"Print remote packages like verdaccio for instance(will try to print them all)",
 				});
 		},
 		async (args: any) => {
@@ -49,7 +55,7 @@ export default async function printMain(
 					blacklist: config.getBlacklist(),
 				});
 				const nodePackages = await appsToNodePackages(allPackages);
-				
+
 				// Calculate the build order
 				const dependencyGraph = new KhansDependencyGraph(nodePackages);
 				console.log(`Build order: `, dependencyGraph.getBuildOrder());
@@ -70,6 +76,14 @@ export default async function printMain(
 					`Repository list: \n`,
 					repositoryList.getRepositories()
 				);
+			}
+			
+			if(args.printRemotePackages) {
+				// Get packages
+				const verdaccioClient = await getVerdaccioFromConfiguration(config);
+				const packages = await verdaccioClient.getAllPackages();
+				
+				console.log(`Remote packages: `, packages);
 			}
 		}
 	);
