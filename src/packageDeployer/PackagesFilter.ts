@@ -12,7 +12,7 @@ import NodePackage from "@/package/NodePackage";
 export default class PackagesFilter {
 	config: PackageDeployerConfiguration;
 	localNodePackages: NodePackageList;
-	remotePackageList: RemotePackageList;
+	deployedPackages: Map<string, { version: string }>;
 
 	// Whether to ignore applications
 	ignoreApps: boolean = false;
@@ -20,14 +20,14 @@ export default class PackagesFilter {
 	constructor(
 		packageDeployerConfiguration: PackageDeployerConfiguration,
 		localNodePackages: NodePackageList,
-		remotePackageList: RemotePackageList,
+		deployedPackages: Map<string, { version: string }>,
 		options?: {
 			ignoreApps: boolean;
 		}
 	) {
 		this.config = packageDeployerConfiguration;
 		this.localNodePackages = localNodePackages;
-		this.remotePackageList = remotePackageList;
+		this.deployedPackages = deployedPackages;
 
 		if (options) {
 			if (options.ignoreApps) {
@@ -83,9 +83,7 @@ export default class PackagesFilter {
 		const filteredPackages = this.filterByConfiguration();
 		const directlyAffected = filteredPackages.filter((pkg) => {
 			// Get remote package
-			const remote = this.remotePackageList
-				.getPackages()
-				.get(pkg.packageName);
+			const remote = this.deployedPackages.get(pkg.packageName);
 
 			return !remote || semver.gt(pkg.version, remote.version);
 		});

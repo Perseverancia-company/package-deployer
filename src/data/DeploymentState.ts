@@ -17,7 +17,7 @@ export default class DeploymentState {
 
 	/**
 	 * Create class object
-	 * 
+	 *
 	 * You can load previous state in the options
 	 *
 	 * @param options
@@ -29,6 +29,25 @@ export default class DeploymentState {
 				this.deploymentState = options.previousState;
 			}
 		}
+	}
+
+	/**
+	 * Get deployment state
+	 */
+	getDeploymentState() {
+		return this.deploymentState;
+	}
+
+	/**
+	 * Get deployment state as map
+	 */
+	getDeploymentStateAsMap() {
+		const resultingMap = new Map();
+		for (const key of Object.keys(this.deploymentState)) {
+			resultingMap.set(key, this.deploymentState[key]);
+		}
+
+		return resultingMap;
 	}
 
 	/**

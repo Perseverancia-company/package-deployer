@@ -12,7 +12,7 @@ import PackageDeployer from "./PackageDeployer";
 export default class PackageDeployerOrchestrator {
 	config: PackageDeployerConfiguration;
 	packageList: NodePackageList;
-	remotePackageList: RemotePackageList;
+	deployedPackages: Map<string, { version: string }>;
 	packageFilter: PackagesFilter;
 
 	// When building ignore apps
@@ -29,12 +29,12 @@ export default class PackageDeployerOrchestrator {
 	constructor(
 		config: PackageDeployerConfiguration,
 		packageList: NodePackageList,
-		remotePackageList: RemotePackageList,
+		deployedPackages: Map<string, { version: string }> = new Map(),
 		options?: { ignoreApps?: boolean }
 	) {
 		this.config = config;
 		this.packageList = packageList;
-		this.remotePackageList = remotePackageList;
+		this.deployedPackages = deployedPackages;
 
 		// Set options
 		if (options) {
@@ -48,7 +48,7 @@ export default class PackageDeployerOrchestrator {
 		this.packageFilter = new PackagesFilter(
 			config,
 			packageList,
-			remotePackageList,
+			this.deployedPackages,
 			{
 				ignoreApps: this.ignoreApps,
 			}

@@ -1,8 +1,7 @@
 import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
-import { PackageDeployer } from "..";
 import NodePackageList from "@/package/NodePackageList";
-import RemotePackageList from "@/package/RemotePackageList";
 import PackageDeployerOrchestrator from "@/packageDeployer/PackageDeployerOrchestrator";
+import DeploymentState from "@/data/DeploymentState";
 
 /**
  * Deploy all packages
@@ -36,12 +35,8 @@ export default async function deployMain(
 				config.getPackagesPath()
 			);
 
-			// Remote package list
-			const remotePackageList =
-				await RemotePackageList.fetchRemotePackages(
-					config,
-					packageList
-				);
+			// Deployment state
+			const deploymentState = await DeploymentState.load();
 
 			const registryUsername = config.getRegistryUsername();
 			const registryPassword = config.getRegistryPassword();
@@ -52,7 +47,7 @@ export default async function deployMain(
 				const orchestrator = new PackageDeployerOrchestrator(
 					config,
 					packageList,
-					remotePackageList,
+					deploymentState.getDeploymentStateAsMap(),
 					{
 						ignoreApps,
 					}
@@ -68,7 +63,7 @@ export default async function deployMain(
 				const orchestrator = new PackageDeployerOrchestrator(
 					config,
 					packageList,
-					remotePackageList,
+					deploymentState.getDeploymentStateAsMap(),
 					{
 						ignoreApps,
 					}

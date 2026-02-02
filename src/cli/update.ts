@@ -3,10 +3,10 @@ import LocalRepositories from "@/repository/LocalRepositories";
 import LocalRepositoryList from "@/repository/LocalRepositoryList";
 import RepositoryList from "@/repository/RepositoryList";
 import { Octokit } from "@octokit/rest";
-import { PackageDeployer } from "..";
 import NodePackageList from "@/package/NodePackageList";
 import RemotePackageList from "@/package/RemotePackageList";
 import PackageDeployerOrchestrator from "@/packageDeployer/PackageDeployerOrchestrator";
+import DeploymentState from "@/data/DeploymentState";
 
 /**
  * Update things
@@ -54,6 +54,9 @@ export default async function updateMain(
 					packageList
 				);
 
+			// Deployment state
+			const deploymentState = await DeploymentState.load();
+
 			// Deploy all packages
 			const registryUsername = config.getRegistryUsername();
 			const registryPassword = config.getRegistryPassword();
@@ -64,7 +67,7 @@ export default async function updateMain(
 				const orchestrator = new PackageDeployerOrchestrator(
 					config,
 					packageList,
-					remotePackageList
+					deploymentState.getDeploymentStateAsMap()
 				);
 				await orchestrator.incrementalDeployment();
 			} else {
@@ -77,7 +80,7 @@ export default async function updateMain(
 				const orchestrator = new PackageDeployerOrchestrator(
 					config,
 					packageList,
-					remotePackageList
+					deploymentState.getDeploymentStateAsMap()
 				);
 				await orchestrator.deploy();
 			}
