@@ -13,6 +13,7 @@ Added
     -   Update all repositories if the remote is newer
     -   Update all packages
 -   Incremental package updates
+-   Packages filter class
 
 ## 2.10.0
 

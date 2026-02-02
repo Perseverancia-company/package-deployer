@@ -26,6 +26,7 @@ export type PackageManagerEngine = NPM | PNPM;
 
 export interface ITaskDeploymentResult {
 	packageName: string;
+	version: string;
 	name: string;
 	success: boolean;
 }

@@ -6,6 +6,7 @@ import { Octokit } from "@octokit/rest";
 import { PackageDeployer } from "..";
 import NodePackageList from "@/package/NodePackageList";
 import RemotePackageList from "@/package/RemotePackageList";
+import PackageDeployerOrchestrator from "@/packageDeployer/PackageDeployerOrchestrator";
 
 /**
  * Update things
@@ -59,26 +60,26 @@ export default async function updateMain(
 			if (registryPassword && registryUsername) {
 				console.log(`Smart(Incremental) package deployment`);
 
-				// Package deployer
-				const pkgDeployer = new PackageDeployer(
+				// Orchestrator
+				const orchestrator = new PackageDeployerOrchestrator(
 					config,
 					packageList,
 					remotePackageList
 				);
-				await pkgDeployer.incrementalDeployment();
+				await orchestrator.incrementalDeployment();
 			} else {
 				console.log(
 					`No registry password nor username, defaulting to deploying all at once.\n`,
 					`Make sure you set the registry username and password so that updates\n`,
 					`are incremental, and you don't re-build what you already had.`
 				);
-				// Initialize package deployer and deploy all
-				const pkgDeployer = new PackageDeployer(
+				// Orchestrator
+				const orchestrator = new PackageDeployerOrchestrator(
 					config,
 					packageList,
 					remotePackageList
 				);
-				await pkgDeployer.deploy();
+				await orchestrator.deploy();
 			}
 		}
 	);
