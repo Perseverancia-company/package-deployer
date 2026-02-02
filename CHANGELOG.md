@@ -14,6 +14,7 @@ Added
     -   Update all packages
 -   Incremental package updates
 -   Packages filter class
+-	Deployment state class
 
 ## 2.10.0
 

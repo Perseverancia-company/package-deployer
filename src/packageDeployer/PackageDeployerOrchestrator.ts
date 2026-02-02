@@ -5,6 +5,8 @@ import NodePackageList from "@/package/NodePackageList";
 import RemotePackageList from "@/package/RemotePackageList";
 import PackagesFilter from "./PackagesFilter";
 import PackageDeployer from "./PackageDeployer";
+import { ITaskDeploymentResult } from "@/types";
+import DeploymentState from "@/data/DeploymentState";
 
 /**
  * Package deployer orchestrator
@@ -12,7 +14,7 @@ import PackageDeployer from "./PackageDeployer";
 export default class PackageDeployerOrchestrator {
 	config: PackageDeployerConfiguration;
 	packageList: NodePackageList;
-	deployedPackages: Map<string, { version: string }>;
+	deployedState: DeploymentState;
 	packageFilter: PackagesFilter;
 
 	// When building ignore apps
@@ -29,12 +31,12 @@ export default class PackageDeployerOrchestrator {
 	constructor(
 		config: PackageDeployerConfiguration,
 		packageList: NodePackageList,
-		deployedPackages: Map<string, { version: string }> = new Map(),
+		deploymentState: DeploymentState,
 		options?: { ignoreApps?: boolean }
 	) {
 		this.config = config;
 		this.packageList = packageList;
-		this.deployedPackages = deployedPackages;
+		this.deployedState = deploymentState;
 
 		// Set options
 		if (options) {
@@ -48,7 +50,7 @@ export default class PackageDeployerOrchestrator {
 		this.packageFilter = new PackagesFilter(
 			config,
 			packageList,
-			this.deployedPackages,
+			deploymentState.getDeploymentStateAsMap(),
 			{
 				ignoreApps: this.ignoreApps,
 			}
@@ -62,7 +64,9 @@ export default class PackageDeployerOrchestrator {
 		const pkgDeployer = new PackageDeployer(
 			this.packageList.getNodePackages()
 		);
-		return await pkgDeployer.deploy();
+		const deploymentResult = await pkgDeployer.deploy();
+		await this.saveSuccessfullyDeployedPackages(deploymentResult);
+		return deploymentResult;
 	}
 
 	/**
@@ -76,7 +80,9 @@ export default class PackageDeployerOrchestrator {
 		const pkgDeployer = new PackageDeployer(
 			this.packageFilter.filterByConfiguration()
 		);
-		return await pkgDeployer.deploy();
+		const deploymentResult = await pkgDeployer.deploy();
+		await this.saveSuccessfullyDeployedPackages(deploymentResult);
+		return deploymentResult;
 	}
 
 	/**
@@ -103,6 +109,27 @@ export default class PackageDeployerOrchestrator {
 
 		// Initialize package deployer and deploy all
 		const pkgDeployer = new PackageDeployer(incrementalBuildOrder);
-		return await pkgDeployer.deploy();
+		const deploymentResult = await pkgDeployer.deploy();
+		await this.saveSuccessfullyDeployedPackages(deploymentResult);
+		return deploymentResult;
+	}
+
+	/**
+	 * Save successfully deployed packages
+	 */
+	async saveSuccessfullyDeployedPackages(
+		taskDeploymentResults: Array<ITaskDeploymentResult>
+	) {
+		for (const task of taskDeploymentResults) {
+			// If the task is successful set the package state
+			if (task.success) {
+				this.deployedState.setPackageState(
+					task.packageName,
+					task.version
+				);
+			}
+		}
+
+		return await this.deployedState.save();
 	}
 }

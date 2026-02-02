@@ -10,6 +10,8 @@ Smart deployment will only update what's necesssary, it won't re-build and publi
 
 ## TODO
 
+- [ ] Save successfully deployed packages
+
 -   [x] Get all packages at a path
 
     -   [x] When gathering the list, add a black list to ignore some packages
@@ -35,8 +37,8 @@ Would serve as a dry run to check if the blacklist works
 
 -   [x] Save package deployment result as json
 
--   [ ] Smart deployment
+-   [x] Smart deployment
 
     -   [x] Get newer packages list
-    -   [ ] Get packages that depend on the newer packages list
+    -   [x] Get packages that depend on the newer packages list
     -   [x] Update newer packages and dependent on newer packages, build and publish them

@@ -67,7 +67,7 @@ export default async function updateMain(
 				const orchestrator = new PackageDeployerOrchestrator(
 					config,
 					packageList,
-					deploymentState.getDeploymentStateAsMap()
+					deploymentState
 				);
 				await orchestrator.incrementalDeployment();
 			} else {
@@ -80,7 +80,7 @@ export default async function updateMain(
 				const orchestrator = new PackageDeployerOrchestrator(
 					config,
 					packageList,
-					deploymentState.getDeploymentStateAsMap()
+					deploymentState
 				);
 				await orchestrator.deploy();
 			}

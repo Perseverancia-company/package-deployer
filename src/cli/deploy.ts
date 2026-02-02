@@ -47,7 +47,7 @@ export default async function deployMain(
 				const orchestrator = new PackageDeployerOrchestrator(
 					config,
 					packageList,
-					deploymentState.getDeploymentStateAsMap(),
+					deploymentState,
 					{
 						ignoreApps,
 					}
@@ -63,7 +63,7 @@ export default async function deployMain(
 				const orchestrator = new PackageDeployerOrchestrator(
 					config,
 					packageList,
-					deploymentState.getDeploymentStateAsMap(),
+					deploymentState,
 					{
 						ignoreApps,
 					}
