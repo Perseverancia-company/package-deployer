@@ -2,7 +2,6 @@ import pc from "picocolors";
 
 import PackageDeployerConfiguration from "./PackageDeployerConfiguration";
 import NodePackageList from "@/package/NodePackageList";
-import RemotePackageList from "@/package/RemotePackageList";
 import PackagesFilter from "./PackagesFilter";
 import PackageDeployer from "./PackageDeployer";
 import { ITaskDeploymentResult } from "@/types";
@@ -47,10 +46,11 @@ export default class PackageDeployerOrchestrator {
 		}
 
 		// Create package filter
+		const stateMap = deploymentState.getDeploymentStateAsMap();
 		this.packageFilter = new PackagesFilter(
 			config,
 			packageList,
-			deploymentState.getDeploymentStateAsMap(),
+			stateMap,
 			{
 				ignoreApps: this.ignoreApps,
 			}

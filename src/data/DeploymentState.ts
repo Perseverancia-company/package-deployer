@@ -44,7 +44,7 @@ export default class DeploymentState {
 	getDeploymentStateAsMap() {
 		const resultingMap = new Map();
 		for (const key of Object.keys(this.deploymentState)) {
-			resultingMap.set(key, this.deploymentState[key]);
+			resultingMap.set(key, { version: this.deploymentState[key] });
 		}
 
 		return resultingMap;
