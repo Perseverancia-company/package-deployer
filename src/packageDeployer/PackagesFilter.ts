@@ -1,7 +1,6 @@
 import semver from "semver";
 
 import NodePackageList from "@/package/NodePackageList";
-import RemotePackageList from "@/package/RemotePackageList";
 import PackageDeployerConfiguration from "./PackageDeployerConfiguration";
 import KhansDependencyGraph from "@/graph/KhansDependencyGraph";
 import NodePackage from "@/package/NodePackage";
@@ -37,30 +36,22 @@ export default class PackagesFilter {
 	}
 
 	/**
-	 * Filters by configuration whitelist/blacklist
-	 *
-	 * This shouldn't leave "gaps"
-	 *
-	 * Suppose this hierarchy
-	 *
-	 * Package A -> Package B -> Package C
-	 *
-	 * If package C is contained, the result of this function must
-	 * have its previous dependencies always.
+	 * Filter given packages by configuration
 	 */
-	public filterByConfiguration() {
-		const filteredPackages = this.localNodePackages
-			.getNodePackages()
-			.filter((pkg) =>
-				// Configuration whitelist/blacklist uses repositories/folder names
-				this.config.configuration.repositoriesListing.use ===
+	public filterGivenPackagesByConfiguration(
+		nodePackages: Array<NodePackage>
+	) {
+		const filteredPackages = nodePackages.filter((pkg) => {
+			// Configuration whitelist/blacklist uses repositories/folder names
+			if (
+				!(this.config.configuration.repositoriesListing.use ===
 				"whitelist"
 					? this.config.getWhitelist().includes(pkg.name)
-					: !this.config.getBlacklist().includes(pkg.name)
-			);
+					: !this.config.getBlacklist().includes(pkg.name))
+			) {
+				return false;
+			}
 
-		// Filter out applications if the argument was given
-		const packages = filteredPackages.filter((pkg) => {
 			// Check if the user flagged ignore apps as true
 			if (this.ignoreApps) {
 				// Check if the package is private
@@ -71,7 +62,47 @@ export default class PackagesFilter {
 			return true;
 		});
 
-		return packages;
+		return filteredPackages;
+	}
+
+	/**
+	 * Filters by configuration whitelist/blacklist
+	 *
+	 * This shouldn't leave "gaps"
+	 *
+	 * Suppose this hierarchy
+	 *
+	 * Package A -> Package B -> Package C
+	 *
+	 * If package C is contained, the result of this function must
+	 * have its previous dependencies always.
+	 *
+	 * If you want to save deployment time, use incremental build order.
+	 */
+	public filterByConfiguration() {
+		return this.filterGivenPackagesByConfiguration(
+			this.localNodePackages.getNodePackages()
+		);
+	}
+
+	/**
+	 * Affected packages
+	 *
+	 * This returns a list of packages that haven't been deployed and
+	 * packages that have changed their version.
+	 */
+	public affectedPackages() {
+		// Directly affected packages
+		const directlyAffected = this.localNodePackages
+			.getNodePackages()
+			.filter((pkg) => {
+				// Get remote package
+				const remote = this.deployedPackages.get(pkg.packageName);
+
+				return !remote || semver.gt(pkg.version, remote.version);
+			});
+
+		return directlyAffected;
 	}
 
 	/**
@@ -80,21 +111,22 @@ export default class PackagesFilter {
 	 * The result of incremental build, can leave gaps between packages
 	 */
 	public getIncrementalBuildOrder(): Array<NodePackage> {
-		const filteredPackages = this.filterByConfiguration();
-		const directlyAffected = filteredPackages.filter((pkg) => {
-			// Get remote package
-			const remote = this.deployedPackages.get(pkg.packageName);
+		const allPackages = this.localNodePackages.getNodePackages();
 
-			return !remote || semver.gt(pkg.version, remote.version);
-		});
+		// Get packages that have changed versions or weren't deployed
+		const directlyAffected = this.affectedPackages();
 
 		// Get directly affected packages
 		const names = directlyAffected.map((p) => p.packageName);
-		const graph = new KhansDependencyGraph(
-			this.localNodePackages.getNodePackages()
-		);
+		const graph = new KhansDependencyGraph(allPackages);
 
 		// Get affected packages from the graph
-		return graph.getAffectedPackages(names);
+		const affectedPackages = graph.getAffectedPackages(names);
+
+		// Apply policies filter (Ignore apps, check whitelist/blacklist)
+		const finalDeploymentOrder =
+			this.filterGivenPackagesByConfiguration(affectedPackages);
+
+		return finalDeploymentOrder;
 	}
 }
