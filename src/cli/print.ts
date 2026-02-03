@@ -5,6 +5,9 @@ import { Octokit } from "@octokit/rest";
 
 import { appsToNodePackages, getAllApps } from "@/lib/apps";
 import getVerdaccioFromConfiguration from "@/lib/verdaccio";
+import NodePackageList from "@/package/NodePackageList";
+import DeploymentState from "@/data/DeploymentState";
+import PackagesFilter from "@/packageDeployer/PackagesFilter";
 
 /**
  * Print things
@@ -39,6 +42,11 @@ export default async function printMain(
 					type: "boolean",
 					description:
 						"Print remote packages like verdaccio for instance(will try to print them all)",
+				})
+				.option("incremental-build-packages", {
+					type: "boolean",
+					description:
+						"Print incremental build affected packages, that is, those that will be deployed",
 				});
 		},
 		async (args: any) => {
@@ -77,13 +85,38 @@ export default async function printMain(
 					repositoryList.getRepositories()
 				);
 			}
-			
-			if(args.printRemotePackages) {
+
+			if (args.printRemotePackages) {
 				// Get packages
-				const verdaccioClient = await getVerdaccioFromConfiguration(config);
+				const verdaccioClient = await getVerdaccioFromConfiguration(
+					config
+				);
 				const packages = await verdaccioClient.getAllPackages();
-				
+
 				console.log(`Remote packages: `, packages);
+			}
+
+			if (args.incrementalBuildPackages) {
+				// Get package list
+				const packageList = await NodePackageList.fromPackagesPath(
+					config.getPackagesPath()
+				);
+
+				// Deployment state
+				const deploymentState = await DeploymentState.load();
+
+				const packageFilter = new PackagesFilter(
+					config,
+					packageList,
+					deploymentState.getDeploymentStateAsMap()
+				);
+
+				console.log(
+					`Remote packages: `,
+					packageFilter
+						.getIncrementalBuildOrder()
+						.map((pkg) => pkg.packageName)
+				);
 			}
 		}
 	);

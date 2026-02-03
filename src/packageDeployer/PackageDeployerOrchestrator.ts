@@ -47,14 +47,9 @@ export default class PackageDeployerOrchestrator {
 
 		// Create package filter
 		const stateMap = deploymentState.getDeploymentStateAsMap();
-		this.packageFilter = new PackagesFilter(
-			config,
-			packageList,
-			stateMap,
-			{
-				ignoreApps: this.ignoreApps,
-			}
-		);
+		this.packageFilter = new PackagesFilter(config, packageList, stateMap, {
+			ignoreApps: this.ignoreApps,
+		});
 	}
 
 	/**
@@ -102,10 +97,10 @@ export default class PackageDeployerOrchestrator {
 		}
 
 		// Final build order and whitelist
-		const whitelist = incrementalBuildOrder.map((pkg) => pkg.packageName);
-		console.log(
-			`🚀 Packages to deploy in order: ${whitelist.join(" => ")}`
+		const buildOrderNames = incrementalBuildOrder.map(
+			(pkg) => pkg.packageName
 		);
+		console.log(`🚀 Packages to deploy in order: `, buildOrderNames);
 
 		// Initialize package deployer and deploy all
 		const pkgDeployer = new PackageDeployer(incrementalBuildOrder);

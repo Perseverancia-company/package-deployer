@@ -1,7 +1,7 @@
 {
 	"name": "@perseverancia/package-deployer",
-	"version": "2.10.0",
-	"description": "",
+	"version": "3.0.0",
+	"description": "Package deployer installs, builds and publishes packages",
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
