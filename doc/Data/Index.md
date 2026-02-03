@@ -10,3 +10,5 @@ This class only stores successful deployments, and nothing else.
 
 - [ ] Deployed packages abstract class
 	- [x] Deployed state
+
+This will be useful later for implementing the class with database models.

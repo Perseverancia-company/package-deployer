@@ -10,7 +10,7 @@ Smart deployment will only update what's necesssary, it won't re-build and publi
 
 ## TODO
 
-- [ ] Save successfully deployed packages
+-   [x] Save successfully deployed packages
 
 -   [x] Get all packages at a path
 
