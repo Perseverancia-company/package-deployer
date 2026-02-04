@@ -8,14 +8,20 @@ import { pullRepositoryIfNewer } from ".";
 export default class LocalRepositories {
 	path: string;
 	repositoryList: LocalRepositoryList;
+	whitelist: Array<string> = [];
 
 	/**
 	 *
 	 * @param path
 	 */
-	constructor(path: string, repositoryList: LocalRepositoryList) {
+	constructor(
+		path: string,
+		repositoryList: LocalRepositoryList,
+		whitelist: Array<string> = []
+	) {
 		this.path = path;
 		this.repositoryList = repositoryList;
+		this.whitelist = whitelist;
 	}
 
 	/**
@@ -23,9 +29,9 @@ export default class LocalRepositories {
 	 *
 	 * Create from the given path
 	 */
-	static async fromPath(folderPath: string) {
+	static async fromPath(folderPath: string, whitelist?: Array<string>) {
 		const repositoryList = await LocalRepositoryList.fromPath(folderPath);
-		return new LocalRepositories(folderPath, repositoryList);
+		return new LocalRepositories(folderPath, repositoryList, whitelist);
 	}
 
 	/**
