@@ -13,3 +13,9 @@ External TODO means to do something in another repository that will control this
 ## Make a frontend
 
 - [ ] Package deployer frontend
+
+## Models
+
+- [ ] Store deployment state on the database
+
+Implement deployment state abstract class and be able to store it in mysql database.
