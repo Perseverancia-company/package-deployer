@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.1.0
+
+Added
+
+- Repositories push command to use the whitelist
+To not push the rest of repositories that don't really matter.
+
 ## 3.0.0
 
 Added
