@@ -64,7 +64,7 @@ export default class LocalRepositories {
 	 * Fetch repository metadata and push or pull based on the last commit date.
 	 */
 	async update() {
-		const repositories = this.repositoryList.repositories;
+		const repositories = this.filterRepositories();
 		const CONCURRENCY_LIMIT = 3;
 
 		console.log(
