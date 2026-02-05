@@ -176,10 +176,17 @@ export default async function repositoriesMain(
 
 						// Pull all repositories
 						const localRepositories =
-							await LocalRepositories.fromPath(repositoriesPath);
+							await LocalRepositories.fromPath(
+								repositoriesPath,
+								config.configuration.repositoriesListing.use ===
+									"whitelist"
+									? config.getWhitelist()
+									: []
+							);
 						await localRepositories.pull();
 					}
 				)
+				.command("update", "Push or pull repositories", {})
 				.command(
 					"push",
 					"Push all repositories",

@@ -21,6 +21,16 @@ import syncMain from "./sync";
 async function main() {
 	// Read dotenv
 	dotenv.config({});
+	
+	throw new Error(`Do this update next:
+	## Update repositories
+
+	Both in the remote and locally
+
+	- [ ] Use the whitelist to push only the repositories I use
+	- [ ] Fetch updates from the remote
+		- [ ] And from the updates, either git pull or git push the changes
+	`);
 
 	// Run some asynchronous tasks
 	const [_a] = await Promise.all([DefaultConfigFolder.createFolder()]);

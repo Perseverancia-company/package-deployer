@@ -35,6 +35,28 @@ export default class LocalRepositories {
 	}
 
 	/**
+	 * Filter repositories
+	 */
+	filterRepositories() {
+		if (this.whitelist.length > 0) {
+			const filteredRepositories =
+				this.repositoryList.repositories.filter((repository) => {
+					const repoName = repository.name;
+
+					if (repoName === repository.name) {
+						return true;
+					}
+
+					return false;
+				});
+
+			return filteredRepositories;
+		}
+
+		return this.repositoryList.repositories;
+	}
+
+	/**
 	 * Pull all repositories
 	 */
 	async pull() {
@@ -60,7 +82,9 @@ export default class LocalRepositories {
 	 * Pull if newer
 	 */
 	async pullIfNewer() {
-		for (const repository of this.repositoryList.repositories) {
+		// Filter repositories by the whitelist
+		const filteredRepositories = this.filterRepositories();
+		for (const repository of filteredRepositories) {
 			try {
 				await pullRepositoryIfNewer(repository.path);
 			} catch (err) {}
@@ -71,7 +95,9 @@ export default class LocalRepositories {
 	 * Push all repositories
 	 */
 	async push() {
-		for (const repository of this.repositoryList.repositories) {
+		// Filter repositories by the whitelist
+		const filteredRepositories = this.filterRepositories();
+		for (const repository of filteredRepositories) {
 			try {
 				const git = simpleGit(repository.path);
 				await git.push();

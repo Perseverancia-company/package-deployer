@@ -5,7 +5,8 @@
 Added
 
 - Repositories push command to use the whitelist
-To not push the rest of repositories that don't really matter.
+- Repositories pull command to use the whitelist
+To not push or pull the rest of repositories that don't really matter.
 
 ## 3.0.0
 

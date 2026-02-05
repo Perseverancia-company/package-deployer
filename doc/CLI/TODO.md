@@ -17,6 +17,8 @@
 			- [x] Set remote as push url
 			- [x] Set local path as push url
 	- [x] Pull all
+		- [x] Use whitelist
 	- [x] Push all
+		- [x] Use whitelist
 - [ ] Remove repositories that don't have package.json
 That is they aren't nodejs packages
