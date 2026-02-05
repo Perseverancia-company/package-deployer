@@ -42,7 +42,9 @@ export default async function updateMain(
 				config.getPackagesPath(),
 				localRepositories
 			);
-			await repositories.pullIfNewer();
+
+			// Push or pull based on the repositories last commit date
+			await repositories.update();
 
 			// Get package list
 			const packageList = await NodePackageList.fromPackagesPath(

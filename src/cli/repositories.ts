@@ -214,11 +214,6 @@ export default async function repositoriesMain(
 								RepositoryList.defaultConfigurationFile(),
 								octokit
 							);
-
-							console.log(
-								`Repository list: `,
-								repositoryList.getRepositories()
-							);
 						} else {
 							repositoryList = await RepositoryList.fromPath(
 								RepositoryList.defaultConfigurationFile(),
@@ -235,6 +230,9 @@ export default async function repositoriesMain(
 									? config.getWhitelist()
 									: []
 							);
+
+						// Push or pull repositories based on their last commit date
+						await localRepositories.update();
 					}
 				)
 				.command(

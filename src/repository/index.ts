@@ -1,9 +1,10 @@
 import { Octokit } from "@octokit/rest";
 import fsp from "fs/promises";
+import simpleGit from "simple-git";
+import pc from "picocolors";
 
 import LocalRepositoryList from "./LocalRepositoryList";
 import { execPromise } from "@/lib";
-import simpleGit from "simple-git";
 
 /**
  * Get all repositories
@@ -19,7 +20,7 @@ export async function getAllRepositories(octokit: Octokit) {
 				visibility: "all", // Options: 'all', 'public', 'private'
 				affiliation: "owner", // Ensures you only get repos you own (not just members of)
 				per_page: 100, // Maximum per request to reduce number of calls
-			},
+			}
 		);
 
 		console.log(`Successfully fetched ${repos.length} repositories.`);
@@ -46,7 +47,7 @@ export async function getAllRepositories(octokit: Octokit) {
  * Set repositories remote push urls
  */
 export async function setRepositoriesRemotePushUrls(
-	localRepositories: LocalRepositoryList,
+	localRepositories: LocalRepositoryList
 ) {
 	for (const repo of localRepositories.repositories) {
 		console.log(`Checking configuration for: ${repo.name}...`);
@@ -67,7 +68,7 @@ export async function setRepositoriesRemotePushUrls(
 					{
 						cwd: repo.path,
 						encoding: "utf8",
-					},
+					}
 				);
 				existingPushUrls = output.stdout
 					.split("\n")
@@ -85,7 +86,7 @@ export async function setRepositoriesRemotePushUrls(
 					`git remote set-url --add --push origin ${fetchUrl}`,
 					{
 						cwd: repo.path,
-					},
+					}
 				);
 				console.log(`[${repo.name}] Added GitHub push URL.`);
 			}
@@ -100,21 +101,60 @@ export async function setRepositoriesRemotePushUrls(
 				if (!existingPushUrls.includes(localBarePath)) {
 					await execPromise(
 						`git remote set-url --add --push origin ${localBarePath}`,
-						{ cwd: repo.path },
+						{ cwd: repo.path }
 					);
 					console.log(`[${repo.name}] Added Local Bare push URL.`);
 				}
 			} catch (error) {
 				// This block triggers if fsp.access fails
 				console.warn(
-					`⚠️ [${repo.name}] Skipping local backup: Path ${localBarePath} does not exist.`,
+					`⚠️ [${repo.name}] Skipping local backup: Path ${localBarePath} does not exist.`
 				);
 			}
 		} catch (err) {
 			console.error(
-				`❌ Skipped ${repo.name}: Not a git repository or origin missing.`,
+				`❌ Skipped ${repo.name}: Not a git repository or origin missing.`
 			);
 		}
+	}
+}
+
+/**
+ * Update repository
+ *
+ * Push or pull repository depending on the given date.
+ */
+export async function updateRepository(repositoryPath: string) {
+	const git = simpleGit(repositoryPath);
+
+	// Fetch the latest metadata
+	await git.fetch();
+
+	// Get the latest local commit date
+	const localLog = await git.log({ n: 1 });
+	if (!localLog.latest) {
+		throw new Error("Couldn't fetch the local repository date");
+	}
+	const localDate = new Date(localLog.latest.date);
+
+	// Get the latest remote commit date (tracking branch)
+	// We assume 'origin/main' or 'origin/master'.
+	// Using '@{u}' (upstream) is the most robust way to reference the remote tracking branch.
+	const remoteLog = await git.log(["-1", "@{u}"]);
+	if (!remoteLog.latest) {
+		throw new Error("Couldn't fetch the remote date");
+	}
+	const remoteDate = new Date(remoteLog.latest.date);
+
+	// Check if the remote date is greater than the local date
+	if (remoteDate > localDate) {
+		await git.pull();
+		console.log(pc.green("✅ Local repository updated successfully."));
+	} else if (remoteDate < localDate) {
+		await git.push();
+		console.log(pc.green("✅ Remote repository updated successfully."));
+	} else {
+		console.log(pc.gray("✨ Everything is up to date. No action needed."));
 	}
 }
 
@@ -130,7 +170,7 @@ export async function pullRepositoryIfNewer(repositoryPath: string) {
 	// Get the latest local commit date
 	const localLog = await git.log({ n: 1 });
 	if (!localLog.latest) {
-		throw new Error("Couldn't fetch the local repository date")
+		throw new Error("Couldn't fetch the local repository date");
 	}
 	const localDate = new Date(localLog.latest.date);
 
@@ -139,7 +179,7 @@ export async function pullRepositoryIfNewer(repositoryPath: string) {
 	// Using '@{u}' (upstream) is the most robust way to reference the remote tracking branch.
 	const remoteLog = await git.log(["-1", "@{u}"]);
 	if (!remoteLog.latest) {
-		throw new Error("Couldn't fetch the remote date")
+		throw new Error("Couldn't fetch the remote date");
 	}
 	const remoteDate = new Date(remoteLog.latest.date);
 

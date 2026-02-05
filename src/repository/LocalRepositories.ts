@@ -1,6 +1,8 @@
 import simpleGit from "simple-git";
+import pc from "picocolors";
+
 import LocalRepositoryList from "./LocalRepositoryList";
-import { pullRepositoryIfNewer } from ".";
+import { pullRepositoryIfNewer, updateRepository } from ".";
 
 /**
  * Local repositories
@@ -54,6 +56,48 @@ export default class LocalRepositories {
 		}
 
 		return this.repositoryList.repositories;
+	}
+
+	/**
+	 * Update repository
+	 *
+	 * Fetch repository metadata and push or pull based on the last commit date.
+	 */
+	async update() {
+		const repositories = this.repositoryList.repositories;
+		const CONCURRENCY_LIMIT = 3;
+
+		console.log(
+			pc.magenta(
+				`📦 Batch processing ${repositories.length} repos (Concurrency ${CONCURRENCY_LIMIT})`
+			)
+		);
+
+		for (let i = 0; i < repositories.length; i += CONCURRENCY_LIMIT) {
+			const chunk = repositories.slice(i, i + CONCURRENCY_LIMIT);
+
+			await Promise.allSettled(
+				chunk.map(async (repository) => {
+					try {
+						await updateRepository(repository.path);
+						console.log(
+							`${pc.green("✔")} ${pc.bold(repository.name)}`
+						);
+					} catch (err: any) {
+						console.error(
+							pc.red(`❌ ${repository.name} failed:`),
+							err.message
+						);
+					}
+				})
+			);
+
+			if (i + CONCURRENCY_LIMIT < repositories.length) {
+				console.log(pc.gray("--- Waiting for next batch ---"));
+			}
+		}
+
+		console.log(pc.bgGreen(pc.black(" DONE ")));
 	}
 
 	/**
