@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.2.0
+
+Added
+
+- Update repositories command
+Pushes or pulls repositories based on their last commit date.
+Should be preferred before 'push' or 'pull' command.
+
 ## 3.1.0
 
 Added
