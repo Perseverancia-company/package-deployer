@@ -186,7 +186,57 @@ export default async function repositoriesMain(
 						await localRepositories.pull();
 					}
 				)
-				.command("update", "Push or pull repositories", {})
+				.command(
+					"update",
+					"Push or pull repositories",
+					(yargs: any) => {
+						return yargs
+							.option("path", {
+								type: "string",
+								description:
+									"The path to the repositories, defaults to the default repositories path",
+								default: config.getPackagesPath(),
+							})
+							.option("sync-info", {
+								type: "boolean",
+								description:
+									"Synchronize local information with remote repository information",
+								default: false,
+							});
+					},
+					async (args: any) => {
+						const repositoriesPath = args.path;
+
+						// Update the repository information list from github
+						let repositoryList;
+						if (args.syncInfo) {
+							repositoryList = await RepositoryList.sync(
+								RepositoryList.defaultConfigurationFile(),
+								octokit
+							);
+
+							console.log(
+								`Repository list: `,
+								repositoryList.getRepositories()
+							);
+						} else {
+							repositoryList = await RepositoryList.fromPath(
+								RepositoryList.defaultConfigurationFile(),
+								octokit
+							);
+						}
+
+						// Get local repositories list
+						const localRepositories =
+							await LocalRepositories.fromPath(
+								repositoriesPath,
+								config.configuration.repositoriesListing.use ===
+									"whitelist"
+									? config.getWhitelist()
+									: []
+							);
+					}
+				)
 				.command(
 					"push",
 					"Push all repositories",

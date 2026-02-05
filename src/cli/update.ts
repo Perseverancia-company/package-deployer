@@ -48,11 +48,6 @@ export default async function updateMain(
 			const packageList = await NodePackageList.fromPackagesPath(
 				config.getPackagesPath()
 			);
-			const remotePackageList =
-				await RemotePackageList.fetchRemotePackages(
-					config,
-					packageList
-				);
 
 			// Deployment state
 			const deploymentState = await DeploymentState.load();
