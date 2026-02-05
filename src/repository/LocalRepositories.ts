@@ -45,7 +45,7 @@ export default class LocalRepositories {
 				this.repositoryList.repositories.filter((repository) => {
 					const repoName = repository.name;
 
-					if (repoName === repository.name) {
+					if (this.whitelist.includes(repoName)) {
 						return true;
 					}
 

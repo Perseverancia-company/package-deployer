@@ -40,7 +40,10 @@ export default async function updateMain(
 			// Pull all the repositories if they are newer on the remote
 			const repositories = new LocalRepositories(
 				config.getPackagesPath(),
-				localRepositories
+				localRepositories,
+				config.configuration.repositoriesListing.use === "whitelist"
+					? config.getWhitelist()
+					: []
 			);
 
 			// Push or pull based on the repositories last commit date
