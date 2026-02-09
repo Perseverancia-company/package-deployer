@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.3.0
+
+Changed
+
+- Incremental deployment enabled by default
+- Incremental deployment doesn't needs registry credentials
+
+Removed
+
+- Usage of registry for incremental deployment
+
 ## 3.2.0
 
 Added

@@ -19,6 +19,7 @@ pkgdep config set --github-token GITHUB_TOKEN
 ```
 
 Set registry username and password
+(Not used by the application anymore)
 
 ```bash
 pkgdep config set --registry-username USERNAME --registry-password PASSWORD

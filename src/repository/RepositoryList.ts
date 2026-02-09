@@ -22,7 +22,7 @@ export default class RepositoryList {
 	constructor(
 		configurationFilePath: string,
 		repoConfig: RepositoryFileConfiguration,
-		octokit: Octokit
+		octokit: Octokit,
 	) {
 		this.configurationFilePath = configurationFilePath;
 		this.configuration = repoConfig;
@@ -36,7 +36,7 @@ export default class RepositoryList {
 		// File path
 		const filePath = path.join(
 			DefaultConfigFolder.getPath(),
-			"userRepositories.json"
+			"userRepositories.json",
 		);
 
 		return filePath;
@@ -48,7 +48,7 @@ export default class RepositoryList {
 	async save() {
 		return await fsp.writeFile(
 			this.configurationFilePath,
-			JSON.stringify(this.configuration)
+			JSON.stringify(this.configuration),
 		);
 	}
 
@@ -119,7 +119,7 @@ export default class RepositoryList {
 			whitelist?: Array<string>;
 			blacklist?: Array<string>;
 			cloneAt?: string;
-		} = {}
+		} = {},
 	) {
 		// Get lists
 		const whitelist = options.whitelist;
@@ -128,7 +128,7 @@ export default class RepositoryList {
 		// Cannot use both parameters
 		if (blacklist && whitelist) {
 			throw new Error(
-				"Cannot pass both parameters 'blacklist' and 'whitelist' use one of them."
+				"Cannot pass both parameters 'blacklist' and 'whitelist' use one of them.",
 			);
 		}
 
@@ -141,19 +141,24 @@ export default class RepositoryList {
 		if (whitelist) {
 			// Filter repositories using the whitelist
 			repositories = repositories.filter((repository) =>
-				whitelist.includes(repository.repositoryInfo.name)
+				whitelist.includes(repository.repositoryInfo.name),
 			);
 		} else if (blacklist) {
 			// Filter repositories using the blacklist
 			repositories = repositories.filter((repository) =>
-				blacklist.includes(repository.repositoryInfo.name)
+				blacklist.includes(repository.repositoryInfo.name),
 			);
 		}
+
 
 		// Clone at path
 		const cloneAt =
 			(options.cloneAt && options.cloneAt) ||
 			DefaultConfigFolder.repositoriesPath();
+
+		// Check what repositories are at the path and filter them out
+		const repositoriesAtPath = await fsp.readdir(cloneAt);
+		repositories = repositories.filter((repo) => !repositoriesAtPath.includes(repo.repoName));
 
 		const git = simpleGit();
 
@@ -176,16 +181,16 @@ export default class RepositoryList {
 					} catch (err: any) {
 						console.error(
 							`❌ Error at ${repo.repositoryInfo.name}:`,
-							err.message
+							err.message,
 						);
 						results.failed++;
 					}
-				})
+				}),
 			);
 		}
 
 		console.log(
-			`\n✅ Process finished with: ${results.success} successful clones and ${results.failed} failed clones.`
+			`\n✅ Process finished with: ${results.success} successful clones and ${results.failed} failed clones.`,
 		);
 	}
 }

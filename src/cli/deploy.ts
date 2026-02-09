@@ -19,16 +19,10 @@ export default async function deployMain(
 					type: "boolean",
 					description:
 						"Ignore applications(to detect them, just whether the package is private is checked)",
-				})
-				.option("incremental", {
-					type: "boolean",
-					description: "Incremental deployment(defaults to true)",
-					default: true,
 				});
 		},
 		async (args: any) => {
 			const ignoreApps = args.ignoreApps;
-			const incrementalEnabled = args.incremental;
 
 			// Get package list
 			const packageList = await NodePackageList.fromPackagesPath(
@@ -38,38 +32,16 @@ export default async function deployMain(
 			// Deployment state
 			const deploymentState = await DeploymentState.load();
 
-			const registryUsername = config.getRegistryUsername();
-			const registryPassword = config.getRegistryPassword();
-			if (registryPassword && registryUsername && incrementalEnabled) {
-				console.log(`Smart(Incremental) package deployment`);
-
-				// Orchestrator
-				const orchestrator = new PackageDeployerOrchestrator(
-					config,
-					packageList,
-					deploymentState,
-					{
-						ignoreApps,
-					}
-				);
-				await orchestrator.incrementalDeployment();
-			} else {
-				console.log(
-					`No registry password nor username, defaulting to deploying all at once.\n`,
-					`Make sure you set the registry username and password so that updates\n`,
-					`are incremental, and you don't re-build what you already had.`
-				);
-				// Orchestrator
-				const orchestrator = new PackageDeployerOrchestrator(
-					config,
-					packageList,
-					deploymentState,
-					{
-						ignoreApps,
-					}
-				);
-				await orchestrator.deploy();
-			}
+			// Orchestrator
+			const orchestrator = new PackageDeployerOrchestrator(
+				config,
+				packageList,
+				deploymentState,
+				{
+					ignoreApps,
+				}
+			);
+			await orchestrator.incrementalDeployment();
 		}
 	);
 }

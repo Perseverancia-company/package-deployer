@@ -14,7 +14,7 @@ import DeploymentState from "@/data/DeploymentState";
 export default async function updateMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
-	octokit: Octokit
+	octokit: Octokit,
 ) {
 	return yargs.command(
 		"update",
@@ -26,7 +26,7 @@ export default async function updateMain(
 			// Get(locally) or fetch(from github) repository list
 			const repositoryList = await RepositoryList.sync(
 				RepositoryList.defaultConfigurationFile(),
-				octokit
+				octokit,
 			);
 
 			// Save
@@ -34,7 +34,7 @@ export default async function updateMain(
 
 			// Read all the repositories at the path
 			const localRepositories = await LocalRepositoryList.fromPath(
-				config.getPackagesPath()
+				config.getPackagesPath(),
 			);
 
 			// Pull all the repositories if they are newer on the remote
@@ -43,7 +43,7 @@ export default async function updateMain(
 				localRepositories,
 				config.configuration.repositoriesListing.use === "whitelist"
 					? config.getWhitelist()
-					: []
+					: [],
 			);
 
 			// Push or pull based on the repositories last commit date
@@ -51,39 +51,19 @@ export default async function updateMain(
 
 			// Get package list
 			const packageList = await NodePackageList.fromPackagesPath(
-				config.getPackagesPath()
+				config.getPackagesPath(),
 			);
 
 			// Deployment state
 			const deploymentState = await DeploymentState.load();
 
-			// Deploy all packages
-			const registryUsername = config.getRegistryUsername();
-			const registryPassword = config.getRegistryPassword();
-			if (registryPassword && registryUsername) {
-				console.log(`Smart(Incremental) package deployment`);
-
-				// Orchestrator
-				const orchestrator = new PackageDeployerOrchestrator(
-					config,
-					packageList,
-					deploymentState
-				);
-				await orchestrator.incrementalDeployment();
-			} else {
-				console.log(
-					`No registry password nor username, defaulting to deploying all at once.\n`,
-					`Make sure you set the registry username and password so that updates\n`,
-					`are incremental, and you don't re-build what you already had.`
-				);
-				// Orchestrator
-				const orchestrator = new PackageDeployerOrchestrator(
-					config,
-					packageList,
-					deploymentState
-				);
-				await orchestrator.deploy();
-			}
-		}
+			// Deploy all packages orchestrator
+			const orchestrator = new PackageDeployerOrchestrator(
+				config,
+				packageList,
+				deploymentState,
+			);
+			await orchestrator.incrementalDeployment();
+		},
 	);
 }

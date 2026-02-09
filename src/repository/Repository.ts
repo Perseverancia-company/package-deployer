@@ -20,4 +20,11 @@ export default class Repository {
 	get sshUrl(): string {
 		return `git@github.com:${this.repositoryInfo.fullName}.git`;
 	}
+
+	/**
+	 * Get repository name
+	 */
+	get repoName(): string {
+		return this.repositoryInfo.name;
+	}
 }

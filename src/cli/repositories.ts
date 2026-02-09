@@ -16,7 +16,7 @@ import LocalRepositories from "@/repository/LocalRepositories";
 export default async function repositoriesMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
-	octokit: Octokit
+	octokit: Octokit,
 ) {
 	return yargs.command(
 		"repositories",
@@ -54,7 +54,7 @@ export default async function repositoriesMain(
 
 						// Save configuration
 						await config.save(DefaultConfigFolder.getPath());
-					}
+					},
 				)
 				.command(
 					"clone",
@@ -81,7 +81,7 @@ export default async function repositoriesMain(
 							const repositoryList =
 								await RepositoryList.fromPath(
 									RepositoryList.defaultConfigurationFile(),
-									octokit
+									octokit,
 								);
 
 							// Clone all repositories
@@ -97,7 +97,7 @@ export default async function repositoriesMain(
 								});
 							}
 						}
-					}
+					},
 				)
 				.command(
 					"combine",
@@ -125,7 +125,7 @@ export default async function repositoriesMain(
 						const monorepoPath = args.monorepoPath;
 
 						await generateMonorepo(pkgsPath, monorepoPath, config);
-					}
+					},
 				)
 				.command(
 					"local-config",
@@ -153,12 +153,12 @@ export default async function repositoriesMain(
 								await LocalRepositoryList.fromPath(args.path);
 
 							await setRepositoriesRemotePushUrls(
-								localRepositories
+								localRepositories,
 							);
 
 							console.log("🚀 Configuration update complete.");
 						}
-					}
+					},
 				)
 				.command(
 					"pull",
@@ -181,10 +181,10 @@ export default async function repositoriesMain(
 								config.configuration.repositoriesListing.use ===
 									"whitelist"
 									? config.getWhitelist()
-									: []
+									: [],
 							);
 						await localRepositories.pull();
-					}
+					},
 				)
 				.command(
 					"update",
@@ -212,12 +212,12 @@ export default async function repositoriesMain(
 						if (args.syncInfo) {
 							repositoryList = await RepositoryList.sync(
 								RepositoryList.defaultConfigurationFile(),
-								octokit
+								octokit,
 							);
 						} else {
 							repositoryList = await RepositoryList.fromPath(
 								RepositoryList.defaultConfigurationFile(),
-								octokit
+								octokit,
 							);
 						}
 
@@ -228,12 +228,12 @@ export default async function repositoriesMain(
 								config.configuration.repositoriesListing.use ===
 									"whitelist"
 									? config.getWhitelist()
-									: []
+									: [],
 							);
 
 						// Push or pull repositories based on their last commit date
 						await localRepositories.update();
-					}
+					},
 				)
 				.command(
 					"push",
@@ -256,10 +256,10 @@ export default async function repositoriesMain(
 								config.configuration.repositoriesListing.use ===
 									"whitelist"
 									? config.getWhitelist()
-									: []
+									: [],
 							);
 						await localRepositories.push();
-					}
+					},
 				)
 				.command(
 					"whitelist",
@@ -292,7 +292,7 @@ export default async function repositoriesMain(
 
 						// Save configuration
 						await config.save(DefaultConfigFolder.getPath());
-					}
+					},
 				)
 				.option("select", {
 					type: "string",
@@ -315,7 +315,7 @@ export default async function repositoriesMain(
 					config.setListType(select);
 				} else {
 					throw new Error(
-						"Select can be only 'blacklist' or 'whitelist'"
+						"Select can be only 'blacklist' or 'whitelist'",
 					);
 				}
 			}
@@ -342,6 +342,6 @@ export default async function repositoriesMain(
 					}
 				}
 			}
-		}
+		},
 	);
 }
