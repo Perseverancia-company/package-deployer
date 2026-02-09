@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.4.0
+
+Added
+- Update command for package managers
+
 ## 3.3.1
 
 Added

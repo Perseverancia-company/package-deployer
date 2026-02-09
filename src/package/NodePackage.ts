@@ -86,6 +86,24 @@ export default class NodePackage {
 	}
 
 	/**
+	 * Update packages by name
+	 */
+	async updatePackages(packages: string[]) {
+		const pkgMng = await NodePackage.createPackageManager(this.path);
+
+		// We've gotta lock the package json so that pnpm doesn't converts asterisks(*) to
+		// a version.
+		pkgMng.update().lockPackageJson();
+
+		// Add all packages to the update
+		for (const packageName of packages) {
+			pkgMng.addPackage(packageName);
+		}
+
+		return await pkgMng.run();
+	}
+
+	/**
 	 * Run npm build
 	 */
 	async build() {

@@ -51,6 +51,33 @@ export default class PNPM extends PackageManagerController {
 	}
 
 	/**
+	 * Don't update package versions
+	 *
+	 * In pnpm this is the argument "--no-save"
+	 * In npm don't do anything
+	 */
+	lockPackageJson(): this {
+		this.args.push("--no-save");
+		return this;
+	}
+
+	/**
+	 * Update
+	 */
+	update(): this {
+		this.commands.push("update");
+		return this;
+	}
+
+	/**
+	 * Add a package to update
+	 */
+	addPackage(packageName: string): this {
+		this.args.push(packageName);
+		return this;
+	}
+
+	/**
 	 * Set arg to not use/update lockfile
 	 * Equivalent to npm's --no-package-lock
 	 */

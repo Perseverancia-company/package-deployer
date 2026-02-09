@@ -25,7 +25,25 @@ export default abstract class PackageManagerController {
 	 * Build command
 	 */
 	abstract build(): this;
-	
+
+	/**
+	 * Don't update package versions
+	 *
+	 * In pnpm this is the argument "--no-save"
+	 * In npm don't do anything
+	 */
+	abstract lockPackageJson(): this;
+
+	/**
+	 * Update
+	 */
+	abstract update(): this;
+
+	/**
+	 * Add a package to update
+	 */
+	abstract addPackage(packageName: string): this;
+
 	/**
 	 * Publish command
 	 */
