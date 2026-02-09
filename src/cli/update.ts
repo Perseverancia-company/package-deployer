@@ -14,7 +14,7 @@ import DeploymentState from "@/data/DeploymentState";
 export default async function updateMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
-	octokit: Octokit,
+	octokit: Octokit
 ) {
 	return yargs.command(
 		"update",
@@ -26,15 +26,21 @@ export default async function updateMain(
 			// Get(locally) or fetch(from github) repository list
 			const repositoryList = await RepositoryList.sync(
 				RepositoryList.defaultConfigurationFile(),
-				octokit,
+				octokit
 			);
+			
+			// Clone missing repositories
+			await repositoryList.cloneAll({
+				whitelist: config.getWhitelist(),
+				cloneAt: config.getPackagesPath(),
+			});
 
 			// Save
 			await repositoryList.save();
 
 			// Read all the repositories at the path
 			const localRepositories = await LocalRepositoryList.fromPath(
-				config.getPackagesPath(),
+				config.getPackagesPath()
 			);
 
 			// Pull all the repositories if they are newer on the remote
@@ -43,7 +49,7 @@ export default async function updateMain(
 				localRepositories,
 				config.configuration.repositoriesListing.use === "whitelist"
 					? config.getWhitelist()
-					: [],
+					: []
 			);
 
 			// Push or pull based on the repositories last commit date
@@ -51,7 +57,7 @@ export default async function updateMain(
 
 			// Get package list
 			const packageList = await NodePackageList.fromPackagesPath(
-				config.getPackagesPath(),
+				config.getPackagesPath()
 			);
 
 			// Deployment state
@@ -61,9 +67,9 @@ export default async function updateMain(
 			const orchestrator = new PackageDeployerOrchestrator(
 				config,
 				packageList,
-				deploymentState,
+				deploymentState
 			);
 			await orchestrator.incrementalDeployment();
-		},
+		}
 	);
 }

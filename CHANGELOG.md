@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.3.1
+
+Added
+- Update command also clones repositories
+
 ## 3.3.0
 
 Changed
