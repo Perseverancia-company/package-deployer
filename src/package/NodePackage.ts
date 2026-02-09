@@ -16,15 +16,19 @@ export default class NodePackage {
 	packageName: string;
 	name: string;
 
+	// Whether node modules is there or not
+	hasNodeModules: boolean;
+
 	/**
 	 * Constructor
 	 *
 	 * @param appPath
 	 * @param packageJson
 	 */
-	constructor(appPath: string, packageJson: any) {
+	constructor(appPath: string, packageJson: any, hasNodeModules: boolean) {
 		this.path = appPath;
 		this.packageJson = packageJson;
+		this.hasNodeModules = hasNodeModules;
 
 		// Get package name
 		this.packageName = packageJson["name"];
@@ -56,12 +60,29 @@ export default class NodePackage {
 	}
 
 	/**
+	 * Check if it has node modules
+	 */
+	static async hasNodeModules(packagePath: string) {
+		try {
+			const nodeModulesPath = path.join(packagePath, "node_modules");
+			await fsp.statfs(nodeModulesPath);
+
+			return true;
+		} catch (err) {}
+
+		return false;
+	}
+
+	/**
 	 * Create from a given path
 	 */
 	static async fromPath(packagePath: string) {
 		// Get package json
-		const packageJson = await appPackageJson(packagePath);
-		return new NodePackage(packagePath, packageJson);
+		const [packageJson, hasNodeModules] = await Promise.all([
+			appPackageJson(packagePath),
+			NodePackage.hasNodeModules(packagePath),
+		]);
+		return new NodePackage(packagePath, packageJson, hasNodeModules);
 	}
 
 	/**
