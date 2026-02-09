@@ -10,6 +10,8 @@ Smart deployment will only update what's necesssary, it won't re-build and publi
 
 ## TODO
 
+-   [x] Update packages instead of installing when the node modules folder exists
+
 -   [x] Save successfully deployed packages
 
 -   [x] Get all packages at a path

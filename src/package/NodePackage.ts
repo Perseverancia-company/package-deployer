@@ -42,6 +42,16 @@ export default class NodePackage {
 	}
 
 	/**
+	 * Get dependencies and dev dependencies
+	 */
+	getDependencies() {
+		return [
+			...Object.keys(this.packageJson.dependencies),
+			...Object.keys(this.packageJson.devDependencies),
+		];
+	}
+
+	/**
 	 * Create package manager based on whether it's npm or pnpm
 	 */
 	static async createPackageManager(

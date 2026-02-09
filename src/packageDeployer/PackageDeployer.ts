@@ -28,7 +28,20 @@ export default class PackageDeployer {
 		const packageDeploymentResult: Array<ITaskDeploymentResult> = [];
 		for (const nodePackage of this.packages) {
 			try {
-				await nodePackage.install();
+				// Install packages for the first time
+				if (!nodePackage.hasNodeModules) {
+					await nodePackage.install();
+				} else {
+					// Get dependencies
+					const dependencies = nodePackage.getDependencies();
+
+					// Get only dependencies that are in the list
+					const packagesToUpdate = this.packages
+						.filter((pkg) => dependencies.includes(pkg.packageName))
+						.map((pkg) => pkg.packageName);
+
+					await nodePackage.updatePackages(packagesToUpdate);
+				}
 				await nodePackage.build();
 
 				// Check that the package isn't private
