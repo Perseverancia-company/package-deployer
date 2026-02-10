@@ -115,7 +115,12 @@ export default class NodePackage {
 		const pkgMng = await NodePackage.createPackageManager(this.path);
 
 		// Install packages, don't change package json and use force to ignore integrity checks
-		return await pkgMng.install().lockPackageJson().force().run();
+		return await pkgMng
+			.install()
+			.noPackageLock()
+			.lockPackageJson()
+			.force()
+			.run();
 	}
 
 	/**
