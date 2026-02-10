@@ -31,17 +31,19 @@ export default class PackageDeployer {
 				// Install packages for the first time
 				if (!nodePackage.hasNodeModules) {
 					await nodePackage.install();
-				} else {
-					// Get dependencies
-					const dependencies = nodePackage.getDependencies();
-
-					// Get only dependencies that are in the list
-					const packagesToUpdate = this.packages
-						.filter((pkg) => dependencies.includes(pkg.packageName))
-						.map((pkg) => pkg.packageName);
-
-					await nodePackage.updatePackages(packagesToUpdate);
 				}
+
+				// No matter what we may still need to update our own packages
+				// Get dependencies
+				const dependencies = nodePackage.getDependencies();
+
+				// Get only dependencies that are in the list
+				const packagesToUpdate = this.packages
+					.filter((pkg) => dependencies.includes(pkg.packageName))
+					.map((pkg) => pkg.packageName);
+
+				await nodePackage.updatePackages(packagesToUpdate);
+
 				await nodePackage.build();
 
 				// Check that the package isn't private
@@ -58,7 +60,7 @@ export default class PackageDeployer {
 				});
 			} catch (err) {
 				console.log(
-					`Package ${nodePackage.packageName} failed to be deployed`
+					`Package ${nodePackage.packageName} failed to be deployed`,
 				);
 				packageDeploymentResult.push({
 					packageName: nodePackage.packageName,
@@ -82,7 +84,7 @@ export default class PackageDeployer {
 		// File path
 		const filePath = path.join(
 			DefaultConfigFolder.getPath(),
-			"deploymentResult.json"
+			"deploymentResult.json",
 		);
 
 		// Save as json
