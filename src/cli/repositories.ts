@@ -221,6 +221,17 @@ export default async function repositoriesMain(
 							);
 						}
 
+						// Clone and save
+						await Promise.all([
+							// Clone missing repositories
+							repositoryList.cloneAll({
+								whitelist: config.getWhitelist(),
+								cloneAt: config.getPackagesPath(),
+							}),
+							// Save
+							repositoryList.save(),
+						]);
+
 						// Get local repositories list
 						const localRepositories =
 							await LocalRepositories.fromPath(

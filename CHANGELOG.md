@@ -4,6 +4,8 @@
 
 Added
 - Update command for package managers
+- Package deployer updates package dependencies
+- Repositories update also clones missing repositories
 
 ## 3.3.1
 
