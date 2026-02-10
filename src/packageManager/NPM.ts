@@ -59,6 +59,16 @@ export default class NPM extends PackageManagerController {
 	}
 
 	/**
+	 * Install or update by force
+	 * 
+	 * Necessary since I change computers often
+	 */
+	force(): this {
+		this.args.push("--force");
+		return this;
+	}
+
+	/**
 	 * Update
 	 */
 	update(): this {

@@ -35,6 +35,11 @@ export default abstract class PackageManagerController {
 	abstract lockPackageJson(): this;
 
 	/**
+	 * Force
+	 */
+	abstract force(): this;
+
+	/**
 	 * Update
 	 */
 	abstract update(): this;

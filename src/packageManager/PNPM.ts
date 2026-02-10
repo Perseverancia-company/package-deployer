@@ -62,6 +62,16 @@ export default class PNPM extends PackageManagerController {
 	}
 
 	/**
+	 * Install or update by force
+	 *
+	 * Necessary since I change computers often
+	 */
+	force(): this {
+		this.args.push("--force");
+		return this;
+	}
+
+	/**
 	 * Update
 	 */
 	update(): this {
@@ -106,7 +116,7 @@ export default class PNPM extends PackageManagerController {
 		return await promisifiedSpawn(
 			firstCommand,
 			[...this.commands, ...this.args],
-			spawnOptions
+			spawnOptions,
 		);
 	}
 }

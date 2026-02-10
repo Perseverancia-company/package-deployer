@@ -6,6 +6,7 @@ Added
 - Update command for package managers
 - Package deployer updates package dependencies
 - Repositories update also clones missing repositories
+- Use force to skip integrity checks
 
 ## 3.3.1
 

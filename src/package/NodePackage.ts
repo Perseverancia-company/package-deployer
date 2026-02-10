@@ -55,7 +55,7 @@ export default class NodePackage {
 	 * Create package manager based on whether it's npm or pnpm
 	 */
 	static async createPackageManager(
-		packagePath: string
+		packagePath: string,
 	): Promise<PackageManagerEngine> {
 		try {
 			// Check if it has package lock
@@ -102,7 +102,7 @@ export default class NodePackage {
 		const packageJsonPath = path.join(this.path, "package.json");
 		await fsp.writeFile(
 			packageJsonPath,
-			JSON.stringify(this.packageJson, null, 4)
+			JSON.stringify(this.packageJson, null, 4),
 		);
 	}
 
@@ -113,7 +113,9 @@ export default class NodePackage {
 	 */
 	async install() {
 		const pkgMng = await NodePackage.createPackageManager(this.path);
-		return await pkgMng.install().noPackageLock().run();
+
+		// Install packages, don't change package json and use force to ignore integrity checks
+		return await pkgMng.install().lockPackageJson().force().run();
 	}
 
 	/**
@@ -124,7 +126,8 @@ export default class NodePackage {
 
 		// We've gotta lock the package json so that pnpm doesn't converts asterisks(*) to
 		// a version.
-		pkgMng.update().lockPackageJson();
+		// We also need to use force so that integrity checks are skipped
+		pkgMng.update().lockPackageJson().force();
 
 		// Add all packages to the update
 		for (const packageName of packages) {
