@@ -55,6 +55,11 @@ export default abstract class PackageManagerController {
 	abstract publish(): this;
 
 	/**
+	 * Force pnpm to ignore the lockfile and fetch the latest matching versions
+	 */
+	abstract preferLatest(): this;
+
+	/**
 	 * Set arg to not use/update lockfile
 	 */
 	abstract noPackageLock(): this;

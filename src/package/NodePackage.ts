@@ -120,14 +120,25 @@ export default class NodePackage {
 
 	/**
 	 * Update packages by name
+	 *
+	 * We've gotta lock the package json so that pnpm doesn't converts asterisks(*) to
+	 * a version.
+	 *
+	 * We also need to use force so that integrity checks are skipped
+	 *
+	 * Force works well for the same package version, but some of my computers
+	 * on their verdaccio have a latest version of that package than others, so it fails to install the same version
+	 * therefore we need to not use the package lock and prefer the latest always.
 	 */
 	async updatePackages(packages: string[]) {
 		const pkgMng = await NodePackage.createPackageManager(this.path);
 
-		// We've gotta lock the package json so that pnpm doesn't converts asterisks(*) to
-		// a version.
-		// We also need to use force so that integrity checks are skipped
-		pkgMng.update().lockPackageJson().force();
+		pkgMng
+			.update()
+			.lockPackageJson()
+			.noPackageLock()
+			.preferLatest()
+			.force();
 
 		// Add all packages to the update
 		for (const packageName of packages) {

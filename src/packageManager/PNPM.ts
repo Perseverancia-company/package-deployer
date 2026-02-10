@@ -88,13 +88,22 @@ export default class PNPM extends PackageManagerController {
 	}
 
 	/**
+	 * Force pnpm to ignore the lockfile and fetch the latest matching versions
+	 */
+	preferLatest(): this {
+		// --no-lockfile tells pnpm not to read or write pnpm-lock.yaml
+		this.args.push("--no-lockfile");
+		return this;
+	}
+
+	/**
 	 * Set arg to not use/update lockfile
 	 * Equivalent to npm's --no-package-lock
 	 */
 	noPackageLock() {
 		// In pnpm, --frozen-lockfile prevents updating the lockfile
 		// Or --no-frozen-lockfile depending on your specific intent
-		this.args.push("--frozen-lockfile");
+		this.args.push("--frozen-lockfile=false");
 		return this;
 	}
 

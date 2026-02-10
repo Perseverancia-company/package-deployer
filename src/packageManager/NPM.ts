@@ -60,7 +60,7 @@ export default class NPM extends PackageManagerController {
 
 	/**
 	 * Install or update by force
-	 * 
+	 *
 	 * Necessary since I change computers often
 	 */
 	force(): this {
@@ -81,6 +81,14 @@ export default class NPM extends PackageManagerController {
 	 */
 	addPackage(packageName: string): this {
 		this.args.push(packageName);
+		return this;
+	}
+
+	/**
+	 * Force npm to ignore the lockfile and fetch the latest matching versions
+	 */
+	preferLatest(): this {
+		this.args.push("--prefer-online");
 		return this;
 	}
 
@@ -114,7 +122,7 @@ export default class NPM extends PackageManagerController {
 			{
 				shell: useShell,
 				cwd: this.packagePath,
-			}
+			},
 		);
 	}
 }
