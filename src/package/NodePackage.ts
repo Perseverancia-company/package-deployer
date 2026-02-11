@@ -52,7 +52,7 @@ export default class NodePackage {
 	 * Get package manager type
 	 */
 	static async packageManagerType(
-		packagepath: string,
+		packagePath: string,
 	): Promise<PackageManagerType> {
 		try {
 			// Check if it has package lock
@@ -134,6 +134,25 @@ export default class NodePackage {
 	async deleteNodeModules() {
 		const nodeModulesPath = path.join(this.path, "node_modules");
 		return await fsp.rmdir(nodeModulesPath);
+	}
+
+	/**
+	 * Delete package lock
+	 */
+	async deletePackageLock() {
+		if (this.packageManagerType === "npm") {
+			// Remove package lock
+			const packageLockPath = path.join(this.path, "package-lock.json");
+			await fsp.rm(packageLockPath, {
+				force: true,
+			});
+		} else {
+			// Remove package lock
+			const packageLockPath = path.join(this.path, "pnpm-lock.yaml");
+			await fsp.rm(packageLockPath, {
+				force: true,
+			});
+		}
 	}
 
 	/**

@@ -1,6 +1,9 @@
 import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 import NodePackageList from "@/package/NodePackageList";
 import { PNPM } from "..";
+import path from "path";
+import fsp from "fs/promises";
+import pLimit from "p-limit";
 
 /**
  * Switch main
@@ -22,23 +25,40 @@ export default async function switchMain(
 				config.getPackagesPath(),
 			);
 
-			// Switch to pnpm
-			const promises = [];
-			for (const pkg of packageList.nodePackages) {
-				// If it's an npm package switch to pnpm
-				if (pkg.packageManagerType === "npm") {
-					promises.push(
-						(async () => {
-							// Delete node modules
-							await pkg.deleteNodeModules();
+			// Process 3 packages at a time
+			const limit = pLimit(3);
+			const tasks = packageList.nodePackages
+				.filter((pkg) => pkg.packageManagerType === "npm")
+				.map((pkg) => {
+					// We wrap this logic in the limit function
+					return limit(async () => {
+						console.log(`Switching ${pkg.packageName} to pnpm...`);
+						try {
+							try {
+								// Delete node modules
+								await pkg.deleteNodeModules();
+							} catch (err) {}
+
+							try {
+								// Remove package lock
+								await pkg.deletePackageLock();
+							} catch (err) {}
 
 							// Run pnpm install on it
 							const pnpm = new PNPM(pkg.path);
 							await pnpm.install().run();
-						})(),
-					);
-				}
-			}
+
+							console.log(
+								`Successfully migrated ${pkg.packageName}`,
+							);
+						} catch (err) {
+							console.error(
+								`Failed to migrate ${pkg.packageName}:`,
+								err,
+							);
+						}
+					});
+				});
 		},
 	);
 }
