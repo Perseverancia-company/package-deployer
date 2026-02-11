@@ -85,3 +85,5 @@ export interface LocalRepositoryInfo {
 	name: string;
 	path: string;
 }
+
+export type PackageManagerType = "npm" | "pnpm";

@@ -14,6 +14,8 @@ import updateMain from "./update";
 import deployMain from "./deploy";
 import printMain from "./print";
 import syncMain from "./sync";
+import buildMain from "./build";
+import switchMain from "./switch";
 
 /**
  * Main
@@ -42,7 +44,7 @@ async function main() {
 		process.env.PACKAGES_PATH ?? config.configuration.packagesPath;
 	if (!packagesPath) {
 		console.warn(
-			"No packages path found, be sure to set it using `config --packages-path PACKAGES_PATH`"
+			"No packages path found, be sure to set it using `config --packages-path PACKAGES_PATH`",
 		);
 	}
 
@@ -51,11 +53,13 @@ async function main() {
 
 	// Run commands
 	const yargsInstance = yargs();
+	await buildMain(yargsInstance);
 	await configurationMain(yargsInstance, config, octokit);
 	await deployMain(yargsInstance, config);
 	await printMain(yargsInstance, config, octokit);
 	await repositoriesMain(yargsInstance, config, octokit);
 	await syncMain(yargsInstance, config, octokit);
+	await switchMain(yargsInstance, config);
 	await updateMain(yargsInstance, config, octokit);
 
 	return yargsInstance.help().parse(hideBin(process.argv));

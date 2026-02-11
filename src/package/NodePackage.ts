@@ -2,7 +2,7 @@ import path from "path";
 import fsp from "fs/promises";
 
 import { appPackageJson } from "../lib/apps";
-import { PackageManagerEngine } from "@/types";
+import { PackageManagerEngine, PackageManagerType } from "@/types";
 import NPM from "@/packageManager/NPM";
 import PNPM from "@/packageManager/PNPM";
 
@@ -15,6 +15,7 @@ export default class NodePackage {
 	packageJson: any;
 	packageName: string;
 	name: string;
+	packageManagerType: PackageManagerType;
 
 	// Whether node modules is there or not
 	hasNodeModules: boolean;
@@ -25,10 +26,16 @@ export default class NodePackage {
 	 * @param appPath
 	 * @param packageJson
 	 */
-	constructor(appPath: string, packageJson: any, hasNodeModules: boolean) {
+	constructor(
+		appPath: string,
+		packageJson: any,
+		hasNodeModules: boolean,
+		packageManagerType: PackageManagerType,
+	) {
 		this.path = appPath;
 		this.packageJson = packageJson;
 		this.hasNodeModules = hasNodeModules;
+		this.packageManagerType = packageManagerType;
 
 		// Get package name
 		this.packageName = packageJson["name"];
@@ -42,13 +49,22 @@ export default class NodePackage {
 	}
 
 	/**
-	 * Get dependencies and dev dependencies
+	 * Get package manager type
 	 */
-	getDependencies() {
-		return [
-			...Object.keys(this.packageJson.dependencies),
-			...Object.keys(this.packageJson.devDependencies),
-		];
+	static async packageManagerType(
+		packagepath: string,
+	): Promise<PackageManagerType> {
+		try {
+			// Check if it has package lock
+			const packageLockPath = path.join(packagePath, "package-lock.json");
+			await fsp.stat(packageLockPath);
+
+			// Create npm engine
+			return "npm";
+		} catch (err) {
+			// Assume it's pnpm for now
+			return "pnpm";
+		}
 	}
 
 	/**
@@ -57,13 +73,13 @@ export default class NodePackage {
 	static async createPackageManager(
 		packagePath: string,
 	): Promise<PackageManagerEngine> {
-		try {
-			// Check if it has package lock
-			await fsp.stat(path.join(packagePath, "package-lock.json"));
-
+		// Get package manager type
+		const pkgManagerType =
+			await NodePackage.packageManagerType(packagePath);
+		if (pkgManagerType === "npm") {
 			// Create npm engine
 			return new NPM(packagePath);
-		} catch (err) {
+		} else {
 			// Assume it's pnpm for now
 			return new PNPM(packagePath);
 		}
@@ -88,11 +104,36 @@ export default class NodePackage {
 	 */
 	static async fromPath(packagePath: string) {
 		// Get package json
-		const [packageJson, hasNodeModules] = await Promise.all([
-			appPackageJson(packagePath),
-			NodePackage.hasNodeModules(packagePath),
-		]);
-		return new NodePackage(packagePath, packageJson, hasNodeModules);
+		const [packageJson, hasNodeModules, packageManagerType] =
+			await Promise.all([
+				appPackageJson(packagePath),
+				NodePackage.hasNodeModules(packagePath),
+				NodePackage.packageManagerType(packagePath),
+			]);
+		return new NodePackage(
+			packagePath,
+			packageJson,
+			hasNodeModules,
+			packageManagerType,
+		);
+	}
+
+	/**
+	 * Get dependencies and dev dependencies
+	 */
+	getDependencies() {
+		return [
+			...Object.keys(this.packageJson.dependencies),
+			...Object.keys(this.packageJson.devDependencies),
+		];
+	}
+
+	/**
+	 * Delete node modules
+	 */
+	async deleteNodeModules() {
+		const nodeModulesPath = path.join(this.path, "node_modules");
+		return await fsp.rmdir(nodeModulesPath);
 	}
 
 	/**

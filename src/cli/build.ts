@@ -1,18 +1,14 @@
-import { Octokit } from "@octokit/rest";
 import os from "os";
 import fsp from "fs/promises";
 import { inject } from "postject";
 
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 import { execPromise } from "@/lib";
 
 /**
- * Configuration
+ * Build
  */
-export default async function configurationMain(
-	yargs: any,
-	config: PackageDeployerConfiguration,
-	octokit: Octokit
+export default async function buildMain(
+	yargs: any
 ) {
 	return yargs.command(
 		"build",
