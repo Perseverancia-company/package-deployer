@@ -179,6 +179,7 @@ export default class NodePackage {
 			.install()
 			.noPackageLock()
 			.lockPackageJson()
+			.preferLatest()
 			.force()
 			.run();
 	}
