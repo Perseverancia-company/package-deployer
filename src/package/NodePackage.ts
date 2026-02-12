@@ -201,7 +201,8 @@ export default class NodePackage {
 		pkgMng
 			.update()
 			.lockPackageJson()
-			.noPackageLock()
+			// "Frozen lockfile" of pnpm is not available for updating a package
+			// .noPackageLock()
 			.preferLatest()
 			.force();
 
