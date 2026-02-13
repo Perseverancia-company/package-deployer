@@ -1,5 +1,5 @@
 import NodePackageList from "@/package/NodePackageList";
-import { PNPM, PackageDeployerConfiguration } from "..";
+import { PackageDeployerConfiguration } from "..";
 import pLimit from "p-limit";
 import simpleGit, { CleanOptions } from "simple-git";
 
@@ -41,20 +41,28 @@ export default async function revertSwitchMain(
 							// Create git instance
 							const git = simpleGit(pkg.path);
 
-							// Do git restore (discards changes to tracked files)
-							// Equivalent to: git checkout -- .
-							await git.checkout(".");
+							// Get the current status of the repository
+							const status = await git.status();
+							if (!status.isClean()) {
+								// Do git restore (discards changes to tracked files)
+								// Equivalent to: git checkout -- .
+								await git.checkout(".");
 
-							// Do git clean using force (removes untracked files and directories)
-							// Equivalent to: git clean -fd
-							// 'f' for force, 'd' for directories
-							await git.clean(
-								CleanOptions.FORCE + CleanOptions.RECURSIVE,
-							);
+								// Do git clean using force (removes untracked files and directories)
+								// Equivalent to: git clean -fd
+								// 'f' for force, 'd' for directories
+								await git.clean(
+									CleanOptions.FORCE + CleanOptions.RECURSIVE,
+								);
 
-							console.log(
-								`Successfully reverted ${pkg.packageName}`,
-							);
+								console.log(
+									`Successfully reverted ${pkg.packageName}`,
+								);
+							} else {
+								console.log(
+									`No changes found in ${pkg.packageName}. Skipping.`,
+								);
+							}
 						} catch (err) {
 							console.error(
 								`Failed to revert ${pkg.packageName}:`,
