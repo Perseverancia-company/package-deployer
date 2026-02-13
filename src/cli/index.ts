@@ -16,6 +16,7 @@ import printMain from "./print";
 import syncMain from "./sync";
 import buildMain from "./build";
 import switchMain from "./switch";
+import revertSwitchMain from "./revert-switch";
 
 /**
  * Main
@@ -58,6 +59,7 @@ async function main() {
 	await deployMain(yargsInstance, config);
 	await printMain(yargsInstance, config, octokit);
 	await repositoriesMain(yargsInstance, config, octokit);
+	await revertSwitchMain(yargsInstance, config);
 	await syncMain(yargsInstance, config, octokit);
 	await switchMain(yargsInstance, config);
 	await updateMain(yargsInstance, config, octokit);
