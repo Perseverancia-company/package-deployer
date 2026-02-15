@@ -1,13 +1,14 @@
 import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 import { setRepositoriesRemotePushUrls } from "@/repository";
 import LocalRepositoryList from "@/repository/LocalRepositoryList";
+import path from "path";
 
 /**
  * Local config command
  */
 export default function localConfigMain(
 	yargs: any,
-	config: PackageDeployerConfiguration
+	config: PackageDeployerConfiguration,
 ) {
 	return yargs.command(
 		"local-config",
@@ -25,17 +26,28 @@ export default function localConfigMain(
 					description:
 						"Set the preferred configuration check documentation for specifics",
 					default: false,
+				})
+				.option("bare-repositories-path", {
+					type: "string",
+					description: "The path to the bare repositories, the local repositories will be pushed to these if they exist.",
+					default: path.join("srv", "git", "user", "Javascript"),
 				});
 		},
 		async (args: any) => {
 			// Set preferred configuration on every repository
 			if (args.preferredConfiguration) {
+				const bareRepositoriesPath: string = args.bareRepositoriesPath;
+
 				// Read all the repositories at the path
 				const localRepositories = await LocalRepositoryList.fromPath(
 					args.path,
 				);
 
-				await setRepositoriesRemotePushUrls(localRepositories);
+				// Set repositories remote push urls
+				await setRepositoriesRemotePushUrls(
+					localRepositories,
+					bareRepositoriesPath,
+				);
 
 				console.log("🚀 Configuration update complete.");
 			}

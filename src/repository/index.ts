@@ -5,6 +5,7 @@ import pc from "picocolors";
 
 import LocalRepositoryList from "./LocalRepositoryList";
 import { execPromise } from "@/lib";
+import path from "path";
 
 /**
  * Get all repositories
@@ -20,7 +21,7 @@ export async function getAllRepositories(octokit: Octokit) {
 				visibility: "all", // Options: 'all', 'public', 'private'
 				affiliation: "owner", // Ensures you only get repos you own (not just members of)
 				per_page: 100, // Maximum per request to reduce number of calls
-			}
+			},
 		);
 
 		console.log(`Successfully fetched ${repos.length} repositories.`);
@@ -47,7 +48,8 @@ export async function getAllRepositories(octokit: Octokit) {
  * Set repositories remote push urls
  */
 export async function setRepositoriesRemotePushUrls(
-	localRepositories: LocalRepositoryList
+	localRepositories: LocalRepositoryList,
+	bareRepositoriesPath: string,
 ) {
 	for (const repo of localRepositories.repositories) {
 		console.log(`Checking configuration for: ${repo.name}...`);
@@ -68,7 +70,7 @@ export async function setRepositoriesRemotePushUrls(
 					{
 						cwd: repo.path,
 						encoding: "utf8",
-					}
+					},
 				);
 				existingPushUrls = output.stdout
 					.split("\n")
@@ -86,13 +88,16 @@ export async function setRepositoriesRemotePushUrls(
 					`git remote set-url --add --push origin ${fetchUrl}`,
 					{
 						cwd: repo.path,
-					}
+					},
 				);
 				console.log(`[${repo.name}] Added GitHub push URL.`);
 			}
 
 			// Define our target URLs
-			const localBarePath = `/srv/git/user/Javascript/${repo.name}.git`;
+			const localBarePath = path.join(
+				bareRepositoriesPath,
+				`${repo.name}.git`,
+			);
 			try {
 				// Check if the local bare repository path actually exists
 				await fsp.access(localBarePath);
@@ -101,19 +106,19 @@ export async function setRepositoriesRemotePushUrls(
 				if (!existingPushUrls.includes(localBarePath)) {
 					await execPromise(
 						`git remote set-url --add --push origin ${localBarePath}`,
-						{ cwd: repo.path }
+						{ cwd: repo.path },
 					);
 					console.log(`[${repo.name}] Added Local Bare push URL.`);
 				}
 			} catch (error) {
 				// This block triggers if fsp.access fails
 				console.warn(
-					`⚠️ [${repo.name}] Skipping local backup: Path ${localBarePath} does not exist.`
+					`⚠️ [${repo.name}] Skipping local backup: Path ${localBarePath} does not exist.`,
 				);
 			}
 		} catch (err) {
 			console.error(
-				`❌ Skipped ${repo.name}: Not a git repository or origin missing.`
+				`❌ Skipped ${repo.name}: Not a git repository or origin missing.`,
 			);
 		}
 	}
