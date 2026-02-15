@@ -29,15 +29,16 @@ export default function localConfigMain(
 				})
 				.option("bare-repositories-path", {
 					type: "string",
-					description: "The path to the bare repositories, the local repositories will be pushed to these if they exist.",
-					default: path.join("srv", "git", "user", "Javascript"),
+					description:
+						"The path to the bare repositories, the local repositories will be pushed to these if they exist.",
+					default: path.join("/srv", "git", "user", "Javascript"),
 				});
 		},
 		async (args: any) => {
+			const bareRepositoriesPath: string = args.bareRepositoriesPath;
+
 			// Set preferred configuration on every repository
 			if (args.preferredConfiguration) {
-				const bareRepositoriesPath: string = args.bareRepositoriesPath;
-
 				// Read all the repositories at the path
 				const localRepositories = await LocalRepositoryList.fromPath(
 					args.path,
