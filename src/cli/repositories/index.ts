@@ -9,6 +9,7 @@ import combineMain from "./combine";
 import localConfigMain from "./local-config";
 import pullMain from "./pull";
 import updateMain from "./update";
+import pushMain from "./push";
 
 /**
  * Repositories command
@@ -22,13 +23,13 @@ export default async function repositoriesMain(
 		"repositories",
 		"Repositories management",
 		function (yargs: any) {
-
 			// Run subcommands
 			blacklistMain(yargs, config);
 			cloneMain(yargs, config, octokit);
 			combineMain(yargs, config);
 			localConfigMain(yargs, config);
 			pullMain(yargs, config);
+			pushMain(yargs, config);
 			updateMain(yargs, config, octokit);
 
 			return yargs
