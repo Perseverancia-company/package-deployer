@@ -2,6 +2,8 @@
 
 External TODO means to do something in another repository that will control this one in some way.
 
+## Frontend command definitions
+
 - [ ] Make a frontend to define the commands
 	- [ ] Define the command
 		- [ ] The description

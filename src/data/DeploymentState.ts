@@ -1,5 +1,4 @@
 import fsp from "fs/promises";
-import DefaultConfigFolder from "@/configuration/DefaultConfigFolder";
 import path from "path";
 import { parse, stringify } from "yaml";
 
@@ -61,11 +60,11 @@ export default class DeploymentState {
 	/**
 	 * Get file path
 	 */
-	static filePath() {
+	static filePath(configurationPath: string) {
 		// File path
 		const filePath = path.join(
-			DefaultConfigFolder.getPath(),
-			"packageDeploymentState.yaml"
+			configurationPath,
+			"packageDeploymentState.yaml",
 		);
 		return filePath;
 	}
@@ -73,12 +72,15 @@ export default class DeploymentState {
 	/**
 	 * Load
 	 */
-	static async load() {
+	static async load(configurationPath: string) {
 		try {
 			// Read file
-			const data = await fsp.readFile(DeploymentState.filePath(), {
-				encoding: "utf-8",
-			});
+			const data = await fsp.readFile(
+				DeploymentState.filePath(configurationPath),
+				{
+					encoding: "utf-8",
+				},
+			);
 
 			// Parse data
 			const parsedData = parse(data);
@@ -96,12 +98,16 @@ export default class DeploymentState {
 	/**
 	 * Save deployment state
 	 */
-	async save() {
+	async save(configurationPath: string) {
 		const data = stringify(this.deploymentState);
 
 		// Save as json
-		return await fsp.writeFile(DeploymentState.filePath(), data, {
-			encoding: "utf-8",
-		});
+		return await fsp.writeFile(
+			DeploymentState.filePath(configurationPath),
+			data,
+			{
+				encoding: "utf-8",
+			},
+		);
 	}
 }

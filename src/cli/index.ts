@@ -5,8 +5,7 @@ import { hideBin } from "yargs/helpers";
 import { Octokit } from "@octokit/rest";
 import dotenv from "dotenv";
 
-import PackageDeployerConfiguration from "../packageDeployer/PackageDeployerConfiguration";
-import DefaultConfigFolder from "@/configuration/DefaultConfigFolder";
+import PackageDeployerConfiguration from "../configuration/PackageDeployerConfiguration";
 import RepositoriesFolder from "@/repository/RepositoriesFolder";
 import repositoriesMain from "./repositories";
 import configurationMain from "./config";
@@ -17,6 +16,7 @@ import syncMain from "./sync";
 import buildMain from "./build";
 import switchMain from "./switch";
 import revertSwitchMain from "./revert-switch";
+import DefaultAppFolder from "@/configuration/DefaultAppFolder";
 
 /**
  * Main
@@ -26,11 +26,20 @@ async function main() {
 	dotenv.config({});
 
 	// Run some asynchronous tasks
-	const [_a] = await Promise.all([DefaultConfigFolder.createFolder()]);
+	const [daf] = await Promise.all([
+		DefaultAppFolder.fromGlobalConfiguration(),
+	]);
 
 	const [config] = await Promise.all([
-		PackageDeployerConfiguration.load(),
-		new RepositoriesFolder().createFolder(),
+		PackageDeployerConfiguration.load({
+			appPath: daf.appPath,
+			configPath: daf.configurationPath,
+		}),
+		daf.createFolders(),
+	]);
+
+	await Promise.all([
+		new RepositoriesFolder(config.repositoriesPath).createFolder(),
 	]);
 
 	// Github token

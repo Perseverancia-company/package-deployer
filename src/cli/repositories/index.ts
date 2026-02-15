@@ -2,7 +2,7 @@ import { Octokit } from "@octokit/rest";
 import fsp from "fs/promises";
 import path from "path";
 
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 import blacklistMain from "./blacklist";
 import cloneMain from "./clone";
 import combineMain from "./combine";
@@ -59,7 +59,7 @@ export default async function repositoriesMain(
 			}
 
 			// Save configuration
-			await config.save();
+			await config.save(config.configurationPath);
 
 			// Delete local repositories
 			if (args.deleteBlacklisted) {

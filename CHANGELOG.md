@@ -7,6 +7,8 @@ Added
 - Package deployer updates package dependencies
 - Repositories update also clones missing repositories
 - Use force to skip integrity checks
+- App path can be changed
+This will allow using a global path with permissions for other users
 
 ## 3.3.1
 

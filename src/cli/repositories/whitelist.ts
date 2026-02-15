@@ -1,5 +1,5 @@
-import { DefaultConfigFolder, RepositoryList } from "@/index";
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
+import { DefaultConfigFolder } from "@/index";
+import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 
 /**
  * Whitelist command
@@ -37,7 +37,7 @@ export default function whitelistMain(
 			}
 
 			// Save configuration
-			await config.save(DefaultConfigFolder.getPath());
+			await config.save(config.configurationPath);
 		},
 	);
 }

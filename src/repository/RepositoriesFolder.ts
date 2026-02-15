@@ -1,7 +1,5 @@
 import fsp from "fs/promises";
 
-import DefaultConfigFolder from "@/configuration/DefaultConfigFolder";
-
 /**
  * Repositories folder
  */
@@ -11,7 +9,7 @@ export default class RepositoriesFolder {
 	/**
 	 * Repositories folder
 	 */
-	constructor(reposPath: string = DefaultConfigFolder.repositoriesPath()) {
+	constructor(reposPath: string) {
 		this.repositoriesPath = reposPath;
 	}
 

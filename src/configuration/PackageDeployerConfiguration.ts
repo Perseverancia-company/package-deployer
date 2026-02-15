@@ -3,7 +3,6 @@ import fsp from "fs/promises";
 import path from "path";
 
 import { IPackageDeployerConfiguration } from "../types";
-import DefaultConfigFolder from "../configuration/DefaultConfigFolder";
 
 export const DEPLOYER_CONFIG_FILENAME = "deployer-config.yaml";
 
@@ -20,6 +19,50 @@ export default class PackageDeployerConfiguration {
 		this.configuration = configuration;
 	}
 
+	// --- App folders ---
+	/**
+	 * App path
+	 */
+	get appPath() {
+		return this.configuration.appPath;
+	}
+
+	/**
+	 * Get packages path
+	 */
+	get packagesPath() {
+		return this.configuration.packagesPath;
+	}
+
+	/**
+	 * Repositories path
+	 */
+	get repositoriesPath() {
+		return path.join(this.appPath, "repos");
+	}
+
+	/**
+	 * Default monorepo path
+	 */
+	get monorepoPath() {
+		return path.join(this.appPath, "monorepo");
+	}
+
+	/**
+	 * Default configuration path
+	 */
+	get configurationPath() {
+		return path.join(this.appPath, "configuration");
+	}
+
+	/**
+	 * Default data path
+	 */
+	get dataPath() {
+		return path.join(this.appPath, "data");
+	}
+
+	// --- Configuration ---
 	/**
 	 * Add a repository to the whitelist
 	 */
@@ -139,7 +182,7 @@ export default class PackageDeployerConfiguration {
 		// File path
 		const filePath = path.join(
 			process.cwd(),
-			"defaultPackageDeployerConfiguration.yaml"
+			"defaultPackageDeployerConfiguration.yaml",
 		);
 
 		try {
@@ -158,19 +201,14 @@ export default class PackageDeployerConfiguration {
 	/**
 	 * Load
 	 */
-	static async load(
-		configuration: {
-			configPath: string;
-			useDefaults: boolean;
-		} = {
-			configPath: DefaultConfigFolder.getPath(),
-			useDefaults: true,
-		}
-	) {
+	static async load(configuration: {
+		appPath: string;
+		configPath: string;
+	}) {
 		// File path
 		const filePath = path.join(
 			configuration.configPath,
-			DEPLOYER_CONFIG_FILENAME
+			DEPLOYER_CONFIG_FILENAME,
 		);
 
 		try {
@@ -191,12 +229,13 @@ export default class PackageDeployerConfiguration {
 
 		// File doesn't exists, create it
 		const data: IPackageDeployerConfiguration = {
+			appPath: configuration.appPath,
 			repositoriesListing: {
 				blacklist: [],
 				whitelist: [],
 				use: "whitelist",
 			},
-			packagesPath: DefaultConfigFolder.repositoriesPath(),
+			packagesPath: path.join(configuration.appPath, "repos"),
 			packagesBlacklist: [],
 			// Override with default options
 			...defaultPackageDeployerConfiguration,
@@ -208,7 +247,7 @@ export default class PackageDeployerConfiguration {
 	/**
 	 * Save
 	 */
-	async save(configPath: string = DefaultConfigFolder.getPath()) {
+	async save(configPath: string) {
 		// Filepath
 		const filePath = path.join(configPath, DEPLOYER_CONFIG_FILENAME);
 

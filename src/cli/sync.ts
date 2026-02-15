@@ -1,7 +1,7 @@
 import { Octokit } from "@octokit/rest";
 
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
 import RepositoryList from "@/repository/RepositoryList";
+import { PackageDeployerConfiguration } from "..";
 
 /**
  * Sync
@@ -9,7 +9,7 @@ import RepositoryList from "@/repository/RepositoryList";
 export default async function syncMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
-	octokit: Octokit
+	octokit: Octokit,
 ) {
 	return yargs.command(
 		"sync",
@@ -17,7 +17,8 @@ export default async function syncMain(
 		(args: any) => {
 			return args.option("repositories", {
 				type: "boolean",
-				description: "Sync repositories information fetching it from the services",
+				description:
+					"Sync repositories information fetching it from the services",
 			});
 		},
 		async (args: any) => {
@@ -25,13 +26,16 @@ export default async function syncMain(
 			if (args.repositories) {
 				// Get(locally) or fetch(from github) repository list
 				const repositoryList = await RepositoryList.sync(
-					RepositoryList.defaultConfigurationFile(),
-					octokit
+					RepositoryList.defaultConfigurationFile(
+						config.configurationPath,
+					),
+					octokit,
+					config.repositoriesPath,
 				);
 
 				// Save
 				await repositoryList.save();
 			}
-		}
+		},
 	);
 }

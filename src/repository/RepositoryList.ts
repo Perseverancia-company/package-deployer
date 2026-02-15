@@ -4,7 +4,6 @@ import path from "path";
 
 import { RepositoryFileConfiguration } from "@/types";
 import { getAllRepositories } from ".";
-import DefaultConfigFolder from "@/configuration/DefaultConfigFolder";
 import simpleGit from "simple-git";
 import Repository from "./Repository";
 
@@ -15,6 +14,7 @@ export default class RepositoryList {
 	configurationFilePath: string;
 	configuration: RepositoryFileConfiguration;
 	octokit: Octokit;
+	repositoriesPath: string;
 
 	/**
 	 * Constructor
@@ -23,22 +23,20 @@ export default class RepositoryList {
 		configurationFilePath: string,
 		repoConfig: RepositoryFileConfiguration,
 		octokit: Octokit,
+		repositoriesPath: string,
 	) {
 		this.configurationFilePath = configurationFilePath;
 		this.configuration = repoConfig;
 		this.octokit = octokit;
+		this.repositoriesPath = repositoriesPath;
 	}
 
 	/**
 	 * Default configuration file path
 	 */
-	static defaultConfigurationFile() {
+	static defaultConfigurationFile(configurationPath: string) {
 		// File path
-		const filePath = path.join(
-			DefaultConfigFolder.getPath(),
-			"userRepositories.json",
-		);
-
+		const filePath = path.join(configurationPath, "userRepositories.json");
 		return filePath;
 	}
 
@@ -64,7 +62,11 @@ export default class RepositoryList {
 	 *
 	 * Overwrite local repository information
 	 */
-	static async sync(configurationFilePath: string, octokit: Octokit) {
+	static async sync(
+		configurationFilePath: string,
+		octokit: Octokit,
+		repositoriesPath: string,
+	) {
 		// Get all repositories from the github user
 		const repositories = await getAllRepositories(octokit);
 		if (!repositories) {
@@ -78,20 +80,34 @@ export default class RepositoryList {
 		};
 
 		// Instantiate class
-		return new RepositoryList(configurationFilePath, config, octokit);
+		return new RepositoryList(
+			configurationFilePath,
+			config,
+			octokit,
+			repositoriesPath,
+		);
 	}
 
 	/**
 	 * Create from a given path or fetch from github
 	 */
-	static async fromPath(configurationFilePath: string, octokit: Octokit) {
+	static async fromPath(
+		configurationFilePath: string,
+		octokit: Octokit,
+		repositoriesPath: string,
+	) {
 		try {
 			// Try to load configuration
 			const content = await fsp.readFile(configurationFilePath, "utf-8");
 			const config: RepositoryFileConfiguration = JSON.parse(content);
 
 			// Instantiate class
-			return new RepositoryList(configurationFilePath, config, octokit);
+			return new RepositoryList(
+				configurationFilePath,
+				config,
+				octokit,
+				repositoriesPath,
+			);
 		} catch (err) {
 			// The file couldn't be read, it probably doesn't exists
 			// Let's fetch user repository information
@@ -107,7 +123,12 @@ export default class RepositoryList {
 			};
 
 			// Instantiate class
-			return new RepositoryList(configurationFilePath, config, octokit);
+			return new RepositoryList(
+				configurationFilePath,
+				config,
+				octokit,
+				repositoriesPath,
+			);
 		}
 	}
 
@@ -150,15 +171,15 @@ export default class RepositoryList {
 			);
 		}
 
-
 		// Clone at path
 		const cloneAt =
-			(options.cloneAt && options.cloneAt) ||
-			DefaultConfigFolder.repositoriesPath();
+			(options.cloneAt && options.cloneAt) || this.repositoriesPath;
 
 		// Check what repositories are at the path and filter them out
 		const repositoriesAtPath = await fsp.readdir(cloneAt);
-		repositories = repositories.filter((repo) => !repositoriesAtPath.includes(repo.repoName));
+		repositories = repositories.filter(
+			(repo) => !repositoriesAtPath.includes(repo.repoName),
+		);
 
 		const git = simpleGit();
 

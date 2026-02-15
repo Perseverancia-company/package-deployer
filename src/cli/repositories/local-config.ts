@@ -1,4 +1,4 @@
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 import { setRepositoriesRemotePushUrls } from "@/repository";
 import LocalRepositoryList from "@/repository/LocalRepositoryList";
 

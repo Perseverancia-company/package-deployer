@@ -47,8 +47,14 @@ export interface RepositoryAllowanceListing {
  * Package deployer configuration
  */
 export interface IPackageDeployerConfiguration {
-	// Packages path
+	// The main app path
+	// Usually ~/perseverancia
+	appPath: string;
+
+	// The main packages path
+	// Usually {APP_PATH}/repos
 	packagesPath: string;
+
 	// Repositories allow listing
 	repositoriesListing: RepositoryAllowanceListing;
 	// Blacklisted packages to not manage

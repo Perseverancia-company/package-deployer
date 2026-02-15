@@ -1,12 +1,12 @@
 import { DefaultConfigFolder, generateMonorepo } from "@/index";
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 
 /**
  * Combine command
  */
 export default function combineMain(
 	yargs: any,
-	config: PackageDeployerConfiguration
+	config: PackageDeployerConfiguration,
 ) {
 	return yargs.command(
 		"combine",
@@ -23,7 +23,7 @@ export default function combineMain(
 					type: "string",
 					description:
 						"The absolute path where the monorepo will be located",
-					default: DefaultConfigFolder.monorepoPath(),
+					default: config.monorepoPath,
 				});
 		},
 		async (args: any) => {

@@ -2,8 +2,7 @@ import fsp from "fs/promises";
 import path from "path";
 import { Octokit } from "@octokit/rest";
 
-import DefaultConfigFolder from "@/configuration/DefaultConfigFolder";
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 
 /**
  * Configuration
@@ -11,7 +10,7 @@ import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfi
 export default async function configurationMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
-	octokit: Octokit
+	octokit: Octokit,
 ) {
 	return yargs.command(
 		"config",
@@ -48,8 +47,8 @@ export default async function configurationMain(
 						}
 
 						// Save configuration
-						await config.save(DefaultConfigFolder.getPath());
-					}
+						await config.save(config.configurationPath);
+					},
 				)
 				.command(
 					"whitelist",
@@ -81,8 +80,8 @@ export default async function configurationMain(
 						}
 
 						// Save configuration
-						await config.save(DefaultConfigFolder.getPath());
-					}
+						await config.save(config.configurationPath);
+					},
 				)
 				.command(
 					"set",
@@ -147,8 +146,8 @@ export default async function configurationMain(
 							config.setRegistryPassword(args.registryPassword);
 						}
 
-						await config.save(DefaultConfigFolder.getPath());
-					}
+						await config.save(config.configurationPath);
+					},
 				)
 				.option("select", {
 					type: "string",
@@ -171,13 +170,13 @@ export default async function configurationMain(
 					config.setListType(select);
 				} else {
 					throw new Error(
-						"Select can be only 'blacklist' or 'whitelist'"
+						"Select can be only 'blacklist' or 'whitelist'",
 					);
 				}
 			}
 
 			// Save configuration
-			await config.save();
+			await config.save(config.configurationPath);
 
 			// Delete local repositories
 			if (args.deleteBlacklisted) {
@@ -198,6 +197,6 @@ export default async function configurationMain(
 					}
 				}
 			}
-		}
+		},
 	);
 }

@@ -1,7 +1,7 @@
 import path from "path";
 import fsp from "fs/promises";
 
-import DefaultConfigFolder from "../configuration/DefaultConfigFolder";
+import DefaultConfigFolder from "../configuration/DefaultAppFolder";
 import { ITaskDeploymentResult } from "../types";
 import NodePackage from "@/package/NodePackage";
 

@@ -1,5 +1,5 @@
 import { RepositoryList } from "@/index";
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 import { Octokit } from "@octokit/rest";
 
 /**
@@ -33,8 +33,9 @@ export default function cloneMain(
 			if (args.all) {
 				// Get(locally) or fetch(from github) repository list
 				const repositoryList = await RepositoryList.fromPath(
-					RepositoryList.defaultConfigurationFile(),
+					RepositoryList.defaultConfigurationFile(config.configurationPath),
 					octokit,
+					config.repositoriesPath
 				);
 
 				// Clone all repositories

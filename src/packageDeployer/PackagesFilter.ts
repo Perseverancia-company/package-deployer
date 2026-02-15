@@ -1,7 +1,7 @@
 import semver from "semver";
 
 import NodePackageList from "@/package/NodePackageList";
-import PackageDeployerConfiguration from "./PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "../configuration/PackageDeployerConfiguration";
 import KhansDependencyGraph from "@/graph/KhansDependencyGraph";
 import NodePackage from "@/package/NodePackage";
 

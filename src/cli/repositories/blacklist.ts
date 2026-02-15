@@ -1,5 +1,4 @@
-import DefaultConfigFolder from "@/configuration/DefaultConfigFolder";
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 
 /**
  * Blacklist command
@@ -37,7 +36,7 @@ export default function blacklistMain(
 			}
 
 			// Save configuration
-			await config.save(DefaultConfigFolder.getPath());
+			await config.save(config.configurationPath);
 		},
 	);
 }

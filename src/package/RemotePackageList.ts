@@ -1,6 +1,5 @@
 import { IRemotePackageInfo } from "@/types";
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
-import VerdaccioClient from "@/lib/VerdaccioClient";
+import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 import NodePackageList from "./NodePackageList";
 import getVerdaccioFromConfiguration from "@/lib/verdaccio";
 

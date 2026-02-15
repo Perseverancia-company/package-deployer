@@ -1,5 +1,5 @@
 import { RepositoryList } from "@/index";
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 import LocalRepositories from "@/repository/LocalRepositories";
 import { Octokit } from "@octokit/rest";
 
@@ -36,13 +36,19 @@ export default function updateMain(
 			let repositoryList;
 			if (args.syncInfo) {
 				repositoryList = await RepositoryList.sync(
-					RepositoryList.defaultConfigurationFile(),
+					RepositoryList.defaultConfigurationFile(
+						config.configurationPath,
+					),
 					octokit,
+					config.repositoriesPath,
 				);
 			} else {
 				repositoryList = await RepositoryList.fromPath(
-					RepositoryList.defaultConfigurationFile(),
+					RepositoryList.defaultConfigurationFile(
+						config.configurationPath,
+					),
 					octokit,
+					config.repositoriesPath,
 				);
 			}
 

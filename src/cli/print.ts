@@ -1,5 +1,5 @@
 import KhansDependencyGraph from "@/graph/KhansDependencyGraph";
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 import RepositoryList from "@/repository/RepositoryList";
 import { Octokit } from "@octokit/rest";
 
@@ -15,7 +15,7 @@ import PackagesFilter from "@/packageDeployer/PackagesFilter";
 export default async function printMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
-	octokit: Octokit
+	octokit: Octokit,
 ) {
 	return yargs.command(
 		"print",
@@ -69,6 +69,7 @@ export default async function printMain(
 				console.log(`Build order: `, dependencyGraph.getBuildOrder());
 			}
 
+			// Print configuration
 			if (args.configuration) {
 				console.log(`Configuration: \n`, config);
 			}
@@ -76,21 +77,23 @@ export default async function printMain(
 			if (args.userRepositories) {
 				// Get(locally) or fetch(from github) repository list
 				const repositoryList = await RepositoryList.fromPath(
-					RepositoryList.defaultConfigurationFile(),
-					octokit
+					RepositoryList.defaultConfigurationFile(
+						config.configurationPath,
+					),
+					octokit,
+					config.repositoriesPath,
 				);
 
 				console.log(
 					`Repository list: \n`,
-					repositoryList.getRepositories()
+					repositoryList.getRepositories(),
 				);
 			}
 
 			if (args.printRemotePackages) {
 				// Get packages
-				const verdaccioClient = await getVerdaccioFromConfiguration(
-					config
-				);
+				const verdaccioClient =
+					await getVerdaccioFromConfiguration(config);
 				const packages = await verdaccioClient.getAllPackages();
 
 				console.log(`Remote packages: `, packages);
@@ -99,25 +102,27 @@ export default async function printMain(
 			if (args.incrementalBuildPackages) {
 				// Get package list
 				const packageList = await NodePackageList.fromPackagesPath(
-					config.getPackagesPath()
+					config.getPackagesPath(),
 				);
 
 				// Deployment state
-				const deploymentState = await DeploymentState.load();
+				const deploymentState = await DeploymentState.load(
+					config.configurationPath,
+				);
 
 				const packageFilter = new PackagesFilter(
 					config,
 					packageList,
-					deploymentState.getDeploymentStateAsMap()
+					deploymentState.getDeploymentStateAsMap(),
 				);
 
 				console.log(
 					`Remote packages: `,
 					packageFilter
 						.getIncrementalBuildOrder()
-						.map((pkg) => pkg.packageName)
+						.map((pkg) => pkg.packageName),
 				);
 			}
-		}
+		},
 	);
 }

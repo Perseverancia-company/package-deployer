@@ -1,4 +1,4 @@
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 import NodePackageList from "@/package/NodePackageList";
 import PackageDeployerOrchestrator from "@/packageDeployer/PackageDeployerOrchestrator";
 import DeploymentState from "@/data/DeploymentState";
@@ -30,7 +30,7 @@ export default async function deployMain(
 			);
 
 			// Deployment state
-			const deploymentState = await DeploymentState.load();
+			const deploymentState = await DeploymentState.load(config.configurationPath);
 
 			// Orchestrator
 			const orchestrator = new PackageDeployerOrchestrator(
