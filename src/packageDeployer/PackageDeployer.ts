@@ -1,7 +1,6 @@
 import path from "path";
 import fsp from "fs/promises";
 
-import DefaultConfigFolder from "../configuration/DefaultAppFolder";
 import { ITaskDeploymentResult } from "../types";
 import NodePackage from "@/package/NodePackage";
 
@@ -10,14 +9,16 @@ import NodePackage from "@/package/NodePackage";
  */
 export default class PackageDeployer {
 	packages: Array<NodePackage> = [];
+	configurationFolderPath: string;
 
 	/**
 	 * Package deployer constructor
 	 *
 	 * @param config
 	 */
-	constructor(nodePackages: Array<NodePackage>) {
+	constructor(nodePackages: Array<NodePackage>, configurationFolderPath: string) {
 		this.packages = nodePackages;
+		this.configurationFolderPath = configurationFolderPath;
 	}
 
 	/**
@@ -83,7 +84,7 @@ export default class PackageDeployer {
 	async saveDeploymentResult(deploymentResult: Array<ITaskDeploymentResult>) {
 		// File path
 		const filePath = path.join(
-			DefaultConfigFolder.getPath(),
+			this.configurationFolderPath,
 			"deploymentResult.json",
 		);
 

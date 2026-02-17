@@ -58,6 +58,7 @@ export default class PackageDeployerOrchestrator {
 	async deployAll() {
 		const pkgDeployer = new PackageDeployer(
 			this.packageList.getNodePackages(),
+			this.config.configurationPath,
 		);
 		const deploymentResult = await pkgDeployer.deploy();
 		await this.saveSuccessfullyDeployedPackages(deploymentResult);
@@ -74,6 +75,7 @@ export default class PackageDeployerOrchestrator {
 	async deploy() {
 		const pkgDeployer = new PackageDeployer(
 			this.packageFilter.filterByConfiguration(),
+			this.config.configurationPath,
 		);
 		const deploymentResult = await pkgDeployer.deploy();
 		await this.saveSuccessfullyDeployedPackages(deploymentResult);
@@ -103,7 +105,10 @@ export default class PackageDeployerOrchestrator {
 		console.log(`🚀 Packages to deploy in order: `, buildOrderNames);
 
 		// Initialize package deployer and deploy all
-		const pkgDeployer = new PackageDeployer(incrementalBuildOrder);
+		const pkgDeployer = new PackageDeployer(
+			incrementalBuildOrder,
+			this.config.configurationPath,
+		);
 		const deploymentResult = await pkgDeployer.deploy();
 		await this.saveSuccessfullyDeployedPackages(deploymentResult);
 		return deploymentResult;
