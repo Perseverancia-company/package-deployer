@@ -1,18 +1,19 @@
 import fsp from "fs/promises";
 import path from "path";
-import { Octokit } from "@octokit/rest";
 
 import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 import blacklistMain from "./blacklist";
 import setMain from "./set";
 import whitelistMain from "./whitelist";
+import DefaultAppFolder from "@/configuration/DefaultAppFolder";
 
 /**
  * Configuration
  */
 export default async function configurationMain(
 	yargs: any,
-	config: PackageDeployerConfiguration
+	config: PackageDeployerConfiguration,
+	daf: DefaultAppFolder,
 ) {
 	return yargs.command(
 		"config",
@@ -20,7 +21,7 @@ export default async function configurationMain(
 		function (yargs: any) {
 			// Run subcommands
 			blacklistMain(yargs, config);
-			setMain(yargs, config);
+			setMain(yargs, config, daf);
 			whitelistMain(yargs, config);
 
 			return yargs

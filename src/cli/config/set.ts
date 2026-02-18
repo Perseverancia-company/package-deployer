@@ -1,3 +1,4 @@
+import DefaultAppFolder from "@/configuration/DefaultAppFolder";
 import { PackageDeployerConfiguration } from "@/index";
 
 /**
@@ -9,12 +10,17 @@ import { PackageDeployerConfiguration } from "@/index";
 export default function setMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
+	daf: DefaultAppFolder,
 ) {
 	return yargs.command(
 		"set",
 		"Set configuration",
 		(yargs: any) => {
 			return yargs
+				.option("app-path", {
+					type: "string",
+					description: "Set app path",
+				})
 				.option("packages-path", {
 					type: "string",
 					description:
@@ -43,6 +49,11 @@ export default function setMain(
 				});
 		},
 		async (args: any) => {
+			// App path configuration
+			if (args.appPath) {
+				daf.setAppPath(args.appPath);
+			}
+
 			// Packages path
 			if (args.packagesPath) {
 				config.setPackagesPath(args.packagesPath);
@@ -73,7 +84,10 @@ export default function setMain(
 				config.setRegistryPassword(args.registryPassword);
 			}
 
-			await config.save(config.configurationPath);
+			await Promise.all([
+				config.save(config.configurationPath),
+				daf.saveGlobalConfiguration(),
+			]);
 		},
 	);
 }

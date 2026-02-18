@@ -21,6 +21,13 @@ export default class DefaultAppFolder {
 	}
 
 	/**
+	 * Set app path
+	 */
+	setAppPath(appPath: string) {
+		this.path = appPath;
+	}
+
+	/**
 	 * App path
 	 */
 	get appPath() {
@@ -56,11 +63,9 @@ export default class DefaultAppFolder {
 	}
 
 	/**
-	 * Create from global configuration
-	 *
-	 * @returns
+	 * Get configuration path
 	 */
-	static async fromGlobalConfiguration(): Promise<DefaultAppFolder> {
+	static globalConfigurationFilePath() {
 		const appPath = path.join(os.homedir(), "perseverancia");
 
 		// Check if there's a different configuration over there
@@ -69,9 +74,19 @@ export default class DefaultAppFolder {
 			"globalConfiguration.yaml",
 		);
 
+		return configurationFilePath;
+	}
+
+	/**
+	 * Create from global configuration
+	 *
+	 * @returns
+	 */
+	static async fromGlobalConfiguration(): Promise<DefaultAppFolder> {
+		const appPath = DefaultAppFolder.globalConfigurationFilePath();
 		try {
 			// Read the file
-			const fileData = await fsp.readFile(configurationFilePath, {
+			const fileData = await fsp.readFile(appPath, {
 				encoding: "utf-8",
 			});
 			const configuration: IGlobalConfiguration = YAML.parse(fileData);
@@ -81,6 +96,20 @@ export default class DefaultAppFolder {
 
 		// If that didn't work, then just return the object with the default path
 		return new DefaultAppFolder(appPath);
+	}
+
+	/**
+	 * Save configuration
+	 */
+	async saveGlobalConfiguration() {
+		const appPath = DefaultAppFolder.globalConfigurationFilePath();
+
+		const configuration: IGlobalConfiguration = {
+			appPath: this.path,
+		};
+		const fileData = YAML.stringify(configuration);
+
+		await fsp.writeFile(appPath, fileData);
 	}
 
 	/**
