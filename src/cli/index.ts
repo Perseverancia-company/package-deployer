@@ -64,7 +64,7 @@ async function main() {
 	// Run commands
 	const yargsInstance = yargs();
 	await buildMain(yargsInstance);
-	await configurationMain(yargsInstance, config, octokit);
+	await configurationMain(yargsInstance, config);
 	await deployMain(yargsInstance, config);
 	await printMain(yargsInstance, config, octokit);
 	await repositoriesMain(yargsInstance, config, octokit);
