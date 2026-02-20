@@ -2,6 +2,7 @@ import { Octokit } from "@octokit/rest";
 
 import RepositoryList from "@/repository/RepositoryList";
 import { PackageDeployerConfiguration } from "..";
+import { syncAll } from "@/lib/sync";
 
 /**
  * Sync
@@ -15,13 +16,26 @@ export default async function syncMain(
 		"sync",
 		"Sync things",
 		(args: any) => {
-			return args.option("repositories", {
-				type: "boolean",
-				description:
-					"Sync repositories information fetching it from the services",
-			});
+			return args
+				.option("repositories", {
+					type: "boolean",
+					description:
+						"Sync repositories information fetching it from the services",
+				})
+				.option("all", {
+					type: "boolean",
+					description:
+						"Synchronize all, same behavior as 'update' command",
+				});
 		},
 		async (args: any) => {
+			if (args.all) {
+				await syncAll(config, octokit);
+
+				// Don't continue
+				return;
+			}
+
 			// Get repository information from github
 			if (args.repositories) {
 				// Get(locally) or fetch(from github) repository list
