@@ -4,7 +4,6 @@ import {
 	getAllPackages,
 	getAppsInfoAtPath,
 } from "./lib/apps";
-import DefaultConfigFolder from "./configuration/DefaultAppFolder";
 import { dependencyBuildOrder } from "./lib/graph";
 import NodePackage from "./package/NodePackage";
 import PackageDeployer from "./packageDeployer/PackageDeployer";
@@ -21,10 +20,11 @@ import PNPM from "./packageManager/PNPM";
 import KhansDependencyGraph from "./graph/KhansDependencyGraph";
 import VerdaccioClient from "./lib/VerdaccioClient";
 import NodePackageList from "./package/NodePackageList";
+import DefaultAppFolder from "./configuration/DefaultAppFolder";
 
 export {
 	DEPLOYER_CONFIG_FILENAME,
-	DefaultConfigFolder,
+	DefaultAppFolder,
 	KhansDependencyGraph,
 	NodePackage,
 	NodePackageList,
