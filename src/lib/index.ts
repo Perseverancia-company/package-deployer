@@ -4,7 +4,7 @@ import path from "path";
 import { promisify } from "util";
 
 import { appsToNodePackages, getAllPackages } from "@/lib/apps";
-import PackageDeployerConfiguration from "@/packageDeployer/PackageDeployerConfiguration";
+import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 import PackageJson from "@/package/PackageJson";
 import { Octokit } from "@octokit/rest";
 import RepositoryList from "@/repository/RepositoryList";
@@ -136,6 +136,8 @@ export async function generateMonorepo(
 export async function cloneAllAtPath(
 	cloneFolderPath: string,
 	octokit: Octokit,
+	configurationPath: string,
+	repositoriesPath: string,
 	whitelist?: Array<string>
 ) {
 	// Read all the folders at the path
@@ -143,8 +145,9 @@ export async function cloneAllAtPath(
 
 	// Get(locally) or fetch(from github) repository list
 	const repositoryList = await RepositoryList.fromPath(
-		RepositoryList.defaultConfigurationFile(),
-		octokit
+		RepositoryList.defaultConfigurationFile(configurationPath),
+		octokit,
+		repositoriesPath
 	);
 
 	// Clone all repositories
