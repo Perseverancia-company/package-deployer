@@ -20,12 +20,14 @@ import NPM from "./packageManager/NPM";
 import PNPM from "./packageManager/PNPM";
 import KhansDependencyGraph from "./graph/KhansDependencyGraph";
 import VerdaccioClient from "./lib/VerdaccioClient";
+import NodePackageList from "./package/NodePackageList";
 
 export {
 	DEPLOYER_CONFIG_FILENAME,
 	DefaultConfigFolder,
 	KhansDependencyGraph,
 	NodePackage,
+	NodePackageList,
 	NPM,
 	PNPM,
 	PackageDeployerConfiguration,
