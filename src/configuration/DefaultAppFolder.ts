@@ -63,15 +63,22 @@ export default class DefaultAppFolder {
 	}
 
 	/**
+	 * Default folder path
+	 */
+	static defaultFolderPath() {
+		return path.join(os.homedir(), "perseverancia");
+	}
+
+	/**
 	 * Get configuration path
 	 */
 	static globalConfigurationFilePath() {
-		const appPath = path.join(os.homedir(), "perseverancia");
+		const appPath = DefaultAppFolder.defaultFolderPath();
 
 		// Check if there's a different configuration over there
 		const configurationFilePath = path.join(
 			appPath,
-			"globalConfiguration.yaml",
+			"globalConfiguration.yaml"
 		);
 
 		return configurationFilePath;
@@ -83,10 +90,11 @@ export default class DefaultAppFolder {
 	 * @returns
 	 */
 	static async fromGlobalConfiguration(): Promise<DefaultAppFolder> {
-		const appPath = DefaultAppFolder.globalConfigurationFilePath();
+		const configurationFilePath =
+			DefaultAppFolder.globalConfigurationFilePath();
 		try {
 			// Read the file
-			const fileData = await fsp.readFile(appPath, {
+			const fileData = await fsp.readFile(configurationFilePath, {
 				encoding: "utf-8",
 			});
 			const configuration: IGlobalConfiguration = YAML.parse(fileData);
@@ -95,7 +103,8 @@ export default class DefaultAppFolder {
 		} catch (err) {}
 
 		// If that didn't work, then just return the object with the default path
-		return new DefaultAppFolder(appPath);
+		const defaultFolderPath = DefaultAppFolder.defaultFolderPath();
+		return new DefaultAppFolder(defaultFolderPath);
 	}
 
 	/**
@@ -139,7 +148,7 @@ export default class DefaultAppFolder {
 							recursive: true,
 						});
 					} catch (err) {}
-				})(),
+				})()
 			);
 		}
 	}

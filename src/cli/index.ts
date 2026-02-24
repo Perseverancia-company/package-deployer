@@ -30,6 +30,8 @@ async function main() {
 		DefaultAppFolder.fromGlobalConfiguration(),
 	]);
 
+	console.log(`App path: `, daf.appPath);
+
 	const [config] = await Promise.all([
 		PackageDeployerConfiguration.load({
 			appPath: daf.appPath,
@@ -54,7 +56,7 @@ async function main() {
 		process.env.PACKAGES_PATH ?? config.configuration.packagesPath;
 	if (!packagesPath) {
 		console.warn(
-			"No packages path found, be sure to set it using `config --packages-path PACKAGES_PATH`",
+			"No packages path found, be sure to set it using `config --packages-path PACKAGES_PATH`"
 		);
 	}
 
