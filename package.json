@@ -28,7 +28,8 @@
 	"type": "module",
 	"scripts": {
 		"cli": "tsx ./src/cli/index.ts",
-		"build": "tsup"
+		"build": "tsup",
+		"test": "jest"
 	},
 	"repository": {
 		"type": "git",
@@ -59,6 +60,7 @@
 		"@types/semver": "^7.7.1",
 		"@types/yargs": "^17.0.35",
 		"jest": "^30.2.0",
+		"ts-jest": "^29.4.6",
 		"tsup": "^8.5.1",
 		"tsx": "^4.20.6",
 		"typescript": "^5.9.3"
