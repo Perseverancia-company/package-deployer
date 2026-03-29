@@ -1,4 +1,4 @@
-import KhansDependencyGraph from "./KhansDependencyGraph";
+import KhansDependencyGraph from "./KhansDependencyGraphWhitelist";
 import NodePackage from "@/package/NodePackage";
 
 // Helper to create a mock NodePackage that satisfies the class structure

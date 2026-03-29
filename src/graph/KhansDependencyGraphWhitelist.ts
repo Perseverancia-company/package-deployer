@@ -6,16 +6,24 @@ import NodePackage from "@/package/NodePackage";
  * Handles dependency resolution for workspace packages
  * using Kahn's Algorithm (Topological Sort).
  */
-export default class KhansDependencyGraph {
+export default class KhansDependencyGraphWhitelist {
 	private packageMap = new Map<string, NodePackage>();
 	private adj = new Map<string, Set<string>>();
 	private inDegree = new Map<string, number>();
+	private packageWhitelist: Array<string> = [];
 
 	/**
 	 *
 	 * @param nodePackages
 	 */
-	constructor(private nodePackages: NodePackage[]) {
+	constructor(
+		private nodePackages: NodePackage[],
+		packageWhitelist?: Array<string>
+	) {
+		if (packageWhitelist) {
+			this.packageWhitelist = packageWhitelist;
+		}
+
 		this.initializeNodes();
 	}
 
@@ -100,11 +108,22 @@ export default class KhansDependencyGraph {
 	 */
 	private getUniqueWorkspaceDeps(pkg: NodePackage): Set<string> {
 		// If the package whitelist is empty, don't use it
-		const packageList = [
-			...Object.keys(pkg.packageJson.dependencies || {}),
-			...Object.keys(pkg.packageJson.devDependencies || {}),
-			// Not necessary to include peer dependencies for now
-		];
+		const packageList =
+			this.packageWhitelist.length === 0
+				? [
+						...Object.keys(pkg.packageJson.dependencies || {}),
+						...Object.keys(pkg.packageJson.devDependencies || {}),
+						// Not necessary to include peer dependencies for now
+				  ]
+				: [
+						...Object.keys(
+							pkg.packageJson.dependencies || {}
+						).filter((val) => this.packageWhitelist.includes(val)),
+						...Object.keys(
+							pkg.packageJson.devDependencies || {}
+						).filter((val) => this.packageWhitelist.includes(val)),
+						// Not necessary to include peer dependencies for now
+				  ];
 
 		return new Set(packageList);
 	}

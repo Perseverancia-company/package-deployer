@@ -18,6 +18,7 @@ import { generateMonorepo } from "./lib";
 import NPM from "./packageManager/NPM";
 import PNPM from "./packageManager/PNPM";
 import KhansDependencyGraph from "./graph/KhansDependencyGraph";
+import KhansDependencyGraphWhitelist from "./graph/KhansDependencyGraphWhitelist";
 import VerdaccioClient from "./lib/VerdaccioClient";
 import NodePackageList from "./package/NodePackageList";
 import DefaultAppFolder from "./configuration/DefaultAppFolder";
@@ -26,6 +27,7 @@ export {
 	DEPLOYER_CONFIG_FILENAME,
 	DefaultAppFolder,
 	KhansDependencyGraph,
+	KhansDependencyGraphWhitelist,
 	NodePackage,
 	NodePackageList,
 	NPM,
