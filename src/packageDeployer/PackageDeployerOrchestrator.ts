@@ -31,7 +31,7 @@ export default class PackageDeployerOrchestrator {
 		config: PackageDeployerConfiguration,
 		packageList: NodePackageList,
 		deploymentState: DeploymentState,
-		options?: { ignoreApps?: boolean },
+		options?: { ignoreApps?: boolean }
 	) {
 		this.config = config;
 		this.packageList = packageList;
@@ -58,10 +58,10 @@ export default class PackageDeployerOrchestrator {
 	async deployAll() {
 		const pkgDeployer = new PackageDeployer(
 			this.packageList.getNodePackages(),
-			this.config.configurationPath,
+			this.config.configurationPath
 		);
 		const deploymentResult = await pkgDeployer.deploy();
-		await this.saveSuccessfullyDeployedPackages(deploymentResult);
+		await this.saveDeployedPackages(deploymentResult);
 		return deploymentResult;
 	}
 
@@ -75,10 +75,10 @@ export default class PackageDeployerOrchestrator {
 	async deploy() {
 		const pkgDeployer = new PackageDeployer(
 			this.packageFilter.filterByConfiguration(),
-			this.config.configurationPath,
+			this.config.configurationPath
 		);
 		const deploymentResult = await pkgDeployer.deploy();
-		await this.saveSuccessfullyDeployedPackages(deploymentResult);
+		await this.saveDeployedPackages(deploymentResult);
 		return deploymentResult;
 	}
 
@@ -93,41 +93,43 @@ export default class PackageDeployerOrchestrator {
 			this.packageFilter.getIncrementalBuildOrder();
 		if (incrementalBuildOrder.length === 0) {
 			console.log(
-				pc.green("✅ All packages are up to date. Nothing to deploy."),
+				pc.green("✅ All packages are up to date. Nothing to deploy.")
 			);
 			return;
 		}
 
 		// Final build order and whitelist
 		const buildOrderNames = incrementalBuildOrder.map(
-			(pkg) => pkg.packageName,
+			(pkg) => pkg.packageName
 		);
 		console.log(`🚀 Packages to deploy in order: `, buildOrderNames);
 
 		// Initialize package deployer and deploy all
 		const pkgDeployer = new PackageDeployer(
 			incrementalBuildOrder,
-			this.config.configurationPath,
+			this.config.configurationPath
 		);
 		const deploymentResult = await pkgDeployer.deploy();
-		await this.saveSuccessfullyDeployedPackages(deploymentResult);
+		await this.saveDeployedPackages(deploymentResult);
 		return deploymentResult;
 	}
 
 	/**
-	 * Save successfully deployed packages
+	 * Save deployed packages
+	 *
+	 * Store package state, regardless of whether it was successful or not
+	 * Storing failures will help us to not try to deploy the same package with the same version
+	 * again, this will save a lot of computing time.
 	 */
-	async saveSuccessfullyDeployedPackages(
-		taskDeploymentResults: Array<ITaskDeploymentResult>,
+	async saveDeployedPackages(
+		taskDeploymentResults: Array<ITaskDeploymentResult>
 	) {
 		for (const task of taskDeploymentResults) {
-			// If the task is successful set the package state
-			if (task.success) {
-				this.deployedState.setPackageState(
-					task.packageName,
-					task.version,
-				);
-			}
+			this.deployedState.setPackageState(
+				task.packageName,
+				task.version,
+				task.success
+			);
 		}
 
 		return await this.deployedState.save(this.config.configurationPath);

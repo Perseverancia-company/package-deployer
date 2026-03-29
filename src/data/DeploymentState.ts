@@ -2,6 +2,8 @@ import fsp from "fs/promises";
 import path from "path";
 import { parse, stringify } from "yaml";
 
+import { IDeploymentState } from "@/types";
+
 /**
  * Deployment state
  *
@@ -10,9 +12,10 @@ import { parse, stringify } from "yaml";
  * Only successful deployments should be stored here
  */
 export default class DeploymentState {
-	deploymentState: {
-		[packageName: string]: string;
-	} = {};
+	deploymentState: IDeploymentState = {
+		successes: {},
+		failures: {},
+	};
 
 	/**
 	 * Create class object
@@ -21,7 +24,7 @@ export default class DeploymentState {
 	 *
 	 * @param options
 	 */
-	constructor(options?: { previousState?: {} }) {
+	constructor(options?: { previousState?: IDeploymentState }) {
 		if (options) {
 			// Load previous state
 			if (options.previousState) {
@@ -39,11 +42,22 @@ export default class DeploymentState {
 
 	/**
 	 * Get deployment state as map
+	 *
+	 * Merges both successes and failures
 	 */
 	getDeploymentStateAsMap() {
-		const resultingMap = new Map();
-		for (const key of Object.keys(this.deploymentState)) {
-			resultingMap.set(key, { version: this.deploymentState[key] });
+		const resultingMap: Map<string, { version: string }> = new Map();
+
+		// Get successes
+		for (const key of Object.keys(this.deploymentState.successes)) {
+			const state = this.deploymentState.successes[key];
+			resultingMap.set(key, { version: state });
+		}
+
+		// Get failures
+		for (const key of Object.keys(this.deploymentState.failures)) {
+			const state = this.deploymentState.failures[key];
+			resultingMap.set(key, { version: state });
 		}
 
 		return resultingMap;
@@ -52,8 +66,13 @@ export default class DeploymentState {
 	/**
 	 * Set package state
 	 */
-	setPackageState(packageName: string, version: string) {
-		this.deploymentState[packageName] = version;
+	setPackageState(packageName: string, version: string, success: boolean) {
+		if (success) {
+			this.deploymentState.successes[packageName] = version;
+		} else {
+			this.deploymentState.failures[packageName];
+		}
+
 		return this;
 	}
 
@@ -64,7 +83,7 @@ export default class DeploymentState {
 		// File path
 		const filePath = path.join(
 			configurationPath,
-			"packageDeploymentState.yaml",
+			"packageDeploymentState.yaml"
 		);
 		return filePath;
 	}
@@ -79,7 +98,7 @@ export default class DeploymentState {
 				DeploymentState.filePath(configurationPath),
 				{
 					encoding: "utf-8",
-				},
+				}
 			);
 
 			// Parse data
@@ -107,7 +126,7 @@ export default class DeploymentState {
 			data,
 			{
 				encoding: "utf-8",
-			},
+			}
 		);
 	}
 }

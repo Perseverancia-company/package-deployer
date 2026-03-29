@@ -2,6 +2,17 @@ import NPM from "@/packageManager/NPM";
 import PNPM from "@/packageManager/PNPM";
 
 /**
+ * Deployment state
+ * 
+ * The structure is
+ * Package name: Package Version
+ */
+export interface IDeploymentState {
+	successes: { [packageName: string]: string };
+	failures: { [packageName: string]: string };
+}
+
+/**
  * Remote package info
  */
 export interface IRemotePackageInfo {

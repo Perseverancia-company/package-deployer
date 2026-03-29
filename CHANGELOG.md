@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.5.0
+
+Added
+- Khans dependenc graph without a whitelist
+- Stores failed deployments too
+- Doesn't tries to deploy packages that failed deployment again
+
 ## 3.4.0
 
 Added
