@@ -1,6 +1,6 @@
 import fsp from "fs/promises";
 import path from "path";
-import { parse, stringify } from "yaml";
+import YAML from "yaml";
 
 import { IDeploymentState } from "@/types";
 
@@ -102,7 +102,7 @@ export default class DeploymentState {
 			);
 
 			// Parse data
-			const parsedData = parse(data);
+			const parsedData = YAML.parse(data);
 
 			// Create instance
 			return new DeploymentState({
@@ -118,7 +118,7 @@ export default class DeploymentState {
 	 * Save deployment state
 	 */
 	async save(configurationPath: string) {
-		const data = stringify(this.deploymentState);
+		const data = YAML.stringify(this.deploymentState);
 
 		// Save as json
 		return await fsp.writeFile(

@@ -39,6 +39,7 @@ export default class PackageDeployer {
 		// Deploy all packages
 		const packageDeploymentResult: Array<ITaskDeploymentResult> = [];
 		for (const nodePackage of this.packages) {
+			let success = true;
 			try {
 				// Install packages for the first time
 				if (!nodePackage.hasNodeModules) {
@@ -65,6 +66,8 @@ export default class PackageDeployer {
 
 				console.log(`Package ${nodePackage.packageName} deployed`);
 			} catch (err) {
+				// Change state
+				success = false;
 				console.log(
 					`Package ${nodePackage.packageName} failed to be deployed`
 				);
@@ -75,7 +78,7 @@ export default class PackageDeployer {
 				packageName: nodePackage.packageName,
 				name: nodePackage.name,
 				version: nodePackage.version,
-				success: true,
+				success,
 			};
 			packageDeploymentResult.push(packageInfo);
 
