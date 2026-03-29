@@ -6,6 +6,9 @@ Added
 - Khans dependenc graph without a whitelist
 - Stores failed deployments too
 - Doesn't tries to deploy packages that failed deployment again
+- Save state on every deployed package
+This is better than before even if it makes the process do more work, because you could lose
+progress if for some reason the program or your computer crashes.
 
 ## 3.4.0
 

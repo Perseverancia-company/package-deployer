@@ -1,6 +1,3 @@
-import path from "path";
-import fsp from "fs/promises";
-
 import { ITaskDeploymentResult } from "../types";
 import NodePackage from "@/package/NodePackage";
 
@@ -11,14 +8,28 @@ export default class PackageDeployer {
 	packages: Array<NodePackage> = [];
 	configurationFolderPath: string;
 
+	onPackageDeployed?: (data: ITaskDeploymentResult) => Promise<void>;
+
 	/**
 	 * Package deployer constructor
 	 *
 	 * @param config
 	 */
-	constructor(nodePackages: Array<NodePackage>, configurationFolderPath: string) {
+	constructor(
+		nodePackages: Array<NodePackage>,
+		configurationFolderPath: string,
+		configuration?: {
+			onPackageDeployed?: (data: ITaskDeploymentResult) => Promise<void>;
+		}
+	) {
 		this.packages = nodePackages;
 		this.configurationFolderPath = configurationFolderPath;
+
+		if (configuration) {
+			if (configuration.onPackageDeployed) {
+				this.onPackageDeployed = configuration.onPackageDeployed;
+			}
+		}
 	}
 
 	/**
@@ -53,44 +64,27 @@ export default class PackageDeployer {
 				}
 
 				console.log(`Package ${nodePackage.packageName} deployed`);
-				packageDeploymentResult.push({
-					packageName: nodePackage.packageName,
-					name: nodePackage.name,
-					version: nodePackage.version,
-					success: true,
-				});
 			} catch (err) {
 				console.log(
-					`Package ${nodePackage.packageName} failed to be deployed`,
+					`Package ${nodePackage.packageName} failed to be deployed`
 				);
-				packageDeploymentResult.push({
-					packageName: nodePackage.packageName,
-					name: nodePackage.name,
-					version: nodePackage.version,
-					success: false,
-				});
+			}
+
+			// Save package state
+			const packageInfo = {
+				packageName: nodePackage.packageName,
+				name: nodePackage.name,
+				version: nodePackage.version,
+				success: true,
+			};
+			packageDeploymentResult.push(packageInfo);
+
+			// Trigger callback
+			if (this.onPackageDeployed) {
+				await this.onPackageDeployed(packageInfo);
 			}
 		}
 
-		// Save as json
-		this.saveDeploymentResult(packageDeploymentResult);
-
 		return packageDeploymentResult;
-	}
-
-	/**
-	 * Save deployment result
-	 */
-	async saveDeploymentResult(deploymentResult: Array<ITaskDeploymentResult>) {
-		// File path
-		const filePath = path.join(
-			this.configurationFolderPath,
-			"deploymentResult.json",
-		);
-
-		// Save as json
-		return await fsp.writeFile(filePath, JSON.stringify(deploymentResult), {
-			encoding: "utf-8",
-		});
 	}
 }

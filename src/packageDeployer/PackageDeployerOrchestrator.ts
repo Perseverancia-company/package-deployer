@@ -104,13 +104,20 @@ export default class PackageDeployerOrchestrator {
 		);
 		console.log(`🚀 Packages to deploy in order: `, buildOrderNames);
 
+		// ON package deployed callback
+		const onPackageDeployed = async (task: ITaskDeploymentResult) => {
+			return await this.saveDeployedPackages([task]);
+		};
+
 		// Initialize package deployer and deploy all
 		const pkgDeployer = new PackageDeployer(
 			incrementalBuildOrder,
-			this.config.configurationPath
+			this.config.configurationPath,
+			{
+				onPackageDeployed,
+			}
 		);
 		const deploymentResult = await pkgDeployer.deploy();
-		await this.saveDeployedPackages(deploymentResult);
 		return deploymentResult;
 	}
 

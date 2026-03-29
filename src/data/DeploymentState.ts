@@ -70,7 +70,7 @@ export default class DeploymentState {
 		if (success) {
 			this.deploymentState.successes[packageName] = version;
 		} else {
-			this.deploymentState.failures[packageName];
+			this.deploymentState.failures[packageName] = version;
 		}
 
 		return this;
