@@ -3,7 +3,7 @@
 ## 3.5.0
 
 Added
-- Khans dependenc graph without a whitelist
+- Khans dependency graph without a whitelist
 - Stores failed deployments too
 - Doesn't tries to deploy packages that failed deployment again
 - Save state on every deployed package
