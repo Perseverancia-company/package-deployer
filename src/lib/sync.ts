@@ -68,7 +68,7 @@ export async function syncAll(
 	);
 
 	// Deploy all packages orchestrator
-	console.log(pc.magenta("🏗️  Initializing Incremental Deployment..."));
+	console.log(pc.magenta("🏗️ Initializing Incremental Deployment..."));
 	const orchestrator = new PackageDeployerOrchestrator(
 		config,
 		packageList,
