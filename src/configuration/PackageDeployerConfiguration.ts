@@ -263,8 +263,8 @@ export default class PackageDeployerConfiguration {
 			},
 			packagesPath: path.join(configuration.appPath, "repos"),
 			packagesBlacklist: [],
-			// Update repositories every hour
-			updateRepositoriesEvery: 60 * 60 * 1000,
+			// Update repositories listing every day
+			updateRepositoriesEvery: 24 * 60 * 60 * 1000,
 			// Override with default options
 			...defaultPackageDeployerConfiguration,
 		};

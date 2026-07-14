@@ -3,11 +3,11 @@ import pc from "picocolors";
 
 import LocalRepositoryList from "@/repository/LocalRepositoryList";
 import { PackageDeployerConfiguration, RepositoryList } from "..";
-import LocalRepositories from "@/repository/LocalRepositories";
 import NodePackageList from "@/package/NodePackageList";
 import DeploymentState from "@/data/DeploymentState";
 import PackageDeployerOrchestrator from "@/packageDeployer/PackageDeployerOrchestrator";
 import AppState from "@/data/AppState";
+import RepositoryManager from "@/repository/RepositoryManager";
 
 /**
  * Sync all
@@ -26,7 +26,7 @@ export async function syncAll(
 		);
 	}
 
-	// Get(locally) or fetch(from github) repository list
+	// Get(locally) or fetch(from github) the repository list
 	if (logging) {
 		console.log(pc.blue("🔍 Fetching repository list..."));
 	}
@@ -56,41 +56,29 @@ export async function syncAll(
 		config.getPackagesPath()
 	);
 
-	// Pull all the repositories if they are newer on the remote
-	// Push or pull based on the repositories last commit date
-	// Check whether it's time to do the pull or not
-	const lastUpdate = state.state.lastRepositoriesUpdate;
-	const shouldUpdateRepositories = lastUpdate
-		? lastUpdate.getTime() + config.configuration.updateRepositoriesEvery <
-		  Date.now()
-		: true; // Default to true if the last repositories update date doesn't exists
-	if (shouldUpdateRepositories) {
-		if (logging) {
-			console.log(pc.yellow("🔄 Updating local repositories..."));
+	if (logging) {
+		console.log(pc.yellow("🔄 Updating local repositories..."));
+	}
+	const whitelist =
+		config.configuration.repositoriesListing.use === "whitelist"
+			? config.getWhitelist()
+			: [];
+	const rm = new RepositoryManager(
+		config.getPackagesPath(),
+		localRepositories,
+		state,
+		config,
+		{
+			whitelist,
+			logging: config.getLogging(),
 		}
-		const whitelist =
-			config.configuration.repositoriesListing.use === "whitelist"
-				? config.getWhitelist()
-				: [];
-		const repositories = new LocalRepositories(
-			config.getPackagesPath(),
-			localRepositories,
-			{
-				whitelist,
-				logging: config.getLogging(),
-			}
-		);
-		await repositories.update();
+	);
+	await rm.update();
 
-		// Save state
-		await state.save();
-		if (logging) {
-			console.log(pc.green("✅ All repositories are up to date."));
-		}
-	} else {
-		if (logging) {
-			console.log(pc.green("✅ Don't update repositories."));
-		}
+	// Save state
+	await state.save();
+	if (logging) {
+		console.log(pc.green("✅ All repositories are up to date."));
 	}
 
 	// Get package list

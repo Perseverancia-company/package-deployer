@@ -1,7 +1,9 @@
+import { Octokit } from "@octokit/rest";
+
 import { RepositoryList } from "@/index";
 import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
-import LocalRepositories from "@/repository/LocalRepositories";
-import { Octokit } from "@octokit/rest";
+import RepositoryManager from "@/repository/RepositoryManager";
+import AppState from "@/data/AppState";
 
 /**
  * Update command
@@ -9,6 +11,7 @@ import { Octokit } from "@octokit/rest";
 export default function updateMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
+	state: AppState,
 	octokit: Octokit
 ) {
 	return yargs.command(
@@ -68,8 +71,10 @@ export default function updateMain(
 				config.configuration.repositoriesListing.use === "whitelist"
 					? config.getWhitelist()
 					: [];
-			const localRepositories = await LocalRepositories.fromPath(
+			const rm = await RepositoryManager.fromPath(
 				repositoriesPath,
+				state,
+				config,
 				{
 					whitelist,
 					logging: config.getLogging(),
@@ -77,7 +82,7 @@ export default function updateMain(
 			);
 
 			// Push or pull repositories based on their last commit date
-			await localRepositories.update();
+			await rm.update();
 		}
 	);
 }

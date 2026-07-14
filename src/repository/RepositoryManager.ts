@@ -3,6 +3,8 @@ import simpleGit from "simple-git";
 
 import LocalRepositoryList from "./LocalRepositoryList";
 import { pullRepositoryIfNewer, updateRepository } from ".";
+import AppState from "@/data/AppState";
+import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 
 /**
  * # Repository manager
@@ -49,6 +51,9 @@ import { pullRepositoryIfNewer, updateRepository } from ".";
 export default class RepositoryManager {
 	path: string;
 	repositoryList: LocalRepositoryList;
+	state: AppState;
+	config: PackageDeployerConfiguration;
+
 	whitelist: Array<string> = [];
 	logging: boolean = false;
 
@@ -62,6 +67,8 @@ export default class RepositoryManager {
 	constructor(
 		path: string,
 		repositoryList: LocalRepositoryList,
+		state: AppState,
+		config: PackageDeployerConfiguration,
 		options?: {
 			whitelist?: Array<string>;
 			logging?: boolean;
@@ -69,6 +76,8 @@ export default class RepositoryManager {
 	) {
 		this.path = path;
 		this.repositoryList = repositoryList;
+		this.state = state;
+		this.config = config;
 
 		if (options) {
 			if (options.logging) {
@@ -88,14 +97,22 @@ export default class RepositoryManager {
 	 */
 	static async fromPath(
 		folderPath: string,
+		state: AppState,
+		config: PackageDeployerConfiguration,
 		options?: {
 			whitelist?: Array<string>;
 			logging?: boolean;
-			localRepositoryList?: LocalRepositoryList
+			localRepositoryList?: LocalRepositoryList;
 		}
 	) {
 		const repositoryList = await LocalRepositoryList.fromPath(folderPath);
-		return new RepositoryManager(folderPath, repositoryList, options);
+		return new RepositoryManager(
+			folderPath,
+			repositoryList,
+			state,
+			config,
+			options
+		);
 	}
 
 	/**
@@ -131,47 +148,65 @@ export default class RepositoryManager {
 		const repositories = this.filterRepositories();
 		const CONCURRENCY_LIMIT = 3;
 
-		if (this.logging) {
-			console.log(
-				pc.magenta(
-					`📦 Batch processing ${repositories.length} repos (Concurrency ${CONCURRENCY_LIMIT})`
-				)
-			);
-		}
+		// Push or pull based on the repositories last commit date
+		// If the latest commit on the remote is newer the repository is pulled
+		const lastUpdate = this.state.state.lastRepositoriesUpdate;
+		const shouldUpdateRepositories = lastUpdate
+			? lastUpdate.getTime() +
+					this.config.configuration.updateRepositoriesEvery <
+			  Date.now()
+			: true; // Default to true if the last repositories update date doesn't exists
 
-		for (let i = 0; i < repositories.length; i += CONCURRENCY_LIMIT) {
-			const chunk = repositories.slice(i, i + CONCURRENCY_LIMIT);
-
-			await Promise.allSettled(
-				chunk.map(async (repository) => {
-					try {
-						// Update repository handles pushing or pulling
-						await updateRepository(repository.path);
-						if (this.logging) {
-							console.log(
-								`${pc.green("✔")} ${pc.bold(repository.name)}`
-							);
-						}
-					} catch (err: any) {
-						if (this.logging) {
-							console.error(
-								pc.red(`❌ ${repository.name} failed:`),
-								err.message
-							);
-						}
-					}
-				})
-			);
-
+		// Only if should update repositories is true, actually update
+		if (shouldUpdateRepositories) {
 			if (this.logging) {
-				if (i + CONCURRENCY_LIMIT < repositories.length) {
-					console.log(pc.gray("--- Waiting for next batch ---"));
+				console.log(
+					pc.magenta(
+						`📦 Batch processing ${repositories.length} repos (Concurrency ${CONCURRENCY_LIMIT})`
+					)
+				);
+			}
+
+			for (let i = 0; i < repositories.length; i += CONCURRENCY_LIMIT) {
+				const chunk = repositories.slice(i, i + CONCURRENCY_LIMIT);
+
+				await Promise.allSettled(
+					chunk.map(async (repository) => {
+						try {
+							// Update repository handles pushing or pulling
+							await updateRepository(repository.path);
+							if (this.logging) {
+								console.log(
+									`${pc.green("✔")} ${pc.bold(
+										repository.name
+									)}`
+								);
+							}
+						} catch (err: any) {
+							if (this.logging) {
+								console.error(
+									pc.red(`❌ ${repository.name} failed:`),
+									err.message
+								);
+							}
+						}
+					})
+				);
+
+				if (this.logging) {
+					if (i + CONCURRENCY_LIMIT < repositories.length) {
+						console.log(pc.gray("--- Waiting for next batch ---"));
+					}
 				}
 			}
-		}
 
-		if (this.logging) {
-			console.log(pc.bgGreen(pc.black(" DONE ")));
+			if (this.logging) {
+				console.log(pc.bgGreen(pc.black(" DONE ")));
+			}
+		} else {
+			if (this.logging) {
+				console.log(pc.green("✅ Don't update repositories."));
+			}
 		}
 	}
 

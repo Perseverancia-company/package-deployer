@@ -1,12 +1,14 @@
 import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
-import LocalRepositories from "@/repository/LocalRepositories";
+import RepositoryManager from "@/repository/RepositoryManager";
+import AppState from "@/data/AppState";
 
 /**
  * Pull command
  */
 export default function pullMain(
 	yargs: any,
-	config: PackageDeployerConfiguration
+	config: PackageDeployerConfiguration,
+	state: AppState
 ) {
 	return yargs.command(
 		"pull",
@@ -27,14 +29,16 @@ export default function pullMain(
 				config.configuration.repositoriesListing.use === "whitelist"
 					? config.getWhitelist()
 					: [];
-			const localRepositories = await LocalRepositories.fromPath(
+			const rm = await RepositoryManager.fromPath(
 				repositoriesPath,
+				state,
+				config,
 				{
 					whitelist,
 					logging: config.getLogging(),
 				}
 			);
-			await localRepositories.pull();
+			await rm.pull();
 		}
 	);
 }
