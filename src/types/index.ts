@@ -3,13 +3,20 @@ import PNPM from "@/packageManager/PNPM";
 
 /**
  * Deployment state
- * 
+ *
  * The structure is
  * Package name: Package Version
  */
 export interface IDeploymentState {
 	successes: { [packageName: string]: string };
 	failures: { [packageName: string]: string };
+}
+
+/**
+ * General App State
+ */
+export interface IDeployerState {
+	lastRepositoriesUpdate?: Date;
 }
 
 /**
@@ -61,11 +68,9 @@ export interface IPackageDeployerConfiguration {
 	// The main app path
 	// Usually ~/perseverancia
 	appPath: string;
-
 	// The main packages path
 	// Usually {APP_PATH}/repos
 	packagesPath: string;
-
 	// Repositories allow listing
 	repositoriesListing: RepositoryAllowanceListing;
 	// Blacklisted packages to not manage
@@ -74,13 +79,16 @@ export interface IPackageDeployerConfiguration {
 	githubProfileUrl?: string;
 	// The github token of the user to clone the repositories
 	githubToken?: string;
-
 	// Registry
 	// The package registry url
 	registryUrl?: string;
 	// Username and password
 	registryUsername?: string;
 	registryPassword?: string;
+	// Is logging enabled or not
+	logging?: boolean;
+	// Repository update frequency
+	updateRepositoriesEvery: number;
 }
 
 export interface RepositoryInfo {

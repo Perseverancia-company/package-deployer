@@ -3,6 +3,7 @@ import { Octokit } from "@octokit/rest";
 import RepositoryList from "@/repository/RepositoryList";
 import { PackageDeployerConfiguration } from "..";
 import { syncAll } from "@/lib/sync";
+import AppState from "@/data/AppState";
 
 /**
  * Sync
@@ -10,7 +11,8 @@ import { syncAll } from "@/lib/sync";
 export default async function syncMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
-	octokit: Octokit,
+	state: AppState,
+	octokit: Octokit
 ) {
 	return yargs.command(
 		"sync",
@@ -30,7 +32,7 @@ export default async function syncMain(
 		},
 		async (args: any) => {
 			if (args.all) {
-				await syncAll(config, octokit);
+				await syncAll(config, state, octokit);
 
 				// Don't continue
 				return;
@@ -41,15 +43,15 @@ export default async function syncMain(
 				// Get(locally) or fetch(from github) repository list
 				const repositoryList = await RepositoryList.sync(
 					RepositoryList.defaultConfigurationFile(
-						config.configurationPath,
+						config.configurationPath
 					),
 					octokit,
-					config.repositoriesPath,
+					config.repositoriesPath
 				);
 
 				// Save
 				await repositoryList.save();
 			}
-		},
+		}
 	);
 }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.6.0
+
+Added
+- Added a cooldown for updating repositories
+The default is 1 hour
+
 ## 3.5.0
 
 Added

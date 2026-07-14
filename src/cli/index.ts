@@ -17,6 +17,7 @@ import buildMain from "./build";
 import switchMain from "./switch";
 import revertSwitchMain from "./revert-switch";
 import DefaultAppFolder from "@/configuration/DefaultAppFolder";
+import AppState from "@/data/AppState";
 
 /**
  * Main
@@ -40,7 +41,8 @@ async function main() {
 		daf.createFolders(),
 	]);
 
-	await Promise.all([
+	const [state] = await Promise.all([
+		AppState.load(config.appPath),
 		new RepositoriesFolder(config.repositoriesPath).createFolder(),
 	]);
 
@@ -71,9 +73,9 @@ async function main() {
 	await printMain(yargsInstance, config, octokit);
 	await repositoriesMain(yargsInstance, config, octokit);
 	await revertSwitchMain(yargsInstance, config);
-	await syncMain(yargsInstance, config, octokit);
+	await syncMain(yargsInstance, config, state, octokit);
 	await switchMain(yargsInstance, config);
-	await updateMain(yargsInstance, config, octokit);
+	await updateMain(yargsInstance, config, state, octokit);
 
 	return yargsInstance.help().parse(hideBin(process.argv));
 }

@@ -13,7 +13,7 @@ import DefaultAppFolder from "@/configuration/DefaultAppFolder";
 export default async function configurationMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
-	daf: DefaultAppFolder,
+	daf: DefaultAppFolder
 ) {
 	return yargs.command(
 		"config",
@@ -23,6 +23,17 @@ export default async function configurationMain(
 			blacklistMain(yargs, config);
 			setMain(yargs, config, daf);
 			whitelistMain(yargs, config);
+
+			yargs.command(
+				"print",
+				"Prints configuration",
+				(yargs: any) => {
+					return yargs;
+				},
+				async (args: any) => {
+					console.log(`Configuration: `, config.configuration);
+				}
+			);
 
 			return yargs
 				.option("select", {
@@ -46,7 +57,7 @@ export default async function configurationMain(
 					config.setListType(select);
 				} else {
 					throw new Error(
-						"Select can be only 'blacklist' or 'whitelist'",
+						"Select can be only 'blacklist' or 'whitelist'"
 					);
 				}
 			}
@@ -73,6 +84,6 @@ export default async function configurationMain(
 					}
 				}
 			}
-		},
+		}
 	);
 }

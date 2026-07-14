@@ -2,6 +2,7 @@ import YAML from "yaml";
 import fsp from "fs/promises";
 import path from "path";
 
+import DefaultAppFolder from "./DefaultAppFolder";
 import { IPackageDeployerConfiguration } from "../types";
 
 export const DEPLOYER_CONFIG_FILENAME = "deployer-config.yaml";
@@ -63,6 +64,13 @@ export default class PackageDeployerConfiguration {
 	}
 
 	// --- Configuration ---
+	/**
+	 * Set app path
+	 */
+	setAppPath(appPath: string) {
+		this.configuration.appPath = appPath;
+	}
+
 	/**
 	 * Add a repository to the whitelist
 	 */
@@ -176,13 +184,27 @@ export default class PackageDeployerConfiguration {
 	}
 
 	/**
+	 * Set update repositories every
+	 */
+	setUpdateRepositoriesEvery(givenTime: number) {
+		this.configuration.updateRepositoriesEvery = givenTime;
+	}
+
+	/**
+	 * Set logging
+	 */
+	setLogging(logging: boolean) {
+		this.configuration.logging = logging;
+	}
+
+	/**
 	 * Load default package deployer configuration
 	 */
 	static async loadDefaultPackageDeployerConfiguration() {
 		// File path
 		const filePath = path.join(
 			process.cwd(),
-			"defaultPackageDeployerConfiguration.yaml",
+			"defaultPackageDeployerConfiguration.yaml"
 		);
 
 		try {
@@ -201,14 +223,11 @@ export default class PackageDeployerConfiguration {
 	/**
 	 * Load
 	 */
-	static async load(configuration: {
-		appPath: string;
-		configPath: string;
-	}) {
+	static async load(configuration: { appPath: string; configPath: string }) {
 		// File path
 		const filePath = path.join(
 			configuration.configPath,
-			DEPLOYER_CONFIG_FILENAME,
+			DEPLOYER_CONFIG_FILENAME
 		);
 
 		try {
@@ -237,6 +256,8 @@ export default class PackageDeployerConfiguration {
 			},
 			packagesPath: path.join(configuration.appPath, "repos"),
 			packagesBlacklist: [],
+			// Update repositories every hour
+			updateRepositoriesEvery: 60 * 60 * 1000,
 			// Override with default options
 			...defaultPackageDeployerConfiguration,
 		};
@@ -247,9 +268,17 @@ export default class PackageDeployerConfiguration {
 	/**
 	 * Save
 	 */
-	async save(configPath: string) {
+	async save(configPath?: string) {
+		const daf = new DefaultAppFolder(this.configuration.appPath);
+		const finalConfigurationPath = configPath
+			? configPath
+			: daf.configurationPath;
+
 		// Filepath
-		const filePath = path.join(configPath, DEPLOYER_CONFIG_FILENAME);
+		const filePath = path.join(
+			finalConfigurationPath,
+			DEPLOYER_CONFIG_FILENAME
+		);
 
 		// Write file
 		const data = YAML.stringify(this.configuration);

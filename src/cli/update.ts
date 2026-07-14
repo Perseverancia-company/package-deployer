@@ -2,6 +2,7 @@ import { Octokit } from "@octokit/rest";
 
 import { syncAll } from "@/lib/sync";
 import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
+import AppState from "@/data/AppState";
 
 /**
  * Update things
@@ -9,7 +10,8 @@ import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfigu
 export default async function updateMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
-	octokit: Octokit,
+	appState: AppState,
+	octokit: Octokit
 ) {
 	return yargs.command(
 		"update",
@@ -19,7 +21,7 @@ export default async function updateMain(
 			return yargs;
 		},
 		async (args: any) => {
-			await syncAll(config, octokit);
-		},
+			await syncAll(config, appState, octokit);
+		}
 	);
 }
