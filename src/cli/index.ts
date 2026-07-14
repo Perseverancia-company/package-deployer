@@ -31,8 +31,6 @@ async function main() {
 		DefaultAppFolder.fromGlobalConfiguration(),
 	]);
 
-	console.log(`App path: `, daf.appPath);
-
 	const [config] = await Promise.all([
 		PackageDeployerConfiguration.load({
 			appPath: daf.appPath,

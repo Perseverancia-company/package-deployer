@@ -11,6 +11,7 @@ export default class LocalRepositories {
 	path: string;
 	repositoryList: LocalRepositoryList;
 	whitelist: Array<string> = [];
+	logging: boolean = false;
 
 	/**
 	 *
@@ -19,11 +20,23 @@ export default class LocalRepositories {
 	constructor(
 		path: string,
 		repositoryList: LocalRepositoryList,
-		whitelist: Array<string> = []
+		options?: {
+			whitelist?: Array<string>;
+			logging?: boolean;
+		}
 	) {
 		this.path = path;
 		this.repositoryList = repositoryList;
-		this.whitelist = whitelist;
+
+		if (options) {
+			if (options.logging) {
+				this.logging = options.logging;
+			}
+
+			if (options.whitelist) {
+				this.whitelist = options.whitelist;
+			}
+		}
 	}
 
 	/**
@@ -31,9 +44,15 @@ export default class LocalRepositories {
 	 *
 	 * Create from the given path
 	 */
-	static async fromPath(folderPath: string, whitelist?: Array<string>) {
+	static async fromPath(
+		folderPath: string,
+		options?: {
+			whitelist?: Array<string>;
+			logging?: boolean;
+		}
+	) {
 		const repositoryList = await LocalRepositoryList.fromPath(folderPath);
-		return new LocalRepositories(folderPath, repositoryList, whitelist);
+		return new LocalRepositories(folderPath, repositoryList, options);
 	}
 
 	/**
@@ -67,11 +86,13 @@ export default class LocalRepositories {
 		const repositories = this.filterRepositories();
 		const CONCURRENCY_LIMIT = 3;
 
-		console.log(
-			pc.magenta(
-				`📦 Batch processing ${repositories.length} repos (Concurrency ${CONCURRENCY_LIMIT})`
-			)
-		);
+		if (this.logging) {
+			console.log(
+				pc.magenta(
+					`📦 Batch processing ${repositories.length} repos (Concurrency ${CONCURRENCY_LIMIT})`
+				)
+			);
+		}
 
 		for (let i = 0; i < repositories.length; i += CONCURRENCY_LIMIT) {
 			const chunk = repositories.slice(i, i + CONCURRENCY_LIMIT);
@@ -80,24 +101,32 @@ export default class LocalRepositories {
 				chunk.map(async (repository) => {
 					try {
 						await updateRepository(repository.path);
-						console.log(
-							`${pc.green("✔")} ${pc.bold(repository.name)}`
-						);
+						if (this.logging) {
+							console.log(
+								`${pc.green("✔")} ${pc.bold(repository.name)}`
+							);
+						}
 					} catch (err: any) {
-						console.error(
-							pc.red(`❌ ${repository.name} failed:`),
-							err.message
-						);
+						if (this.logging) {
+							console.error(
+								pc.red(`❌ ${repository.name} failed:`),
+								err.message
+							);
+						}
 					}
 				})
 			);
 
-			if (i + CONCURRENCY_LIMIT < repositories.length) {
-				console.log(pc.gray("--- Waiting for next batch ---"));
+			if (this.logging) {
+				if (i + CONCURRENCY_LIMIT < repositories.length) {
+					console.log(pc.gray("--- Waiting for next batch ---"));
+				}
 			}
 		}
 
-		console.log(pc.bgGreen(pc.black(" DONE ")));
+		if (this.logging) {
+			console.log(pc.bgGreen(pc.black(" DONE ")));
+		}
 	}
 
 	/**
@@ -112,12 +141,20 @@ export default class LocalRepositories {
 
 				if (remote) {
 					await git.pull(remote);
-					console.log(`Pulled ${repository.name}`);
+					if (this.logging) {
+						console.log(`Pulled ${repository.name}`);
+					}
 				} else {
-					console.log(`Repository ${repository.name} has no remote`);
+					if (this.logging) {
+						console.log(
+							`Repository ${repository.name} has no remote`
+						);
+					}
 				}
 			} catch (err) {
-				console.error(`Error: `, err);
+				if (this.logging) {
+					console.error(`Error: `, err);
+				}
 			}
 		}
 	}
@@ -145,9 +182,16 @@ export default class LocalRepositories {
 			try {
 				const git = simpleGit(repository.path);
 				await git.push();
-				console.log(`Pushed ${repository.name}`);
+				if (this.logging) {
+					console.log(`Pushed ${repository.name}`);
+				}
 			} catch (err) {
-				console.error(`Error when pushing ${repository.name}: `, err);
+				if (this.logging) {
+					console.error(
+						`Error when pushing ${repository.name}: `,
+						err
+					);
+				}
 			}
 		}
 	}

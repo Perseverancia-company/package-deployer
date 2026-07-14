@@ -9,7 +9,7 @@ import { Octokit } from "@octokit/rest";
 export default function updateMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
-	octokit: Octokit,
+	octokit: Octokit
 ) {
 	return yargs.command(
 		"update",
@@ -37,18 +37,18 @@ export default function updateMain(
 			if (args.syncInfo) {
 				repositoryList = await RepositoryList.sync(
 					RepositoryList.defaultConfigurationFile(
-						config.configurationPath,
+						config.configurationPath
 					),
 					octokit,
-					config.repositoriesPath,
+					config.repositoriesPath
 				);
 			} else {
 				repositoryList = await RepositoryList.fromPath(
 					RepositoryList.defaultConfigurationFile(
-						config.configurationPath,
+						config.configurationPath
 					),
 					octokit,
-					config.repositoriesPath,
+					config.repositoriesPath
 				);
 			}
 
@@ -64,15 +64,20 @@ export default function updateMain(
 			]);
 
 			// Get local repositories list
-			const localRepositories = await LocalRepositories.fromPath(
-				repositoriesPath,
+			const whitelist =
 				config.configuration.repositoriesListing.use === "whitelist"
 					? config.getWhitelist()
-					: [],
+					: [];
+			const localRepositories = await LocalRepositories.fromPath(
+				repositoriesPath,
+				{
+					whitelist,
+					logging: config.getLogging(),
+				}
 			);
 
 			// Push or pull repositories based on their last commit date
 			await localRepositories.update();
-		},
+		}
 	);
 }

@@ -17,21 +17,32 @@ export async function syncAll(
 	state: AppState,
 	octokit: Octokit
 ) {
-	console.log(
-		`\n${pc.bold(pc.cyan("🚀 Starting Sync Process for Perseverancia..."))}`
-	);
+	const logging = config.configuration.logging;
+	if (logging) {
+		console.log(
+			`\n${pc.bold(
+				pc.cyan("🚀 Starting Sync Process for Perseverancia...")
+			)}`
+		);
+	}
 
 	// Get(locally) or fetch(from github) repository list
-	console.log(pc.blue("🔍 Fetching repository list..."));
+	if (logging) {
+		console.log(pc.blue("🔍 Fetching repository list..."));
+	}
 	const repositoryList = await RepositoryList.sync(
 		RepositoryList.defaultConfigurationFile(config.configurationPath),
 		octokit,
 		config.repositoriesPath
 	);
-	console.log(pc.green("✅ Repository list synchronized."));
+	if (logging) {
+		console.log(pc.green("✅ Repository list synchronized."));
+	}
 
 	// Clone missing repositories
-	console.log(pc.blue("📦 Checking for missing repositories..."));
+	if (logging) {
+		console.log(pc.blue("📦 Checking for missing repositories..."));
+	}
 	await repositoryList.cloneAll({
 		whitelist: config.getWhitelist(),
 		cloneAt: config.getPackagesPath(),
@@ -54,21 +65,32 @@ export async function syncAll(
 		  Date.now()
 		: true; // Default to true if the last repositories update date doesn't exists
 	if (shouldUpdateRepositories) {
-		console.log(pc.yellow("🔄 Updating local repositories..."));
+		if (logging) {
+			console.log(pc.yellow("🔄 Updating local repositories..."));
+		}
+		const whitelist =
+			config.configuration.repositoriesListing.use === "whitelist"
+				? config.getWhitelist()
+				: [];
 		const repositories = new LocalRepositories(
 			config.getPackagesPath(),
 			localRepositories,
-			config.configuration.repositoriesListing.use === "whitelist"
-				? config.getWhitelist()
-				: []
+			{
+				whitelist,
+				logging: config.getLogging(),
+			}
 		);
 		await repositories.update();
 
 		// Save state
 		await state.save();
-		console.log(pc.green("✅ All repositories are up to date."));
+		if (logging) {
+			console.log(pc.green("✅ All repositories are up to date."));
+		}
 	} else {
-		console.log(pc.green("✅ Don't update repositories."));
+		if (logging) {
+			console.log(pc.green("✅ Don't update repositories."));
+		}
 	}
 
 	// Get package list
@@ -82,7 +104,9 @@ export async function syncAll(
 	);
 
 	// Deploy all packages orchestrator
-	console.log(pc.magenta("🏗️ Initializing Incremental Deployment..."));
+	if (logging) {
+		console.log(pc.magenta("🏗️ Initializing Incremental Deployment..."));
+	}
 	const orchestrator = new PackageDeployerOrchestrator(
 		config,
 		packageList,
@@ -90,9 +114,11 @@ export async function syncAll(
 	);
 	await orchestrator.incrementalDeployment();
 
-	console.log(
-		`\n${pc.bold(
-			pc.green("✨ Sync and Deployment completed successfully! ✨")
-		)}\n`
-	);
+	if (logging) {
+		console.log(
+			`\n${pc.bold(
+				pc.green("✨ Sync and Deployment completed successfully! ✨")
+			)}\n`
+		);
+	}
 }

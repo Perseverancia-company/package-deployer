@@ -114,6 +114,13 @@ export default class PackageDeployerConfiguration {
 	}
 
 	/**
+	 * Get logging
+	 */
+	getLogging() {
+		return this.configuration.logging;
+	}
+
+	/**
 	 * Get packages path
 	 */
 	getPackagesPath() {

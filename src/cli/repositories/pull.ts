@@ -6,7 +6,7 @@ import LocalRepositories from "@/repository/LocalRepositories";
  */
 export default function pullMain(
 	yargs: any,
-	config: PackageDeployerConfiguration,
+	config: PackageDeployerConfiguration
 ) {
 	return yargs.command(
 		"pull",
@@ -23,13 +23,18 @@ export default function pullMain(
 			const repositoriesPath = args.path;
 
 			// Pull all repositories
-			const localRepositories = await LocalRepositories.fromPath(
-				repositoriesPath,
+			const whitelist =
 				config.configuration.repositoriesListing.use === "whitelist"
 					? config.getWhitelist()
-					: [],
+					: [];
+			const localRepositories = await LocalRepositories.fromPath(
+				repositoriesPath,
+				{
+					whitelist,
+					logging: config.getLogging(),
+				}
 			);
 			await localRepositories.pull();
-		},
+		}
 	);
 }
