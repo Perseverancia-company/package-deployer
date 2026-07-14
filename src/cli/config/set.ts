@@ -113,7 +113,13 @@ export default function setMain(
 			}
 
 			// Set logging, it's toggled whenever the user runs the command
-			config.setLogging(args.logging);
+			const logging = args.logging;
+			config.setLogging(logging);
+			if (logging) {
+				console.log("✅ Login is " + pc.green("enabled"));
+			} else {
+				console.log("✅ Login has been " + pc.red("disabled"));
+			}
 
 			await Promise.all([
 				config.save(config.configurationPath),

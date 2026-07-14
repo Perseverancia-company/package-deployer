@@ -167,6 +167,7 @@ export default class RepositoryManager {
 				);
 			}
 
+			// Push or pull repositories
 			for (let i = 0; i < repositories.length; i += CONCURRENCY_LIMIT) {
 				const chunk = repositories.slice(i, i + CONCURRENCY_LIMIT);
 
@@ -203,6 +204,10 @@ export default class RepositoryManager {
 			if (this.logging) {
 				console.log(pc.bgGreen(pc.black(" DONE ")));
 			}
+
+			// Save state
+			this.state.setLastRepositoriesUpdate(new Date());
+			await this.state.save();
 		} else {
 			if (this.logging) {
 				console.log(pc.green("✅ Don't update repositories."));

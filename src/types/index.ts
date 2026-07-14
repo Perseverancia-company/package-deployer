@@ -13,6 +13,16 @@ export interface IDeploymentState {
 }
 
 /**
+ * Better interface for state
+ */
+export interface IPackageDeploymentState {
+	name: string;
+	success: boolean;
+	// When was the repository information last fetch at
+	repositoryUpdatedAt: Date;
+}
+
+/**
  * General App State
  */
 export interface IDeployerState {

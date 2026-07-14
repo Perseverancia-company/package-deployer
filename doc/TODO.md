@@ -14,3 +14,4 @@
     -   [x] Enable/Disable Logging
 -   [x] State
     -   [x] Last repositories update
+            A more sophisiticated method of checking when where all repositories metadata updated last would be to check individually per repository.

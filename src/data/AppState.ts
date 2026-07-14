@@ -35,6 +35,14 @@ export default class AppState {
 	}
 
 	/**
+	 * Set last repositories update date
+	 */
+	setLastRepositoriesUpdate(updateDate: Date) {
+		this.state.lastRepositoriesUpdate = updateDate;
+	}
+
+	// --- Storage ---
+	/**
 	 * Get file path
 	 */
 	static filePath(statePath: string) {
@@ -49,12 +57,9 @@ export default class AppState {
 	static async load(statePath: string) {
 		try {
 			// Read file
-			const data = await fsp.readFile(
-				AppState.filePath(statePath),
-				{
-					encoding: "utf-8",
-				}
-			);
+			const data = await fsp.readFile(AppState.filePath(statePath), {
+				encoding: "utf-8",
+			});
 
 			// Parse data
 			const parsedData = YAML.parse(data);
@@ -76,12 +81,8 @@ export default class AppState {
 		const data = YAML.stringify(this.state);
 
 		// Save as json
-		return await fsp.writeFile(
-			AppState.filePath(this.statePath),
-			data,
-			{
-				encoding: "utf-8",
-			}
-		);
+		return await fsp.writeFile(AppState.filePath(this.statePath), data, {
+			encoding: "utf-8",
+		});
 	}
 }
