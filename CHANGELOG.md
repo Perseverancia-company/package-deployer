@@ -5,6 +5,8 @@
 Added
 - Added a cooldown for updating repositories
 The default is 1 hour
+- Enable or disable logging in the configuration
+- Change "LocalRepositories" name to "RepositoryManager", which is more appropriate.
 
 ## 3.5.0
 

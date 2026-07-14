@@ -1,13 +1,52 @@
-import simpleGit from "simple-git";
 import pc from "picocolors";
+import simpleGit from "simple-git";
 
 import LocalRepositoryList from "./LocalRepositoryList";
 import { pullRepositoryIfNewer, updateRepository } from ".";
 
 /**
- * Local repositories
+ * # Repository manager
+ *
+ * Very similar to LocalRepositories, but the name of this
+ * class is more appropriate for what it does.
+ *
+ * Repository manager uses a list of local repositories at the given path to
+ * manage local repositories.
+ *
+ * The  tasks it does are listed here:
+ *
+ * ## Remote services integration
+ *
+ * Uses remote services like github, gitlab, bitbucket, etc. to clone, push
+ * or pull repositories.
+ *
+ * ## Clone/Push/Pull consensus
+ *
+ * This are the policies used to clone, push or pull a repository from the remote
+ * to the local machine.
+ *
+ * ### Clone policy
+ *
+ * In case that a repository doesn't exists locally, the repository will be
+ * cloned locally.
+ *
+ * ### Pull policy
+ *
+ * It fetches repositories information from the remotes(github, gitlab,
+ * bitbucket, etc.), if the remote version is newer than the
+ * local version, then it pulls the repositories.
+ *
+ * ## Options
+ *
+ * Options can be used to configure the behavior of the class.
+ *
+ * - whitelist
+ * The whitelist does exactly what you think, it only fetches/clones/pulls
+ * repositories in that list.
+ * - logging
+ * Whether to log actions or not in the console/terminal(stdout, stderr).
  */
-export default class LocalRepositories {
+export default class RepositoryManager {
 	path: string;
 	repositoryList: LocalRepositoryList;
 	whitelist: Array<string> = [];
@@ -52,10 +91,11 @@ export default class LocalRepositories {
 		options?: {
 			whitelist?: Array<string>;
 			logging?: boolean;
+			localRepositoryList?: LocalRepositoryList
 		}
 	) {
 		const repositoryList = await LocalRepositoryList.fromPath(folderPath);
-		return new LocalRepositories(folderPath, repositoryList, options);
+		return new RepositoryManager(folderPath, repositoryList, options);
 	}
 
 	/**
@@ -84,6 +124,8 @@ export default class LocalRepositories {
 	 * Update repository
 	 *
 	 * Fetch repository metadata and push or pull based on the last commit date.
+	 *
+	 * TODO: Clones a repository when it doesn't exists locally.
 	 */
 	async update() {
 		const repositories = this.filterRepositories();
@@ -103,6 +145,7 @@ export default class LocalRepositories {
 			await Promise.allSettled(
 				chunk.map(async (repository) => {
 					try {
+						// Update repository handles pushing or pulling
 						await updateRepository(repository.path);
 						if (this.logging) {
 							console.log(

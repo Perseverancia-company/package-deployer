@@ -22,6 +22,7 @@ import KhansDependencyGraphWhitelist from "./graph/KhansDependencyGraphWhitelist
 import VerdaccioClient from "./lib/VerdaccioClient";
 import NodePackageList from "./package/NodePackageList";
 import DefaultAppFolder from "./configuration/DefaultAppFolder";
+import RepositoryManager from "./repository/RepositoryManager";
 
 export {
 	DEPLOYER_CONFIG_FILENAME,
@@ -37,6 +38,7 @@ export {
 	RepositoriesFolder,
 	Repository,
 	RepositoryList,
+	RepositoryManager,
 	VerdaccioClient,
 	appsToNodePackages,
 	getAllApps,

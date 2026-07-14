@@ -88,13 +88,19 @@ export default class PackageDeployerOrchestrator {
 	 * This will only update packages that have changed.
 	 */
 	async incrementalDeployment() {
+		const logging = this.config.getLogging();
+
 		// Get incremental build order and if it's zero return
 		const incrementalBuildOrder =
 			this.packageFilter.getIncrementalBuildOrder();
 		if (incrementalBuildOrder.length === 0) {
-			console.log(
-				pc.green("✅ All packages are up to date. Nothing to deploy.")
-			);
+			if (logging) {
+				console.log(
+					pc.green(
+						"✅ All packages are up to date. Nothing to deploy."
+					)
+				);
+			}
 			return;
 		}
 
@@ -102,7 +108,9 @@ export default class PackageDeployerOrchestrator {
 		const buildOrderNames = incrementalBuildOrder.map(
 			(pkg) => pkg.packageName
 		);
-		console.log(`🚀 Packages to deploy in order: `, buildOrderNames);
+		if (logging) {
+			console.log(`🚀 Packages to deploy in order: `, buildOrderNames);
+		}
 
 		// ON package deployed callback
 		const onPackageDeployed = async (task: ITaskDeploymentResult) => {
