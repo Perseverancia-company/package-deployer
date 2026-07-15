@@ -65,6 +65,12 @@ export default class AppState {
 			// Parse data
 			const parsedData = YAML.parse(data);
 
+			// Update the dates
+			const lastUpdate = parsedData.lastRepositoriesUpdate;
+			if (lastUpdate) {
+				parsedData.lastRepositoriesUpdate = new Date(lastUpdate);
+			}
+
 			// Create instance
 			return new AppState(statePath, {
 				previousState: parsedData,

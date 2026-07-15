@@ -1,5 +1,6 @@
 import pc from "picocolors";
 import simpleGit from "simple-git";
+import prettyMs from "pretty-ms"
 
 import LocalRepositoryList from "./LocalRepositoryList";
 import { pullRepositoryIfNewer, updateRepository } from ".";
@@ -147,10 +148,39 @@ export default class RepositoryManager {
 	 * if the check was done recently it won't update repositories locally.
 	 */
 	shouldUpdateRepositories() {
+		const lastUpdate = this.state.state.lastRepositoriesUpdate;
+		const now = Date.now();
+		const updateEveryMs = this.config.configuration.updateRepositoriesEvery;
+
+		if (lastUpdate) {
+			// Convert lastUpdate to a Date object in case it is saved as an ISO string
+			const lastUpdateDate = new Date(lastUpdate);
+			const timeSinceLastUpdateMs = now - lastUpdateDate.getTime();
+
+			// "Last update was 17 hours, 15 minutes, 30 seconds ago."
+			const lastUpdateStr = prettyMs(timeSinceLastUpdateMs, {
+				verbose: true,
+				secondsDecimalDigits: 0, // avoid floating-point seconds like 30.2s
+			});
+			console.log(`Last update was ${lastUpdateStr} ago.`);
+
+			const nextUpdateDueAtMs = lastUpdateDate.getTime() + updateEveryMs;
+			const timeUntilNextUpdateMs = nextUpdateDueAtMs - now;
+
+			if (timeUntilNextUpdateMs > 0) {
+				// "Time until next update is 05:10:40"
+				const countdownStr = prettyMs(timeUntilNextUpdateMs, {
+					colonNotation: true,
+					secondsDecimalDigits: 0,
+				});
+				console.log(`Time until next update is ${countdownStr}`);
+			}
+		} else {
+			console.log("No previous updates recorded.");
+		}
+
 		// Push or pull based on the repositories last commit date
 		// If the latest commit on the remote is newer the repository is pulled
-		const lastUpdate = this.state.state.lastRepositoriesUpdate;
-		console.log(`Last update: `, lastUpdate);
 		const shouldUpdateRepositories = lastUpdate
 			? lastUpdate.getTime() +
 					this.config.configuration.updateRepositoriesEvery <
