@@ -29,7 +29,7 @@
 	"scripts": {
 		"cli": "tsx ./src/cli/index.ts",
 		"build": "tsup",
-		"test": "NODE_ENV=test vitest"
+		"test": "vitest"
 	},
 	"repository": {
 		"type": "git",
@@ -64,6 +64,7 @@
 		"tsup": "^8.5.1",
 		"tsx": "^4.20.6",
 		"typescript": "^5.9.3",
+		"vite-tsconfig-paths": "^6.1.1",
 		"vitest": "^4.1.10"
 	}
 }

@@ -1,3 +1,12 @@
+import {
+	describe,
+	beforeEach,
+	afterEach,
+	it,
+	expect,
+	vi,
+	type MockInstance,
+} from "vitest";
 import KhansDependencyGraph from "./KhansDependencyGraphWhitelist";
 import NodePackage from "@/package/NodePackage";
 
@@ -17,11 +26,11 @@ const createMockPackage = (
 };
 
 describe("KhansDependencyGraph", () => {
-	let consoleErrorSpy: jest.SpyInstance;
+	let consoleErrorSpy: MockInstance;
 
 	beforeEach(() => {
 		// Silence console.error for circular dependency tests to keep output clean
-		consoleErrorSpy = jest
+		consoleErrorSpy = vi
 			.spyOn(console, "error")
 			.mockImplementation(() => {});
 	});

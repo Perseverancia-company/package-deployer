@@ -1,4 +1,12 @@
-import pc from "picocolors";
+import {
+	describe,
+	beforeEach,
+	afterEach,
+	it,
+	expect,
+	vi,
+	type MockInstance,
+} from "vitest";
 import NodePackage from "@/package/NodePackage";
 import KhansDependencyGraph from "./KhansDependencyGraph";
 
@@ -20,11 +28,11 @@ const createMockPkg = (
 };
 
 describe("KhansDependencyGraph", () => {
-	let consoleErrorSpy: jest.SpyInstance;
+	let consoleErrorSpy: MockInstance;
 
 	beforeEach(() => {
 		// Silence console.error during tests to keep the output clean
-		consoleErrorSpy = jest
+		consoleErrorSpy = vi
 			.spyOn(console, "error")
 			.mockImplementation(() => {});
 	});

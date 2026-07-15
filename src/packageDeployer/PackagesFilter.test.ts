@@ -1,3 +1,4 @@
+import { describe, beforeEach, it, expect, vi } from "vitest";
 import PackagesFilter from "./PackagesFilter";
 
 // Mocking dependencies
@@ -24,13 +25,13 @@ describe("PackagesFilter", () => {
 			configuration: {
 				repositoriesListing: { use: "blacklist" },
 			},
-			getWhitelist: jest.fn().mockReturnValue([]),
-			getBlacklist: jest.fn().mockReturnValue([]),
+			getWhitelist: vi.fn().mockReturnValue([]),
+			getBlacklist: vi.fn().mockReturnValue([]),
 		};
 
 		// 2. Setup Mock Package List
 		mockNodePackageList = {
-			getNodePackages: jest.fn().mockReturnValue([]),
+			getNodePackages: vi.fn().mockReturnValue([]),
 		};
 
 		// 3. Setup Deployed Packages Map

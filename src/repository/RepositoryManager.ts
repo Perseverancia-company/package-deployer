@@ -117,6 +117,9 @@ export default class RepositoryManager {
 
 	/**
 	 * Filter repositories
+	 *
+	 * If there was a whitelist given this will only keep the repositories
+	 * that are in that whitelist.
 	 */
 	filterRepositories() {
 		if (this.whitelist.length > 0) {
@@ -138,6 +141,26 @@ export default class RepositoryManager {
 	}
 
 	/**
+	 * Should update local repositories
+	 *
+	 * Checks whether the app should update repositories or not, normally
+	 * if the check was done recently it won't update repositories locally.
+	 */
+	shouldUpdateRepositories() {
+		// Push or pull based on the repositories last commit date
+		// If the latest commit on the remote is newer the repository is pulled
+		const lastUpdate = this.state.state.lastRepositoriesUpdate;
+		console.log(`Last update: `, lastUpdate);
+		const shouldUpdateRepositories = lastUpdate
+			? lastUpdate.getTime() +
+					this.config.configuration.updateRepositoriesEvery <
+			  Date.now()
+			: true; // Default to true if the last repositories update date doesn't exists
+
+		return shouldUpdateRepositories;
+	}
+
+	/**
 	 * Update repository
 	 *
 	 * Fetch repository metadata and push or pull based on the last commit date.
@@ -148,14 +171,7 @@ export default class RepositoryManager {
 		const repositories = this.filterRepositories();
 		const CONCURRENCY_LIMIT = 3;
 
-		// Push or pull based on the repositories last commit date
-		// If the latest commit on the remote is newer the repository is pulled
-		const lastUpdate = this.state.state.lastRepositoriesUpdate;
-		const shouldUpdateRepositories = lastUpdate
-			? lastUpdate.getTime() +
-					this.config.configuration.updateRepositoriesEvery <
-			  Date.now()
-			: true; // Default to true if the last repositories update date doesn't exists
+		const shouldUpdateRepositories = this.shouldUpdateRepositories();
 
 		// Only if should update repositories is true, actually update
 		if (shouldUpdateRepositories) {
