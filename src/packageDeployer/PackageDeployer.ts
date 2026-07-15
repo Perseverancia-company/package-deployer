@@ -1,3 +1,5 @@
+import pc from "picocolors";
+
 import { ITaskDeploymentResult } from "../types";
 import NodePackage from "@/package/NodePackage";
 
@@ -7,6 +9,7 @@ import NodePackage from "@/package/NodePackage";
 export default class PackageDeployer {
 	packages: Array<NodePackage> = [];
 	configurationFolderPath: string;
+	logging: boolean = false;
 
 	onPackageDeployed?: (data: ITaskDeploymentResult) => Promise<void>;
 
@@ -20,6 +23,7 @@ export default class PackageDeployer {
 		configurationFolderPath: string,
 		configuration?: {
 			onPackageDeployed?: (data: ITaskDeploymentResult) => Promise<void>;
+			logging?: boolean;
 		}
 	) {
 		this.packages = nodePackages;
@@ -28,6 +32,10 @@ export default class PackageDeployer {
 		if (configuration) {
 			if (configuration.onPackageDeployed) {
 				this.onPackageDeployed = configuration.onPackageDeployed;
+			}
+
+			if (typeof configuration.logging === "boolean") {
+				this.logging = configuration.logging;
 			}
 		}
 	}
@@ -39,6 +47,10 @@ export default class PackageDeployer {
 		// Deploy all packages
 		const packageDeploymentResult: Array<ITaskDeploymentResult> = [];
 		for (const nodePackage of this.packages) {
+			if (this.logging) {
+				console.log(`Deploying ` + pc.cyan(nodePackage.packageName));
+			}
+
 			let success = true;
 			try {
 				// Install packages for the first time
@@ -64,13 +76,17 @@ export default class PackageDeployer {
 					await nodePackage.publish();
 				}
 
-				console.log(`Package ${nodePackage.packageName} deployed`);
+				if (this.logging) {
+					console.log(`Package ${nodePackage.packageName} deployed`);
+				}
 			} catch (err) {
 				// Change state
 				success = false;
-				console.log(
-					`Package ${nodePackage.packageName} failed to be deployed`
-				);
+				if (this.logging) {
+					console.log(
+						`Package ${nodePackage.packageName} failed to be deployed`
+					);
+				}
 			}
 
 			// Save package state

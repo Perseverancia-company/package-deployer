@@ -1,6 +1,6 @@
 import pc from "picocolors";
 import simpleGit from "simple-git";
-import prettyMs from "pretty-ms"
+import prettyMs from "pretty-ms";
 
 import LocalRepositoryList from "./LocalRepositoryList";
 import { pullRepositoryIfNewer, updateRepository } from ".";
@@ -162,7 +162,7 @@ export default class RepositoryManager {
 				verbose: true,
 				secondsDecimalDigits: 0, // avoid floating-point seconds like 30.2s
 			});
-			console.log(`Last update was ${lastUpdateStr} ago.`);
+			console.log(`Last update was ` + pc.cyan(lastUpdateStr) + ` ago.`);
 
 			const nextUpdateDueAtMs = lastUpdateDate.getTime() + updateEveryMs;
 			const timeUntilNextUpdateMs = nextUpdateDueAtMs - now;
@@ -170,10 +170,12 @@ export default class RepositoryManager {
 			if (timeUntilNextUpdateMs > 0) {
 				// "Time until next update is 05:10:40"
 				const countdownStr = prettyMs(timeUntilNextUpdateMs, {
-					colonNotation: true,
+					verbose: true,
 					secondsDecimalDigits: 0,
 				});
-				console.log(`Time until next update is ${countdownStr}`);
+				console.log(
+					`Time until next update is ` + pc.cyan(countdownStr)
+				);
 			}
 		} else {
 			console.log("No previous updates recorded.");

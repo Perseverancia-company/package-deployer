@@ -116,9 +116,9 @@ export default function setMain(
 			const logging = args.logging;
 			config.setLogging(logging);
 			if (logging) {
-				console.log("✅ Login is " + pc.green("enabled"));
+				console.log("✅ Logging is " + pc.green("enabled"));
 			} else {
-				console.log("✅ Login has been " + pc.red("disabled"));
+				console.log("✅ Logging has been " + pc.red("disabled"));
 			}
 
 			await Promise.all([

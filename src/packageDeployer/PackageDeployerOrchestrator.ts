@@ -122,6 +122,7 @@ export default class PackageDeployerOrchestrator {
 			incrementalBuildOrder,
 			this.config.configurationPath,
 			{
+				logging,
 				onPackageDeployed,
 			}
 		);

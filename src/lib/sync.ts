@@ -75,12 +75,6 @@ export async function syncAll(
 	);
 	await rm.update();
 
-	// Save state
-	await state.save();
-	if (logging) {
-		console.log(pc.green("✅ All repositories are up to date."));
-	}
-
 	// Get package list
 	const packageList = await NodePackageList.fromPackagesPath(
 		config.getPackagesPath()
