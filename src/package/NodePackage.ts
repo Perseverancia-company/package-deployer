@@ -119,6 +119,16 @@ export default class NodePackage {
 	}
 
 	/**
+	 * Get node modules
+	 *
+	 * @returns
+	 */
+	getNodeModulesPath() {
+		const nodeModulesPath = path.join(this.path, "node_modules");
+		return nodeModulesPath;
+	}
+
+	/**
 	 * Get dependencies and dev dependencies
 	 */
 	getDependencies() {
@@ -132,8 +142,19 @@ export default class NodePackage {
 	 * Delete node modules
 	 */
 	async deleteNodeModules() {
-		const nodeModulesPath = path.join(this.path, "node_modules");
-		return await fsp.rmdir(nodeModulesPath);
+		return await fsp.rm(this.getNodeModulesPath(), {
+			recursive: true,
+			force: true,
+		});
+	}
+
+	/**
+	 * Delete node modules without crashing(throwing an error)
+	 */
+	async deleteNodeModulesSafe() {
+		try {
+			await this.deleteNodeModules();
+		} catch (err) {}
 	}
 
 	/**

@@ -30,7 +30,7 @@ export async function getAppInfo(appPath: string) {
 	// Get package name
 	const packageStr = fs.readFileSync(
 		path.join(appPath, "package.json"),
-		"utf8"
+		"utf8",
 	);
 	const packageJson = JSON.parse(packageStr);
 
@@ -67,7 +67,7 @@ export async function getAppsInfoAtPath(
 	options: {
 		blacklist?: Array<string>;
 		packageNameBlacklist?: Array<string>;
-	} = {}
+	} = {},
 ) {
 	let apps: IPackageInfo[] = [];
 	const blacklist = (options && options.blacklist) || [];
@@ -108,7 +108,7 @@ export async function getAppsInfoAtPath(
  */
 export async function getWorkspacesPackages(
 	appPath: string,
-	workspaces: string[]
+	workspaces: string[],
 ) {
 	let newApps: IPackageInfo[] = [];
 
@@ -118,7 +118,7 @@ export async function getWorkspacesPackages(
 		// Remove trailing "/*"
 		const workspacePath = workspacePathA.slice(
 			0,
-			workspacePathA.length - 2
+			workspacePathA.length - 2,
 		);
 
 		// Get apps and concatenate them
@@ -144,37 +144,15 @@ export async function getAllApps(
 	options: {
 		blacklist?: Array<string>;
 		packageNameBlacklist?: Array<string>;
-	} = {}
+	} = {},
 ) {
-	// 1. We get all apps
-	const apps = await getAppsInfoAtPath(appsPath, options);
-
-	let newApps: IPackageInfo[] = [];
-
-	// 2. We check which ones have workspace/s
-	for (const app of apps) {
-		const packageJson = appPackageJson(app.path);
-
-		// Get workspaces
-		const workspaces = packageJson["workspaces"];
-		if (workspaces) {
-			const workspacePackages = await getWorkspacesPackages(
-				app.path,
-				workspaces
-			);
-			newApps = newApps.concat(workspacePackages);
-		} else {
-			newApps.push(app);
-		}
-	}
-
-	return newApps;
+	return await getAllPackages(appsPath, options);
 }
 
 /**
  * Get all packages
  *
- * Get all apps alias, it shouldn't have been called get all apps anyways
+ * Get all apps including those inside a workspace
  *
  * ## Blacklists
  *
@@ -186,9 +164,31 @@ export async function getAllPackages(
 	options: {
 		blacklist?: Array<string>;
 		packageNameBlacklist?: Array<string>;
-	} = {}
+	} = {},
 ) {
-	return await getAllApps(packagesPath, options);
+	// We get all apps
+	const apps = await getAppsInfoAtPath(packagesPath, options);
+
+	let newApps: IPackageInfo[] = [];
+
+	// We check which ones have workspace/s
+	for (const app of apps) {
+		const packageJson = appPackageJson(app.path);
+
+		// Get workspaces
+		const workspaces = packageJson["workspaces"];
+		if (workspaces) {
+			const workspacePackages = await getWorkspacesPackages(
+				app.path,
+				workspaces,
+			);
+			newApps = newApps.concat(workspacePackages);
+		} else {
+			newApps.push(app);
+		}
+	}
+
+	return newApps;
 }
 
 /**

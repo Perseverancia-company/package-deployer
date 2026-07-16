@@ -16,10 +16,32 @@ export default class NodePackageList {
 
 	/**
 	 * From packages path
+	 *
+	 * Gets all packages, even those inside workspaces
+	 *
+	 * The whitelist filters the packages, and returns only those that are in it.
 	 */
-	static async fromPackagesPath(packagesPath: string) {
+	static async fromPackagesPath(
+		packagesPath: string,
+		options?: {
+			whitelist?: Array<string>;
+		},
+	) {
 		// Get all packages from the given packages path
 		const allPackages = await getAllPackages(packagesPath);
+
+		// Filter them by the whitelist
+		if (options && options.whitelist) {
+			const whitelist = options.whitelist;
+			const remainingPackages = allPackages.filter((pkg) =>
+				whitelist.includes(pkg.packageName),
+			);
+
+			// Convert to node packages
+			const nodePackages = await appsToNodePackages(remainingPackages);
+
+			return new NodePackageList(nodePackages);
+		}
 
 		// Convert to node packages
 		const nodePackages = await appsToNodePackages(allPackages);
@@ -39,7 +61,7 @@ export default class NodePackageList {
 	 */
 	getNodePackagesWhitelist(whitelist: Array<string>) {
 		return this.nodePackages.filter((pkg) =>
-			whitelist.includes(pkg.packageName)
+			whitelist.includes(pkg.packageName),
 		);
 	}
 

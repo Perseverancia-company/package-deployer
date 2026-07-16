@@ -18,6 +18,7 @@ import switchMain from "./switch";
 import revertSwitchMain from "./revert-switch";
 import DefaultAppFolder from "@/configuration/DefaultAppFolder";
 import AppState from "@/data/AppState";
+import packagesMain from "./packages";
 
 /**
  * Main
@@ -60,8 +61,6 @@ async function main() {
 		);
 	}
 
-	console.log(`Github token: `, githubToken);
-
 	// Initialize octokit
 	const octokit = new Octokit({ auth: githubToken });
 
@@ -76,6 +75,7 @@ async function main() {
 	await syncMain(yargsInstance, config, state, octokit);
 	await switchMain(yargsInstance, config);
 	await updateMain(yargsInstance, config, state, octokit);
+	await packagesMain(yargsInstance, config, state);
 
 	return yargsInstance.help().parse(hideBin(process.argv));
 }
