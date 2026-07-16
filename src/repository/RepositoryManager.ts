@@ -73,7 +73,7 @@ export default class RepositoryManager {
 		options?: {
 			whitelist?: Array<string>;
 			logging?: boolean;
-		}
+		},
 	) {
 		this.path = path;
 		this.repositoryList = repositoryList;
@@ -104,7 +104,7 @@ export default class RepositoryManager {
 			whitelist?: Array<string>;
 			logging?: boolean;
 			localRepositoryList?: LocalRepositoryList;
-		}
+		},
 	) {
 		const repositoryList = await LocalRepositoryList.fromPath(folderPath);
 		return new RepositoryManager(
@@ -112,7 +112,7 @@ export default class RepositoryManager {
 			repositoryList,
 			state,
 			config,
-			options
+			options,
 		);
 	}
 
@@ -162,8 +162,11 @@ export default class RepositoryManager {
 				verbose: true,
 				secondsDecimalDigits: 0, // avoid floating-point seconds like 30.2s
 			});
-			console.log(`Last update was ` + pc.cyan(lastUpdateStr) + ` ago.`);
-
+			if (this.logging) {
+				console.log(
+					`Last update was ` + pc.cyan(lastUpdateStr) + ` ago.`,
+				);
+			}
 			const nextUpdateDueAtMs = lastUpdateDate.getTime() + updateEveryMs;
 			const timeUntilNextUpdateMs = nextUpdateDueAtMs - now;
 
@@ -173,12 +176,16 @@ export default class RepositoryManager {
 					verbose: true,
 					secondsDecimalDigits: 0,
 				});
-				console.log(
-					`Time until next update is ` + pc.cyan(countdownStr)
-				);
+				if (this.logging) {
+					console.log(
+						`Time until next update is ` + pc.cyan(countdownStr),
+					);
+				}
 			}
 		} else {
-			console.log("No previous updates recorded.");
+			if (this.logging) {
+				console.log("No previous updates recorded.");
+			}
 		}
 
 		// Push or pull based on the repositories last commit date
@@ -186,7 +193,7 @@ export default class RepositoryManager {
 		const shouldUpdateRepositories = lastUpdate
 			? lastUpdate.getTime() +
 					this.config.configuration.updateRepositoriesEvery <
-			  Date.now()
+				Date.now()
 			: true; // Default to true if the last repositories update date doesn't exists
 
 		return shouldUpdateRepositories;
@@ -210,8 +217,8 @@ export default class RepositoryManager {
 			if (this.logging) {
 				console.log(
 					pc.magenta(
-						`📦 Batch processing ${repositories.length} repos (Concurrency ${CONCURRENCY_LIMIT})`
-					)
+						`📦 Batch processing ${repositories.length} repos (Concurrency ${CONCURRENCY_LIMIT})`,
+					),
 				);
 			}
 
@@ -227,19 +234,19 @@ export default class RepositoryManager {
 							if (this.logging) {
 								console.log(
 									`${pc.green("✔")} ${pc.bold(
-										repository.name
-									)}`
+										repository.name,
+									)}`,
 								);
 							}
 						} catch (err: any) {
 							if (this.logging) {
 								console.error(
 									pc.red(`❌ ${repository.name} failed:`),
-									err.message
+									err.message,
 								);
 							}
 						}
-					})
+					}),
 				);
 
 				if (this.logging) {
@@ -281,7 +288,7 @@ export default class RepositoryManager {
 				} else {
 					if (this.logging) {
 						console.log(
-							`Repository ${repository.name} has no remote`
+							`Repository ${repository.name} has no remote`,
 						);
 					}
 				}
@@ -323,7 +330,7 @@ export default class RepositoryManager {
 				if (this.logging) {
 					console.error(
 						`Error when pushing ${repository.name}: `,
-						err
+						err,
 					);
 				}
 			}

@@ -56,9 +56,11 @@ async function main() {
 		process.env.PACKAGES_PATH ?? config.configuration.packagesPath;
 	if (!packagesPath) {
 		console.warn(
-			"No packages path found, be sure to set it using `config --packages-path PACKAGES_PATH`"
+			"No packages path found, be sure to set it using `config --packages-path PACKAGES_PATH`",
 		);
 	}
+
+	console.log(`Github token: `, githubToken);
 
 	// Initialize octokit
 	const octokit = new Octokit({ auth: githubToken });

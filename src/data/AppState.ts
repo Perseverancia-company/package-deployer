@@ -38,7 +38,6 @@ export default class AppState {
 	 * Set last repositories update date
 	 */
 	setLastRepositoriesUpdate(updateDate: Date) {
-		console.log(`Setting the new repository date to: `, updateDate);
 		this.state.lastRepositoriesUpdate = updateDate;
 	}
 

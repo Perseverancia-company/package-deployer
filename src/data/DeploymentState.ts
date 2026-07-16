@@ -83,7 +83,7 @@ export default class DeploymentState {
 		// File path
 		const filePath = path.join(
 			configurationPath,
-			"packageDeploymentState.yaml"
+			"packageDeploymentState.yaml",
 		);
 		return filePath;
 	}
@@ -98,7 +98,7 @@ export default class DeploymentState {
 				DeploymentState.filePath(configurationPath),
 				{
 					encoding: "utf-8",
-				}
+				},
 			);
 
 			// Parse data
@@ -126,7 +126,7 @@ export default class DeploymentState {
 			data,
 			{
 				encoding: "utf-8",
-			}
+			},
 		);
 	}
 }
