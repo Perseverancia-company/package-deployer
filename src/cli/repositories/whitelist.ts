@@ -1,4 +1,3 @@
-import { DefaultConfigFolder } from "@/index";
 import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 
 /**

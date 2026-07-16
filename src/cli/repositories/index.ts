@@ -10,6 +10,7 @@ import localConfigMain from "./local-config";
 import pullMain from "./pull";
 import updateMain from "./update";
 import pushMain from "./push";
+import AppState from "@/data/AppState";
 
 /**
  * Repositories command
@@ -17,6 +18,7 @@ import pushMain from "./push";
 export default async function repositoriesMain(
 	yargs: any,
 	config: PackageDeployerConfiguration,
+	state: AppState,
 	octokit: Octokit,
 ) {
 	return yargs.command(
@@ -28,9 +30,9 @@ export default async function repositoriesMain(
 			cloneMain(yargs, config, octokit);
 			combineMain(yargs, config);
 			localConfigMain(yargs, config);
-			pullMain(yargs, config);
-			pushMain(yargs, config);
-			updateMain(yargs, config, octokit);
+			pullMain(yargs, config, state);
+			pushMain(yargs, config, state);
+			updateMain(yargs, config, state, octokit);
 
 			return yargs
 				.option("select", {

@@ -1,4 +1,4 @@
-import { DefaultConfigFolder, generateMonorepo } from "@/index";
+import { generateMonorepo } from "@/index";
 import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfiguration";
 
 /**

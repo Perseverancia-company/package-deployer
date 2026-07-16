@@ -1,4 +1,6 @@
-# Monorepo
+docs_html
+
+# Common
 build/
 doc_dist/
 deploymentState.json

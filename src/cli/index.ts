@@ -70,7 +70,7 @@ async function main() {
 	await configurationMain(yargsInstance, config, daf);
 	await deployMain(yargsInstance, config, state, octokit);
 	await printMain(yargsInstance, config, octokit);
-	await repositoriesMain(yargsInstance, config, octokit);
+	await repositoriesMain(yargsInstance, config, state, octokit);
 	await revertSwitchMain(yargsInstance, config);
 	await syncMain(yargsInstance, config, state, octokit);
 	await switchMain(yargsInstance, config);

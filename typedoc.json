@@ -1,0 +1,9 @@
+{
+	"entryPoints": ["src/index.ts", "src/cli/index.ts"],
+	"outputs": [
+		{
+			"name": "html",
+			"path": "./docs_html"
+		}
+	]
+}

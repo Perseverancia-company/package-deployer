@@ -29,6 +29,7 @@
 	"scripts": {
 		"cli": "tsx ./src/cli/index.ts",
 		"build": "tsup",
+		"build:doc": "typedoc",
 		"test": "vitest"
 	},
 	"repository": {
@@ -64,6 +65,7 @@
 		"ts-jest": "^29.4.6",
 		"tsup": "^8.5.1",
 		"tsx": "^4.20.6",
+		"typedoc": "^0.28.20",
 		"typescript": "^5.9.3",
 		"vite-tsconfig-paths": "^6.1.1",
 		"vitest": "^4.1.10"

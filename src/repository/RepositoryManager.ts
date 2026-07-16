@@ -10,9 +10,6 @@ import PackageDeployerConfiguration from "@/configuration/PackageDeployerConfigu
 /**
  * # Repository manager
  *
- * Very similar to LocalRepositories, but the name of this
- * class is more appropriate for what it does.
- *
  * Repository manager uses a list of local repositories at the given path to
  * manage local repositories.
  *
